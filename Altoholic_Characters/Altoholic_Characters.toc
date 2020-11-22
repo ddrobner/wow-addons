@@ -1,0 +1,21 @@
+## Interface: 90002
+## Title: Altoholic_Characters
+## Notes: Altoholic's Characters UI
+## Author: Thaoky (EU-Marécages de Zangar)
+## Version: 9.0.2-001
+## Dependencies: Altoholic, DataStore, DataStore_Characters, DataStore_Containers
+## LoadOnDemand: 1
+## X-Category: Interface Enhancements
+
+Templates\UITemplates.xml
+TabCharacters.xml
+
+Frames\AuctionHouse.xml
+Frames\Containers.xml
+Frames\Mails.xml
+Frames\Pets.xml
+Frames\Quests.xml
+Frames\Recipes.xml
+Frames\Spellbook.xml
+Frames\Talents.xml
+Frames\Garrisons.xml

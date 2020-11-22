@@ -1,0 +1,22 @@
+------------------------------------------------------------------------
+r20 | Lombra | 2020-10-20 19:17:00 +0000 (Tue, 20 Oct 2020) | 1 line
+Changed paths:
+   M /trunk/Core.lua
+
+- Properly override default dropdown script.
+------------------------------------------------------------------------
+r19 | Lombra | 2020-10-20 19:00:52 +0000 (Tue, 20 Oct 2020) | 1 line
+Changed paths:
+   M /trunk/Core.lua
+   M /trunk/MogIt_SetTransmog.toc
+
+- Update for transmog API changes.
+------------------------------------------------------------------------
+r18 | Lombra | 2020-10-20 18:36:00 +0000 (Tue, 20 Oct 2020) | 1 line
+Changed paths:
+   D /trunk/.pkgmeta
+   A /trunk/pkgmeta.yaml (from /trunk/.pkgmeta:17)
+
+- .yaml
+------------------------------------------------------------------------
+

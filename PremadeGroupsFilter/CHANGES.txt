@@ -1,0 +1,16 @@
+lightweight tag fb94df04fc0ad9ea9d805fca2c1dbae80b5de529 2.0.1
+Author:	Bernhard Saumweber <b.saumweber@gmail.com>
+Date:	Tue Nov 3 22:14:49 2020 +0100
+
+commit fb94df04fc0ad9ea9d805fca2c1dbae80b5de529
+Author: Bernhard Saumweber <b.saumweber@gmail.com>
+Date:   Tue Nov 3 22:14:49 2020 +0100
+
+    Release version 2.0.1
+
+commit 2425e15d8b9e06adde31f6e82ab67f0c7a863d18
+Author: Bernhard Saumweber <b.saumweber@gmail.com>
+Date:   Tue Nov 3 22:14:29 2020 +0100
+
+    Fixed Russian translation thanks to Hollicsh
+

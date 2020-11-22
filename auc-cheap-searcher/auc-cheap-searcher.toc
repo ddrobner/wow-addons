@@ -1,0 +1,15 @@
+## Title: Auctioneer Cheapo searcher module
+## Notes: module that searches for items which are listed near sell-to-vendor price. For WoW versions 8+ it's also possible to apply an additional filter for known transmog items.
+##
+## Authors: Adrian, brykrys, dinesh, ccox, pagep
+## Interface:  80205
+## X-Min-Interface:  11302
+## X-Compatible-With: 80205
+## LoadOnDemand: 0
+## SavedVariables: CheapoMaxPercent, CheapoMaxPprice
+## Dependencies: Auc-Advanced
+## OptionalDependencies: Auc-Util-SearchUI, CanIMogIt
+## Version: 20191013r2
+##
+
+auc-cheap-searcher.lua

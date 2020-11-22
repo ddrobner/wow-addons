@@ -1,0 +1,18 @@
+Altoholic Changelog 
+===================
+
+The up-to-date changelog can now be found at: https://github.com/teelolws/Altoholic-Retail/commits/master
+
+IMPORTANT NOTE: As with every new expansion, many things have changed in the API, and it is REQUIRED to clear your Saved Variables for the addon.
+This means cleaning the following files in \WTF\Account\<your_account>\SavedVariables : Altoholic.lua & All DataStore*.lua
+
+There WILL be bugs if you use your old files without cleaning them first. 
+Some fixes to work around API changes are too time consuming, so cleaning is required. A meagre price to pay once per expansion.
+
+How to support Altoholic's development:
+
+- To make a one-off donation to the original author (Thaoky): Use the donate button on https://www.curseforge.com/wow/addons/altoholic/
+- To make a one-off donation to the current maintainer (Teelo): Use the donate button on https://www.curseforge.com/wow/addons/altoholic-retail/
+- For an ongoing donation to the maintainer: Support Teelo on Patreon : https://www.patreon.com/TeeloJubeithos 
+
+If you like the addon, consider supporting it, this has been a long term effort and commitment.

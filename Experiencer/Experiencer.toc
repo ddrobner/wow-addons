@@ -1,0 +1,28 @@
+## Interface: 90001
+## Title: Experiencer
+## Notes: Simple but advanced tracking progress bar addon
+## Author: Sonaza
+## Version: 4.0.1
+## OptionalDeps: Ace3
+## SavedVariables: ExperiencerDB, ExperiencerDB_module_experience, ExperiencerDB_module_reputation, ExperiencerDB_module_artifact, ExperiencerDB_module_honor, ExperiencerDB_module_conquest
+
+#@no-lib-strip@
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceDB-3.0\AceDB-3.0.xml
+libs\AceEvent-3.0\AceEvent-3.0.xml
+libs\AceHook-3.0\AceHook-3.0.xml
+libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+#@end-no-lib-strip@
+
+core.lua
+modules\experience.lua
+modules\reputation.lua
+modules\artifact.lua
+modules\honor.lua
+modules\conquest.lua
+events.lua
+databroker.lua
+Frame.xml

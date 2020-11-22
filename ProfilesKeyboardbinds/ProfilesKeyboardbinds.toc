@@ -1,0 +1,42 @@
+## Title: Profiles: Keyboard binds
+## Version: v1.9.3.71
+## Author: Fulgerul
+## Interface: 70100
+## SavedVariables: ProfilesKeyboardbindsG
+## SavedVariablesPerCharacter: ProfilesKeyboardbinds
+## OptionalDeps: Outfitter WoWUnit
+## Notes: Sets up profiles for keybinds which you can switch between quickly. 
+
+Libs\usefull_lua_functions.lua
+Libs\Ace3\LibStub\LibStub.lua
+Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\Ace3\AceAddon-3.0\AceAddon-3.0.xml
+Libs\Ace3\AceEvent-3.0\AceEvent-3.0.xml
+Libs\Ace3\AceTimer-3.0\AceTimer-3.0.xml
+Libs\Ace3\AceDB-3.0\AceDB-3.0.xml
+Libs\Ace3\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\Ace3\AceLocale-3.0\AceLocale-3.0.xml
+Libs\Ace3\AceConsole-3.0\AceConsole-3.0.xml
+Libs\Ace3\AceGUI-3.0\AceGUI-3.0.xml
+Libs\Ace3\AceConfig-3.0\AceConfig-3.0.xml
+Libs\Ace3\AceHook-3.0\AceHook-3.0.xml
+
+
+locale\enUS.lua
+locale\deDE.lua
+locale\frFR.lua
+locale\esES.lua
+locale\esMX.lua
+locale\zhCN.lua
+locale\zhTW.lua
+locale\koKR.lua
+locale\ruRU.lua
+
+
+Core-Keybinds.lua
+KPSOptions.lua
+ProfilesHub.lua
+
+kps_triggers\Outfitter.lua
+kps_triggers\Equipment manager.lua
+kps_triggers\Manual Profiles.lua

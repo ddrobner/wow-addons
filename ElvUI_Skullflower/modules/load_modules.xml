@@ -1,0 +1,7 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Include file="datatexts\load_datatexts.xml"/>
+	<Include file="misc\afk.lua"/>
+	<Include file="unitframes\castbar.lua"/>
+	<Include file="unitframes\power.lua"/>
+	<Include file="unitframes\tags.lua"/>
+</Ui>

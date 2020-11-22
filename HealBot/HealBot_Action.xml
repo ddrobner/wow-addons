@@ -1,0 +1,971 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"     xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+    ..\FrameXML\UI.xsd">
+  <Script file="HealBot_Panel.lua" />
+  <Script file="HealBot_Aggro.lua" />
+  <Script file="HealBot_Skins.lua" />
+  <Script file="HealBot_Text.lua" />
+  <Script file="HealBot_Wheel.lua" />
+  <Script file="HealBot_Action.lua" />
+ 
+  <Button name="HealBotButtonSecureTemplate" virtual="true" inherits="SecureUnitButtonTemplate">
+    <Size>
+      <AbsDimension x="95" y="18" />
+    </Size>
+    <Scripts>
+      <OnLoad>HealBot_Action_OnLoad(self)</OnLoad>
+      <OnEnter>HealBot_Action_HealUnit_OnEnter(self);</OnEnter>
+      <OnLeave>HealBot_Action_HealUnit_OnLeave(self);</OnLeave>
+    </Scripts>
+    <Frames>
+      <StatusBar name="$parentBar" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <Texture name="$parentIcon1">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-1" y="0"/> </Offset>
+                 </Anchor>
+               </Anchors>
+             </Texture>
+                <FontString name="$parentExpire1" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-1" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentCount1" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-1" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            <Texture name="$parentIcon2">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-18" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire2" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-18" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount2" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-18" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon3">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire3" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount3" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon4">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire4" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount4" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon5">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire5" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount5" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon6">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire6" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount6" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon7">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire7" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount7" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <Texture name="$parentIcon8">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire8" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount8" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon9">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire9" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount9" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon10">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire10" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount10" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon11">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire11" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount11" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            <Texture name="$parentIcon12">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire12" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount12" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            <Texture name="$parentIcon51">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-1" y="0"/> </Offset>
+                 </Anchor>
+               </Anchors>
+             </Texture>
+                <FontString name="$parentExpire51" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-1" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentCount51" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-1" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            <Texture name="$parentIcon52">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-18" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire52" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-18" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount52" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-18" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon53">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire53" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount53" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon54">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire54" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount54" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon55">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire55" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount55" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon56">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire56" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount56" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon57">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire57" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount57" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIcon58">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+                <FontString name="$parentExpire58" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+                <FontString name="$parentCount58" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-35" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString> 
+            <Texture name="$parentIconal1" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                  <Offset> <AbsDimension x="2" y="-3"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconal2" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                  <Offset> <AbsDimension x="9" y="-3"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconal3" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+                  <Offset> <AbsDimension x="16" y="-3"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconar1" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+                  <Offset> <AbsDimension x="-2" y="-3"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconar2" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+                  <Offset> <AbsDimension x="-9" y="-3"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconar3" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+                  <Offset> <AbsDimension x="-16" y="-3"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIcontm1" file="Interface\AddOns\HealBot\Images\indicator_blue">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOP" relativePoint="TOP">
+                  <Offset> <AbsDimension x="-11" y="-1"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIcontm2" file="Interface\AddOns\HealBot\Images\indicator_blue">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOP" relativePoint="TOP">
+                  <Offset> <AbsDimension x="0" y="-1"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIcontm3" file="Interface\AddOns\HealBot\Images\indicator_blue">
+              <Size> <AbsDimension x="7" y="7"/> </Size>                    
+              <Anchors>
+                <Anchor point="TOP" relativePoint="TOP">
+                  <Offset> <AbsDimension x="11" y="-1"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconpi1" file="Interface\AddOns\HealBot\Images\indicator_red">
+              <Size> <AbsDimension x="5" y="5"/> </Size>                    
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                  <Offset> <AbsDimension x="-14" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconpi2" file="Interface\AddOns\HealBot\Images\indicator_orange">
+              <Size> <AbsDimension x="5" y="5"/> </Size>                    
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                  <Offset> <AbsDimension x="-7" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconpi3" file="Interface\AddOns\HealBot\Images\indicator_yellow">
+              <Size> <AbsDimension x="5" y="5"/> </Size>                    
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                  <Offset> <AbsDimension x="0" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconpi4" file="Interface\AddOns\HealBot\Images\indicator_lime">
+              <Size> <AbsDimension x="5" y="5"/> </Size>                    
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                  <Offset> <AbsDimension x="7" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentIconpi5" file="Interface\AddOns\HealBot\Images\indicator_green">
+              <Size> <AbsDimension x="5" y="5"/> </Size>                    
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                  <Offset> <AbsDimension x="14" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentExtraClass">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentExtraTarget">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentExtraRC">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            <Texture name="$parentExtraOOR">
+              <Size> <AbsDimension x="16" y="16"/> </Size>                    
+              <Anchors>
+                <Anchor point="RIGHT" relativePoint="RIGHT">
+                  <Offset> <AbsDimension x="-35" y="0"/> </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+            </Layer>
+        </Layers>
+      </StatusBar>
+      <StatusBar name="$parentAux1" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux2" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <FontString name="$parent_text" inherits="NumberFontNormalSmall">
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </FontString> 
+          </Layer>
+        </Layers>
+      </StatusBar>
+      <StatusBar name="$parentAux3" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux4" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux5" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux6" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux7" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux8" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentAux9" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentBar2" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentBar5" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentBar6" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+    </Frames>
+  </Button>
+  
+   <Button name="HealingButtonTemplate2" virtual="true" inherits="SecureUnitButtonTemplate">
+    <Size>
+      <AbsDimension x="128" y="18" />
+    </Size>
+    <Scripts>
+      <OnEnter>HealBot_Action_HealUnit_OnEnter(self);</OnEnter>
+      <OnLeave>HealBot_Action_HealUnit_OnLeave(self);</OnLeave>
+    </Scripts>
+    <Frames>
+      <StatusBar name="$parentBar" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+    </Frames>
+  </Button>
+  
+   <Button name="HealingButtonTemplate3" virtual="true" inherits="SecureUnitButtonTemplate">
+    <Size>
+      <AbsDimension x="128" y="18" />
+    </Size>
+    <Scripts>
+      <OnEnter>HealBot_Action_HealUnit_OnEnter(self);</OnEnter>
+      <OnLeave>HealBot_Action_HealUnit_OnLeave(self);</OnLeave>
+    </Scripts>
+    <Frames>
+      <StatusBar name="$parentBar" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+      <StatusBar name="$parentBar5" inherits="HealBot_StatusBar">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="0" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </StatusBar>
+    </Frames>
+  </Button>
+  
+  <Button name="HealBotOptionsButtonTemplate" virtual="true" inherits="HealingButtonTemplate3">
+    <Size>
+      <AbsDimension x="80" y="20"/>
+    </Size>
+    <Anchors>
+      <Anchor point="BOTTOM" relativePoint="BOTTOM">
+        <Offset>
+          <AbsDimension x="0" y="10"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Scripts>
+      <OnClick> HealBot_Action_OptionsButton_OnClick(self); </OnClick>
+    </Scripts>
+  </Button>
+  <Button name="HealBotFocusButtonTemplate" virtual="true" inherits="HealingButtonTemplate2">
+    <Anchors>
+      <Anchor point="BOTTOM" relativePoint="BOTTOM">
+        <Offset>
+          <AbsDimension x="0" y="10"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+  </Button>
+</Ui>

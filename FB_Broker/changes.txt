@@ -1,0 +1,99 @@
+Version 1.37.8
+- Update libraries
+
+Version 1.37.7
+- Update libraries
+
+Version 1.37.6
+- Update libraries
+
+Version 1.37.5
+- Update TOC for "Visions of N'Zoth"
+
+Version 1.37.4
+- Many changes and code improvements
+
+Version 1.36
+- Update libraries
+
+Version 1.34.11
+- Update Fishing library
+
+Version 1.34.11
+- Update libraries
+
+Version 1.34.10
+- Update TOC
+
+Version 1.34.9
+- Update libraries
+
+Version 1.34.8
+- Update libraries
+- Fishing library improvements
+
+Version 1.34.7
+- Fishing library improvements
+
+Version 1.34.6
+- Some code cleanup that might fix the "disappearing tradeskill window" bug
+
+Version 1.34.5
+- Add knowledge of fishing skills for Zandalar. For the Horde!
+
+Version 1.34.4
+- Library updates
+
+Version 1.34.2
+- Better handling of BfA skills
+
+Version 1.34.1
+- BfA version
+
+Version 1.33e
+- Update fishing library (so outfit display does transmog)
+
+Version 1.33d
+- Fix a possible concatenation error
+- Update Fishing Library
+
+Version 1.33c
+- Update libraries
+
+Version 1.33b
+- Updated for 7.3
+
+Version 1.19a-1.20d
+- Update TOC, fishing libraries, support libraries
+
+Version 1.17
+- Remove deprecated LibBabble-Zone
+
+Version 1.16c
+- Update LibFishing to keep in step with Fishing Buddy (and Fishing Ace!)
+
+Version 1.15b
+- Update libraries
+
+Version 1.15a
+- Update libraries (hopefully this will fix some issues with Darkmoon)
+- Added some temporary information about fishing levels in Darkmoon
+
+Version 1.15
+- Update TOC
+- Update libraries
+
+Version 1.13
+- Update Libraries
+
+-Version 1.12
+- Update Libraries
+- Update TOC
+
+Version 1.11
+- Latest libraries
+- Update TOC to 4.1
+
+Version 1.9
+- Updated fishing library (FB 1.0)
+- Updated support libraries

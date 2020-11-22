@@ -1,0 +1,23 @@
+------------------------------------------------------------------------
+r44 | Myrroddin | 2020-10-18 15:06:13 +0000 (Sun, 18 Oct 2020) | 1 line
+Changed paths:
+   M /trunk/AdiBags_Hearthstones.toc
+
+- Adjust Author line in ToC
+------------------------------------------------------------------------
+r43 | Myrroddin | 2020-10-18 15:04:14 +0000 (Sun, 18 Oct 2020) | 1 line
+Changed paths:
+   M /trunk/supported_items.md
+
+- Update supported_items.md for easy exporting to the web
+------------------------------------------------------------------------
+r42 | Myrroddin | 2020-10-18 14:50:59 +0000 (Sun, 18 Oct 2020) | 3 lines
+Changed paths:
+   M /trunk/AdiBags_Hearthstones.lua
+   M /trunk/AdiBags_Hearthstones.toc
+
+- ToC bump for patch 9.0.1
+- Add missing older items
+- Add Shadowlands toys, hearthstones, etc
+------------------------------------------------------------------------
+

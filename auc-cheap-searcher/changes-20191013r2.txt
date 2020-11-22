@@ -1,0 +1,50 @@
+20191013 r2:
+- fixes max price saved value when using the sets transmog mode search option. It was saving across restarts the value multiplied by 100 (sets price limit mode) instead of the initial one.
+This change does not affect the behaviour of the addon under Classic WoW.
+
+20191013:
+ - TOC update for WoW 8.2.5
+ - allow saving max price and percentage factor across game restarts and relax those safety checks: no longer reset them at UI load, but if they are found to be set to invalid values when searching, they will then be reset.
+ - the interface tweaks from the 20190917 cosmetic beta version are also included.
+
+20190917: cosmetic change: move the slider and the 'time left' selector above the fold, pushing down the price limit selector. I ended up using them much more than the price limit, so it makes more sense to have them there.
+since it is only a cosmetic UI change and not a major functionality change, this addon version will only get released as 'beta'.
+
+20190916 Release notes:
+- imports the timeleft vendor filter, newly added to the Auctioneer vendor searcher https://gitlab.com/norganna-wow/auctioneer/auc-util-searchui/commit/fa34dbf1e0663974
+- allows the extra factor slider to be used in modern WoW too, but only when transmog search mode is disabled.
+- Since there's not enough space in the above-the-fold area of the interface, the time left selector and the extra factor slider had to be placed below the fold.
+
+
+20190907: This release is a work-around Twitch bug (case number) 02836759 which they decided to close as "Resolved" without actually doing ANYTHING about it. My Twitch Desktop App is still affected by this bug.
+The bug is that the Twitch App cannot properly detect addon versions for addons that support both Classic WoW and Retail WoW in the same addon package.
+For those addons, for either Classic or Retail WoW, the Twitch Desktop App will show as "current" the most recent version that was released WITHOUT dual-support, before dual-WoW version was added in those addons.
+
+This addon version is actually the same as version 20190901r1 but with the TOC file adjusted so that the Twitch Desktop App can show the proper updated addon version for either WoW edition.
+
+
+20190901r1:
+- adds WoW classic support while maintaining transmog compatibility with modern WoW
+- for Classic WoW: will set transmog mode disabled by default and hidden in interface elements because transmog is impossible in this WoW version.
+- for Classic WoW: bring back the slider to limit above-vendor percentages, defaults to 20% above-vendor (i.e. 120%)
+
+20190305r2: alpha release only: tiny cosmetic code changes and cleanup: disabled a variable that is not used or needed anymore, it was left behind after today's GetItemInfoCache switch.
+
+
+20190305: use Auctioneer's GetItemInfoCache instead of Blizzard's GetItemInfo when searching, searches are now a tiny bit faster. If you get errors about GetItemInfoCache being an unknown function then please make sure that you have updated Auctioneer too.
+
+20190304: Just a note: Cheapo already uses the Vendor fix that was released today with Auctioneer Suite 8.1 Release r6247.
+
+20181222: TOC update for patch 8.1, removed the guild hello message (nobody ever asked about it, anyway) and added note that searching for item set pieces will also multiply internally the maximum price limit by 100.
+
+20180721: TOC update for Battle for Azeroth and also refined a bit the transmog search logic steps that are used when CanIMogIt is NOT detected as active. This time it will properly filter out non-transmogable items.
+
+20171011: Made the transmog search mode enabled by default and removed the slider that limits price percentages vs vendor price in non-transmog search mode. The percentage filter doesn't make sense anymore, especially since WoW patch 7.3 seems to have a different (more aggressive) cache logic. Also removed the 500000g absolute maximum price limit. Go nuts if your game wallet/CPU allows it.
+
+20171009 (beta): tiny optimization in transmog check: move the completionist filter check a bit higher in the code so that it runs before other checks, possibly helping to skip a few CanIMogIt API calls later on in the code path. Logical end result stays the same as before, just the order of the filter checks is changed.
+
+20170920: TOC update for patch 7.3, the cosmetic interface tweaks from the earlier beta (v20170817) are also included.
+
+20170817 (beta): cosmetic interface change: tweaked a bit the position and labels for the checkboxes, renamed the "set pieces" label to just "sets" to use less space.
+
+20170811: added another filter (checkbox) to only show items that belong to a transmog set and that are still needed. When the set option is active the maximum price limit is multiplied internally by 100 to catch more possible set items. This depends on CanIMogIt:GetSourceID(itemLink) and CanIMogIt:SetsDBGetSetFromSourceID(sourceID)

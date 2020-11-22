@@ -1,0 +1,17 @@
+## Interface: 80300
+## Title: Broker: Fishing Buddy
+## Notes: Fishing Buddy controls using LibDataBroker 
+## Author: Sutorix=AT=hotmail.com
+## Version: 1.37.8
+## X-Category: Professions
+## OptionalDeps: FishingBuddy
+## SavedVariablesPerCharacter: FB_BrokerData
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibBabble-SubZone-3.0\lib.xml
+Libs\HereBeDragons\HereBeDragons-2.0.lua
+Libs\LibTourist-3.0\LibTourist-3.0.lua
+Libs\LibFishing-1.0\LibFishing-1.0.lua
+FB_Broker.lua

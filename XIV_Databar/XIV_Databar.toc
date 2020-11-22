@@ -1,0 +1,13 @@
+## Interface: 80000
+## Title: XIV_Databar
+## Author: Mikeprod
+## Version: 2.0.16
+## Notes: Adds a bottombar by the request of |cffffffffu/sammojo|r on Reddit, Icons made by |cffffffffu/sammojo|r. Previously maintained by |cff00FF99Saxitoxin|r then |cffbbbbbbMille|cff990000XIV|r.
+## SavedVariables: TEST_CONFIG, XIVBarDB
+## X-Issues: https://github.com/Mikeprod/XIV_Databar/issues
+
+embeds.xml
+
+locales\locales.xml
+core.lua
+modules\load_modules.xml

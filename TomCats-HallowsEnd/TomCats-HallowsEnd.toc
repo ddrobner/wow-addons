@@ -1,0 +1,14 @@
+## Interface: 90001
+## Title: TomCat's Tours: Hallow's End
+## Author: TomCat
+## X-Website: http://www.tomcatstours.com
+## Version: 01.06.10
+## DefaultState: enabled
+## SavedVariablesPerCharacter: TomCats_HallowsEnd_Character
+## X-TomCats-VersionMessageID: 1604527760
+## X-TomCats-VersionMessage: HWxxr+n0LQBrkaJ8eaAXZUUltP4fLYgeqjm1DlnTvZNgNuZnjfQx/1+jJpABAQYDAgEEAwMBBAYEAQQIBQEEBgYBBAYHAQQXCAECCAkCBgAKAQADCwEGCgwAAQYNAQASDgEAGg8BAAY=
+## OptionalDeps: TomCats
+## X-Part-Of: TomCat's Tours:
+## X-Category: Achievements, Map, Miscellaneous, Quests
+
+Main.xml

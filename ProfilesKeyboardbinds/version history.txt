@@ -1,0 +1,562 @@
+Revision: 89
+Author: fulgerul
+Date: 22:17:45, den 21 augusti 2011
+Message:
+WARNING: This addon will be renamed to 'Profiles: Keyboard binds'.
+----
+Modified : /trunk/Core.lua
+
+Revision: 87
+Author: fulgerul
+Date: 19:46:21, den 14 augusti 2011
+Message:
+Bugs..
+----
+Modified : /trunk/Core.lua
+
+Revision: 85
+Author: fulgerul
+Date: 21:40:38, den 5 augusti 2011
+Message:
+Comparing 2 hashes with unique values is more accurate than comparing 2 arrays.
+----
+Modified : /trunk/Core.lua
+
+Revision: 83
+Author: fulgerul
+Date: 08:17:23, den 4 augusti 2011
+Message:
+* Rewrote LoadProfil() to restore more than 2 keys and to actually restore something
+* Removed sanity checks
+* DeleteProfil() now deletes the profile instead of reseting
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+
+Revision: 81
+Author: fulgerul
+Date: 20:48:27, den 30 juni 2011
+Message:
+Updated toc.
+----
+Modified : /trunk/KeyboardLayoutSaver.toc
+
+Revision: 79
+Author: fulgerul
+Date: 23:50:27, den 28 april 2011
+Message:
+Getting ready for release.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+
+Revision: 78
+Author: fulgerul
+Date: 23:48:21, den 28 april 2011
+Message:
+Core: UPDATE_BINDINGS will fire when we go in combat, so we disable it. "Combat" is PLAYER_ENTER/LEAVE_COMBAT when attacking by rightclicking and PLAYER_REGEN_DISABLED/ENABLED when getting attacked or atacking by ranged spells.
+
+Talents:
+PLAYER_TALENT_UPDATE fires when we PLAYER_ENTERING/LEAVING_WORLD!
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/kls_triggers/Talents.lua
+
+Revision: 77
+Author: fulgerul
+Date: 22:51:42, den 27 april 2011
+Message:
+Patch 4.1
+---------------
+Updated ACE.
+Updated TOC
+
+CORE
+---------------
+Toggle UPDATE_BINDINGS when in and out of combat.
+
+Manual profiles
+----------------
+Reflect the changes made to Core events.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+Modified : /trunk/Libs/AceComm-3.0/AceComm-3.0.lua
+Modified : /trunk/Libs/AceComm-3.0/ChatThrottleLib.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-TabGroup.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-MultiLineEditBox.lua
+Modified : /trunk/kls_triggers/Manual profiles.lua
+
+Revision: 75
+Author: fulgerul
+Date: 00:55:24, den 24 april 2011
+Message:
+Minor bugfix.
+----
+Modified : /trunk/KLSOptions.lua
+
+Revision: 73
+Author: fulgerul
+Date: 00:45:16, den 24 april 2011
+Message:
+* [Feature] Added module Manual profiles.lua which brings back old KLS functionality that enabled usage of slash commands only.
+* [Bug fix] UPDATE_BINDINGS will not run the first time. Hopefully the overwrite profile at start bug has been squashed by this.
+----
+Modified : /trunk/kls_triggers/Manual profiles.lua
+
+Revision: 71
+Author: fulgerul
+Date: 00:38:40, den 24 april 2011
+Message:
+* [Bug fix] UPDATE_BINDINGS will not run the first time. Hopefully the overwrite profile at start bug has been squashed by this.
+* [Feature] Added module Manual profiles.lua which brings back old KLS functionality that enabled usage of slash commands only.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+Added : /trunk/kls_triggers/Manual profiles.lua
+Modified : /trunk/KLSOptions.lua
+
+Revision: 69
+Author: fulgerul
+Date: 17:39:00, den 2 april 2011
+Message:
+Getting ready to make beta release.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+
+Revision: 68
+Author: fulgerul
+Date: 17:32:37, den 2 april 2011
+Message:
+Instead of removing the already saved profiles alltogether when sanitizing, make a backup first.
+----
+Modified : /trunk/Core.lua
+
+Revision: 67
+Author: fulgerul
+Date: 16:53:27, den 2 april 2011
+Message:
+Load and save now does command instead of array index. 
+SanityCheck() resets old db structure. I had to move the bootstrap to "UPDATE_BINDINDS" because binding is not set until after this event.
+
+Next up, event_throttle().
+----
+Modified : /trunk/Core.lua
+
+Revision: 66
+Author: fulgerul
+Date: 22:33:11, den 1 april 2011
+Message:
+Trying to include old format of the database. I should check for string null also!
+----
+Modified : /trunk/Core.lua
+
+Revision: 65
+Author: fulgerul
+Date: 22:02:43, den 1 april 2011
+Message:
+Sanity check added. First check is attempting to remove null values in databases.
+SaveProfil redone from scratch. Now only saves defined keybinds.
+LoadProfil should hopefully not get any nulls now (hint: it still does!)
+----
+Modified : /trunk/Core.lua
+
+Revision: 64
+Author: fulgerul
+Date: 22:09:02, den 31 mars 2011
+Message:
+in Core.lua: 221: if key1 ~= KLSdb.profile[actionID]["key1"] or key2 ~= KLSdb.profile[actionID]["key2"] then
+Will bug out if no key is defined in saved vars.
+----
+Modified : /trunk/Core.lua
+
+Revision: 60
+Author: fulgerul
+Date: 16:11:53, den 26 mars 2011
+Message:
+Version changed to 1.6.4 Beta 1.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+
+Revision: 59
+Author: fulgerul
+Date: 16:09:19, den 26 mars 2011
+Message:
+Outfitter support added.
+Equipment manager support added.
+----
+Modified : /trunk
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+Modified : /trunk/kls_triggers/Talents.lua
+Added : /trunk/Libs/AceComm-3.0 (Copy from path: /features/Libs/AceComm-3.0, Revision, 58)
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-TabGroup.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-MultiLineEditBox.lua
+Modified : /trunk/KLSOptions.lua
+Modified : /trunk/Libs/AceAddon-3.0/AceAddon-3.0.lua
+Added : /trunk/Libs/AceBucket-3.0 (Copy from path: /features/Libs/AceBucket-3.0, Revision, 58)
+Modified : /trunk/Libs/AceConfig-3.0/AceConfig-3.0.lua
+Modified : /trunk/Libs/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.lua
+Modified : /trunk/Libs/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+Modified : /trunk/Libs/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+Modified : /trunk/Libs/AceDB-3.0/AceDB-3.0.lua
+Added : /trunk/Libs/AceDBOptions-3.0 (Copy from path: /features/Libs/AceDBOptions-3.0, Revision, 58)
+Modified : /trunk/Libs/AceEvent-3.0/AceEvent-3.0.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-DropDownGroup.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-Frame.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-InlineGroup.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-ScrollFrame.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-SimpleGroup.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-TreeGroup.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Button.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-DropDown-Items.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-DropDown.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-EditBox.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Icon.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Keybinding.lua
+Modified : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Slider.lua
+Deleted : /trunk/Libs/AceGUI-3.0.old
+Added : /trunk/Libs/AceHook-3.0 (Copy from path: /features/Libs/AceHook-3.0, Revision, 58)
+Modified : /trunk/Libs/AceLocale-3.0/AceLocale-3.0.lua
+Added : /trunk/Libs/AceSerializer-3.0 (Copy from path: /features/Libs/AceSerializer-3.0, Revision, 58)
+Added : /trunk/Libs/AceTab-3.0 (Copy from path: /features/Libs/AceTab-3.0, Revision, 58)
+Added : /trunk/Libs/AceTimer-3.0 (Copy from path: /features/Libs/AceTimer-3.0, Revision, 58)
+Modified : /trunk/Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Deleted : /trunk/embeds.xml
+Modified : /trunk/kls_triggers/Equipment manager.lua
+Modified : /trunk/kls_triggers/Outfitter.lua
+
+Revision: 42
+Author: fulgerul
+Date: 21:48:11, den 18 mars 2011
+Message:
+* KLS triggers added.
+* Talents trigger drycoded
+----
+Modified : /trunk/Core.lua
+Added : /trunk/kls_triggers (Copy from path: /trunk/kls_modules, Revision, 34)
+Added : /trunk/kls_triggers/Talents.lua
+Added : /trunk/kls_triggers/Equipment manager.lua
+Deleted : /trunk/kls_modules
+Added : /trunk/kls_triggers/Stance.lua
+
+Revision: 41
+Author: fulgerul
+Date: 18:31:44, den 17 mars 2011
+Message:
+Features: 
+* Paving the way for modules
+
+Bugs fixed:
+* Saves keybind modifications with the profile selected in GUI Options 
+----
+Modified : /trunk/Core.lua
+
+Revision: 39
+Author: fulgerul
+Date: 23:34:41, den 16 mars 2011
+Message:
+Minor bugfix to key2.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+
+Revision: 37
+Author: fulgerul
+Date: 23:14:18, den 16 mars 2011
+Message:
+Not iterating through 427 keys is a performance improvement!
+----
+Modified : /trunk/Core.lua
+
+Revision: 35
+Author: fulgerul
+Date: 00:02:30, den 16 mars 2011
+Message:
+Version fix.
+----
+Modified : /trunk/Core.lua
+Modified : /trunk/KeyboardLayoutSaver.toc
+Added : /trunk/KLSOptions.lua
+
+Revision: 34
+Author: fulgerul
+Date: 23:56:38, den 15 mars 2011
+Message:
+"Merged" with beta 1.3.4
+----
+Modified : /trunk/KeyboardLayoutSaver.toc
+Added : /trunk/kls_modules
+Added : /trunk/kls_modules/Outfitter.lua
+
+Revision: 33
+Author: fulgerul
+Date: 23:53:21, den 15 mars 2011
+Message:
+Messed up with SVN. Should be ok now.
+----
+Modified : /trunk/Core.lua
+
+Revision: 18
+Author: fulgerul
+Date: 12:37:38, den 12 mars 2011
+Message:
+Version changed, ready for release.
+----
+Modified : /trunk/Core.lua
+
+Revision: 17
+Author: fulgerul
+Date: 12:36:58, den 12 mars 2011
+Message:
+* GetCurrentClass is now called at Enable() and Talent spec change
+
+* Update_binds now no longer saves the profiles at start!
+----
+Modified : /trunk/Core.lua
+
+Revision: 16
+Author: fulgerul
+Date: 12:14:53, den 12 mars 2011
+Message:
+DebugMsg sprinkled in functions.
+----
+Modified : /trunk/Core.lua
+
+Revision: 15
+Author: fulgerul
+Date: 12:04:04, den 12 mars 2011
+Message:
+Circular array implementetation complete.
+----
+Modified : /trunk/Core.lua
+
+Revision: 14
+Author: fulgerul
+Date: 11:32:20, den 12 mars 2011
+Message:
+Circular array now added with debug and all. Thanks for your help Adirelle! :D
+----
+Modified : /trunk/Core.lua
+
+Revision: 13
+Author: fulgerul
+Date: 00:30:03, den 12 mars 2011
+Message:
+Experimenting with circular arrays.
+----
+Modified : /trunk/Core.lua
+
+Revision: 12
+Author: fulgerul
+Date: 22:24:24, den 11 mars 2011
+Message:
+We have a working debug editbox.
+
+TODO:
+Sprinkle the code with Debug
+A circular array should be on by default
+----
+Modified : /trunk/Core.lua
+
+Revision: 11
+Author: fulgerul
+Date: 23:32:37, den 10 mars 2011
+Message:
+DebugWindow has now come to life. Creates a editable text box for easy C&P bug reporting.
+
+Need to figure out a way to use the same frame, as it now uses a new frame each time it prints a message.
+----
+Modified : /trunk/Core.lua
+
+Revision: 9
+Author: fulgerul
+Date: 21:49:16, den 10 mars 2011
+Message:
+Removed some debug messages.
+Moved UnitClass("player") to onEnable
+Caught a bug in onEnable:exists profile if
+----
+Modified : /trunk/Core.lua
+
+Revision: 7
+Author: fulgerul
+Date: 20:58:44, den 10 mars 2011
+Message:
+More annoying debug messages squashed. Thanks bl91118! :)
+
+On another note, seems like a debug option is needed.
+----
+Modified : /trunk/Core.lua
+
+Revision: 5
+Author: fulgerul
+Date: 17:47:29, den 10 mars 2011
+Message:
+Squished class() bug.
+----
+Modified : /trunk/Core.lua
+
+Revision: 4
+Author: fulgerul
+Date: 17:41:05, den 10 mars 2011
+Message:
+pkgmeta update
+----
+Modified : /trunk/.pkgmeta
+
+Revision: 3
+Author: fulgerul
+Date: 00:16:23, den 10 mars 2011
+Message:
+Added .pkgmeta
+----
+Added : /trunk/.pkgmeta
+
+Revision: 2
+Author: fulgerul
+Date: 00:06:27, den 10 mars 2011
+Message:
+1.3 Removed annoying messages from UPDATE_BINDINGS
+----
+Added : /trunk/Core.lua
+Added : /trunk/KeyboardLayoutSaver.toc
+Added : /trunk/Libs
+Added : /trunk/Libs/AceGUI-3.0
+Added : /trunk/Libs/AceGUI-3.0/widgets
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-TabGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-MultiLineEditBox.lua
+Added : /trunk/Libs/AceAddon-3.0
+Added : /trunk/Libs/AceAddon-3.0/AceAddon-3.0.lua
+Added : /trunk/Libs/AceConfig-3.0
+Added : /trunk/Libs/AceConfig-3.0/AceConfig-3.0.lua
+Added : /trunk/Libs/AceConfig-3.0/AceConfigCmd-3.0
+Added : /trunk/Libs/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.lua
+Added : /trunk/Libs/AceConfig-3.0/AceConfigDialog-3.0
+Added : /trunk/Libs/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+Added : /trunk/Libs/AceConfig-3.0/AceConfigRegistry-3.0
+Added : /trunk/Libs/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+Added : /trunk/Libs/AceDB-3.0
+Added : /trunk/Libs/AceDB-3.0/AceDB-3.0.lua
+Added : /trunk/Libs/AceEvent-3.0
+Added : /trunk/Libs/AceEvent-3.0/AceEvent-3.0.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-DropDownGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-Frame.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-InlineGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-ScrollFrame.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-SimpleGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-TreeGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Button.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-DropDown-Items.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-DropDown.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-EditBox.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Icon.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Keybinding.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Slider.lua
+Added : /trunk/Libs/AceGUI-3.0.old
+Added : /trunk/Libs/AceLocale-3.0
+Added : /trunk/Libs/AceLocale-3.0/AceLocale-3.0.lua
+Added : /trunk/Libs/CallbackHandler-1.0
+Added : /trunk/Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Added : /trunk/embeds.xml
+Added : /trunk/Libs/AceAddon-3.0/AceAddon-3.0.xml
+Added : /trunk/Libs/AceConfig-3.0/AceConfig-3.0.xml
+Added : /trunk/Libs/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.xml
+Added : /trunk/Libs/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.xml
+Added : /trunk/Libs/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.xml
+Added : /trunk/Libs/AceConsole-3.0
+Added : /trunk/Libs/AceConsole-3.0/AceConsole-3.0.lua
+Added : /trunk/Libs/AceConsole-3.0/AceConsole-3.0.xml
+Added : /trunk/Libs/AceDB-3.0/AceDB-3.0.xml
+Added : /trunk/Libs/AceEvent-3.0/AceEvent-3.0.xml
+Added : /trunk/Libs/AceGUI-3.0/AceGUI-3.0.lua
+Added : /trunk/Libs/AceGUI-3.0/AceGUI-3.0.xml
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-BlizOptionsGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIContainer-Window.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-BlizOptionsGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-ColorPicker.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-DropDownGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Frame.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Heading.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-InlineGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-InteractiveLabel.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Label.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-ScrollFrame.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-SimpleGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-TabGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-TreeGroup.lua
+Added : /trunk/Libs/AceGUI-3.0/widgets/AceGUIWidget-Window.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/BackgroundWidget.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/BorderWidget.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/FontWidget.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/SharedFunctions.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/SoundWidget.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/StatusbarWidget.lua
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/widget.xml
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets.toc
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/Changelog-AceGUI-3.0-SharedMediaWidgets-3.3.1.txt
+Added : /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/widget.xml
+Added : /trunk/Libs/AceGUI-3.0.old/AceGUI-3.0.lua
+Added : /trunk/Libs/AceGUI-3.0.old/AceGUI-3.0.xml
+Added : /trunk/Libs/AceGUI-3.0.old/widgets
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-BlizOptionsGroup.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Button.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-CheckBox.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-ColorPicker.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-DropDown-Items.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-DropDown.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-DropDownGroup.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-EditBox.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Frame.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Heading.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Icon.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-InlineGroup.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-InteractiveLabel.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Keybinding.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Label.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-MultiLineEditBox.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-ScrollFrame.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-SimpleGroup.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Slider.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-TabGroup.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-TreeGroup.lua
+Added : /trunk/Libs/AceGUI-3.0.old/widgets/AceGUIWidget-Window.lua
+Added : /trunk/Libs/AceLocale-3.0/AceLocale-3.0.xml
+Added : /trunk/Libs/ActionBarSaver
+Added : /trunk/Libs/ActionBarSaver/ActionBarSaver.lua
+Added : /trunk/Libs/ActionBarSaver/ActionBarSaver.toc
+Added : /trunk/Libs/ActionBarSaver/changelog.txt
+Added : /trunk/Libs/ActionBarSaver/localization.enUS.lua
+Added : /trunk/Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml
+Added : /trunk/Libs/LibSharedMedia-3.0
+Added : /trunk/Libs/LibSharedMedia-3.0/LibSharedMedia-3.0.lua
+Added : /trunk/Libs/LibSharedMedia-3.0/lib.xml
+Added : /trunk/Libs/LibStub
+Added : /trunk/Libs/LibStub/LibStub.lua
+Added : /trunk/locale
+Added : /trunk/locale/deDE.lua
+Added : /trunk/locale/enUS.lua
+Added : /trunk/locale/esES.lua
+Added : /trunk/locale/esMX.lua
+Added : /trunk/locale/frFR.lua
+Added : /trunk/locale/koKR.lua
+Added : /trunk/locale/ruRU.lua
+Added : /trunk/locale/zhCN.lua
+Added : /trunk/locale/zhTW.lua
+Added : /trunk/version history.txt
+
+Revision: 1
+Author: root
+Date: 23:46:44, den 9 mars 2011
+Message:
+"keyboard-layout-saver/mainline: Initial Import"
+----
+Added : /trunk
+Added : /branches
+Added : /tags
+

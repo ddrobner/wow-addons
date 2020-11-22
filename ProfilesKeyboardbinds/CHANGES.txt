@@ -1,0 +1,42 @@
+commit 59c2d42bb55a53efaae313137c063e22f6bc96bc
+Author: Fulgerul <me@me.com>
+Date:   Thu Jan 12 22:03:29 2017 +0100
+
+    Ran test in 7.1 - Still works!
+
+commit 6211b796bf99c8ec205157c3f28bd0aa3ec99540
+Author: Fulgerul <me@me.com>
+Date:   Thu Jan 12 21:30:42 2017 +0100
+
+    YAML
+
+commit 7baaba27ced9c1913bb07ba1e240985ae21e354d
+Author: Fulgerul <me@me.com>
+Date:   Tue Jan 10 20:04:02 2017 +0100
+
+    Added pkgmeta!
+
+commit 7baaba27ced9c1913bb07ba1e240985ae21e354d
+Author: Fulgerul <me@me.com>
+Date:   Tue Jan 10 20:04:02 2017 +0100
+
+    Added pkgmeta!
+
+commit 243122cbfb3ce62abfff5f18e95d06a215f6fac0
+Author: Fulgerul <me@me.com>
+Date:   Tue Jan 10 20:04:02 2017 +0100
+
+    Added pkgmeta!
+
+commit 2fbc16615a0b4eb26dc1e57682e950e7592f7fbd
+Author: Alex <alexut.voicu@gmail.com>
+Date:   Tue Jan 10 18:56:11 2017 +0100
+
+    Updated Ace3
+
+commit 7474f05cc824355b555fa826914efd6df3de9a20
+Author: Alex <alexut.voicu@gmail.com>
+Date:   Tue Jan 10 18:50:50 2017 +0100
+
+    Initial import
+
