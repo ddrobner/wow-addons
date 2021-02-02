@@ -103,7 +103,7 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	wipe(mobCollector)
+	mobCollector = {}
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 	self:CDBar(227736, 7) -- Vanish
 	self:CDBar(227851, 30) -- Coat Check
@@ -115,7 +115,7 @@ end
 --
 function mod:INSTANCE_ENCOUNTER_ENGAGE_UNIT()
 	for i = 1, 5 do
-		local guid = UnitGUID(("boss%d"):format(i))
+		local guid = self:UnitGUID(("boss%d"):format(i))
 		if guid and not mobCollector[guid] then
 			mobCollector[guid] = true
 			local mobId = self:MobId(guid)

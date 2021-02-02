@@ -817,7 +817,7 @@ LibStub("LibCraftCategories-1.0").zhCN = {
   [816]={["Name_lang"]="德拉诺草药学",["HordeName_lang"]="",["ID"]=1034,["ParentTradeSkillCategoryID"]=1033,["SkillLineID"]=2551,["OrderIndex"]=950,["Flags"]=1},
   [817]={["Name_lang"]="潘达利亚草药学 - 页眉",["HordeName_lang"]="",["ID"]=1035,["ParentTradeSkillCategoryID"]=0,["SkillLineID"]=182,["OrderIndex"]=960,["Flags"]=0},
   [818]={["Name_lang"]="潘达利亚草药学",["HordeName_lang"]="",["ID"]=1036,["ParentTradeSkillCategoryID"]=1035,["SkillLineID"]=2552,["OrderIndex"]=960,["Flags"]=1},
-  [819]={["Name_lang"]="大地的裂变草药学 - 页眉",["HordeName_lang"]="",["ID"]=1037,["ParentTradeSkillCategoryID"]=0,["SkillLineID"]=182,["OrderIndex"]=970,["Flags"]=0},
+  [819]={["Name_lang"]="大地的裂变草药学 - 标题",["HordeName_lang"]="",["ID"]=1037,["ParentTradeSkillCategoryID"]=0,["SkillLineID"]=182,["OrderIndex"]=970,["Flags"]=0},
   [820]={["Name_lang"]="大地的裂变草药学",["HordeName_lang"]="",["ID"]=1038,["ParentTradeSkillCategoryID"]=1037,["SkillLineID"]=2553,["OrderIndex"]=970,["Flags"]=1},
   [821]={["Name_lang"]="诺森德草药学 - 页眉",["HordeName_lang"]="",["ID"]=1039,["ParentTradeSkillCategoryID"]=0,["SkillLineID"]=182,["OrderIndex"]=980,["Flags"]=0},
   [822]={["Name_lang"]="诺森德草药学",["HordeName_lang"]="",["ID"]=1040,["ParentTradeSkillCategoryID"]=1039,["SkillLineID"]=2554,["OrderIndex"]=980,["Flags"]=1},
@@ -1134,4 +1134,5 @@ LibStub("LibCraftCategories-1.0").zhCN = {
   [1133]={["Name_lang"]="时尚饰物：其他",["HordeName_lang"]="",["ID"]=1533,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=9,["Flags"]=0},
   [1134]={["Name_lang"]="时尚饰物：肩膀",["HordeName_lang"]="",["ID"]=1534,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=7,["Flags"]=0},
   [1135]={["Name_lang"]="时尚饰物：背部",["HordeName_lang"]="",["ID"]=1535,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=8,["Flags"]=0},
+  [1136]={["Name_lang"]="背包",["HordeName_lang"]="",["ID"]=1538,["ParentTradeSkillCategoryID"]=1395,["SkillLineID"]=197,["OrderIndex"]=20,["Flags"]=0},
 }

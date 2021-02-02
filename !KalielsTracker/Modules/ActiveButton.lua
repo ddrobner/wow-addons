@@ -1,5 +1,5 @@
 --- Kaliel's Tracker
---- Copyright (c) 2012-2020, Marouan Sabbagh <mar.sabbagh@gmail.com>
+--- Copyright (c) 2012-2021, Marouan Sabbagh <mar.sabbagh@gmail.com>
 --- All Rights Reserved.
 ---
 --- This file is part of addon Kaliel's Tracker.
@@ -23,7 +23,7 @@ local point, relativeTo, relativePoint, xOfs, yOfs
 
 local extraAbilityFrame = ExtraAbilityContainer
 local pointNum = 2
-local isElvui = false
+local isMoveAnything, isElvui, isTukui = false, false, false
 
 --------------
 -- Internal --
@@ -63,21 +63,42 @@ end
 local function ActiveFrame_Update()
 	if dbChar.activeButtonPosition then return end
 	point, relativeTo, relativePoint, xOfs, yOfs = extraAbilityFrame:GetPoint(pointNum)
+	if not point then return end
 	if isElvui then
-		yOfs = yOfs - 30
+		yOfs = yOfs - 29
 	end
-	if HasExtraActionBar() then
+	if HasExtraActionBar() or #C_ZoneAbility.GetActiveAbilities() > 0 then
 		yOfs = yOfs + 100
 	end
-	KT:prot(activeFrame, "ClearAllPoints")
-	KT:prot(activeFrame, "SetPoint", point, relativeTo, relativePoint, xOfs, yOfs)
+	KT:prot("ClearAllPoints", activeFrame)
+	KT:prot("SetPoint", activeFrame, point, relativeTo, relativePoint, xOfs, yOfs)
 end
 
 local function ActiveFrame_Init()
 	pointNum = extraAbilityFrame:GetNumPoints()
+	if isMoveAnything then
+		if MovAny.Boot then
+			hooksecurefunc(MovAny, "SyncAllFrames", function(self)
+				if extraAbilityFrame.MAHooked then
+					pointNum = 1
+				end
+			end)
+		end
+	end
 	if isElvui then
-		extraAbilityFrame = ExtraActionBarFrame:GetParent()
-		pointNum = 1
+		local parent = ExtraActionBarFrame:GetParent()
+		if parent then
+			extraAbilityFrame = parent
+			pointNum = 1
+		else
+			isElvui = false
+		end
+	elseif isTukui then
+		if TukuiExtraActionButton then
+			extraAbilityFrame:SetParent(TukuiExtraActionButton)
+			extraAbilityFrame:ClearAllPoints()
+			extraAbilityFrame:SetPoint("CENTER", TukuiExtraActionButton, "CENTER", 0, 5)
+		end
 	end
 end
 
@@ -100,7 +121,7 @@ local function SetFrames()
 					UpdateHotkey()
 				end
 			elseif event == "PET_BATTLE_OPENING_START" then
-				KT:prot(activeFrame, "Hide")
+				KT:prot("Hide", activeFrame)
 			elseif event == "PET_BATTLE_CLOSE" then
 				M:Update()
 			end
@@ -241,7 +262,11 @@ end
 
 local function SetHooks()
 	hooksecurefunc("ExtraActionBar_Update", function()
-		ActiveFrame_Update()
+		KT:protStop(ActiveFrame_Update)
+	end)
+
+	hooksecurefunc(ZoneAbilityFrame, "UpdateDisplayedZoneAbilities", function(self)
+		KT:protStop(ActiveFrame_Update)
 	end)
 
 	PetActionBarFrame:HookScript("OnUpdate", function(self, elapsed)
@@ -269,7 +294,9 @@ end
 
 function M:OnEnable()
 	_DBG("|cff00ff00Enable|r - "..self:GetName(), true)
+	isMoveAnything = IsAddOnLoaded("MoveAnything")
 	isElvui = IsAddOnLoaded("ElvUI")
+	isTukui = IsAddOnLoaded("Tukui")
 
 	SetFrames()
 	SetHooks()
@@ -291,6 +318,10 @@ function M:Update(id)
 
 		if not dbChar.collapsed then
 			for questID, _ in pairs(KT.fixedButtons) do
+				if questID == C_SuperTrack.GetSuperTrackedQuestID() then
+					closestQuestID = questID
+					break
+				end
 				if QuestHasPOIInfo(questID) then
 					local distSqr, _ = C_QuestLog.GetDistanceSqToQuest(questID)
 					if distSqr and distSqr <= minDistSqr then

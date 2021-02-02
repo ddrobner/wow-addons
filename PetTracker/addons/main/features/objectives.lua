@@ -1,5 +1,5 @@
 --[[
-Copyright 2012-2020 João Cardoso
+Copyright 2012-2021 João Cardoso
 PetTracker is distributed under the terms of the GNU General Public License (Version 3).
 As a special exception, the copyright holders of this addon do not give permission to
 redistribute and/or modify it.
@@ -20,7 +20,7 @@ if IsAddOnLoaded('Carbonite.Quests') then
 end
 
 local ADDON, Addon = ...
-local Parent, HeaderButton = ObjectiveTrackerBlocksFrame, ObjectiveTrackerFrame.HeaderMenu
+local Parent, Minimize = ObjectiveTrackerBlocksFrame, ObjectiveTrackerFrame.HeaderMenu
 local Objectives = Addon:NewModule('Objectives', Addon.Tracker(Parent))
 
 do
@@ -37,11 +37,12 @@ function Objectives:OnEnable()
 	header:SetScript('OnClick', self.ToggleDropdown)
 	header:RegisterForClicks('anyUp')
 	header:SetPoint('TOPLEFT')
-	header.Text:SetText(PETS)
 	header:Show()
+	header.Text:SetText(PETS)
+	header.MinimizeButton:Hide()
 
-	self.Anchor:SetPoint('TOPLEFT', header, 'BOTTOMLEFT', -4, -10)
-	self.Anchor:SetScript('OnMouseDown', self.ToggleOptions)
+	self.Bar:SetPoint('TOPLEFT', header, 'BOTTOMLEFT', -4, -10)
+	self.Bar:SetScript('OnMouseDown', self.ToggleOptions)
 	self.Header = header
 
 	hooksecurefunc('ObjectiveTracker_Update', function()
@@ -51,15 +52,11 @@ function Objectives:OnEnable()
 		if availableEntries ~= self.MaxEntries then
 			self.MaxEntries = availableEntries
 			self:Update()
+		else
+			self:UpdateMinimize()
 		end
 
 		self:SetPoint('TOPLEFT', Parent, -10, -off)
-	end)
-
-	HeaderButton:HookScript('OnHide', function()
-		if self:IsShown() then
-			HeaderButton:Show()
-		end
 	end)
 end
 
@@ -67,11 +64,20 @@ end
 --[[ API Override ]]--
 
 function Objectives:Update()
+	self:SetShown(Addon.sets.trackPets)
 	self:GetClass().Update(self)
-	self:SetShown(Addon.sets.trackPets and self.Anchor:IsShown())
+	self:SetShown(self:IsShown() and not self.Bar:IsMaximized())
+	self:UpdateMinimize()
 
-	HeaderButton:SetShown(Parent.currentBlock or self:IsShown())
 	OBJECTIVE_TRACKER_ADDONS[self.Index] = self:IsShown() and self:GetHeight() or 0
+end
+
+function Objectives:UpdateMinimize()
+	if self:IsShown() and not Minimize:IsShown() then
+		Minimize:SetFrameLevel(max(Minimize:GetFrameLevel(), self.Header:GetFrameLevel()+2))
+		Minimize:SetPoint('RIGHT', self.Header, 'RIGHT')
+		Minimize:Show()
+	end
 end
 
 function Objectives:GetUsedHeight()

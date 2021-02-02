@@ -77,7 +77,7 @@ end
 
 do
 	local function printTarget(self, player, guid)
-		if not UnitDetailedThreatSituation(player, "boss1") then
+		if not self:Tanking("boss1", player) then
 			self:TargetMessageOld(120789, player, "yellow", "alarm")
 			if self:Me(guid) then
 				self:Say(120789)
@@ -111,7 +111,7 @@ do
 end
 
 function mod:GOSSIP_SHOW()
-	if self:GetOption("custom_on_autotalk") and self:MobId(UnitGUID("npc")) == 61620 then
+	if self:GetOption("custom_on_autotalk") and self:MobId(self:UnitGUID("npc")) == 61620 then
 		if self:GetGossipOptions() then
 			self:SelectGossipOption(1)
 		end

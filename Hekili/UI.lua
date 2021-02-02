@@ -126,26 +126,20 @@ local function Button_OnMouseDown(self, btn)
 
     if Hekili.Config and btn == "LeftButton" and not mover.Moving then
         startScreenMovement(mover)
-
     end
 end
 
 
 function ns.StartConfiguration( external )
-    if Hekili.NewSpellInfo then Hekili:EmbedAbilityOptions(); Hekili:EmbedSpecOptions() end
-    if Hekili.NewItemInfo  then Hekili:EmbedItemOptions()    end
-
     Hekili.Config = true
 
     local scaleFactor = Hekili:GetScale()
     local ccolor = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
     -- Notification Panel
-    ns.UI.Notification:EnableMouse( true )
-    ns.UI.Notification:SetMovable( true )
-    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification )
+    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification, "BackdropTemplate" )
     ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
-    --[[ ns.UI.Notification.Mover:SetBackdrop( {
+    ns.UI.Notification.Mover:SetBackdrop( {
         bgFile = "Interface/Buttons/WHITE8X8",
         edgeFile = "Interface/Buttons/WHITE8X8",
         tile = false,
@@ -155,7 +149,9 @@ function ns.StartConfiguration( external )
     } )
 
     ns.UI.Notification.Mover:SetBackdropColor( 0, 0, 0, .8 )
-    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 ) ]]
+    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )    
+    ns.UI.Notification:EnableMouse( true )
+    ns.UI.Notification:SetMovable( true )
     ns.UI.Notification.Mover:Show()
 
     local f = ns.UI.Notification.Mover
@@ -202,7 +198,7 @@ function ns.StartConfiguration( external )
         if ns.UI.Buttons[ i ][ 1 ] and Hekili.DB.profile.displays[ i ] then
             -- if not Hekili:IsDisplayActive( i ) then v:Show() end
 
-            v.Backdrop = v.Backdrop or Mixin( CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent ), BackdropTemplateMixin )
+            v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent, "BackdropTemplate" )
             v.Backdrop:ClearAllPoints()
             
             if not v:IsAnchoringRestricted() then
@@ -221,7 +217,6 @@ function ns.StartConfiguration( external )
                     v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
                 end
             end
-
 
             v.Backdrop:SetFrameStrata( v:GetFrameStrata() )
             v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
@@ -277,6 +272,7 @@ function ns.StartConfiguration( external )
 
             if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield", 20, 20 ) )
             elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
+            elseif i == "Cooldowns" then v.Header:SetText( "CD" )
             else v.Header:SetText( i ) end
             
             v.Header:SetJustifyH("CENTER")
@@ -309,6 +305,10 @@ function ns.StartConfiguration( external )
     end
 
     Hekili:UpdateDisplayVisibility()
+end
+
+function Hekili:OpenConfiguration()
+    ns.StartConfiguration()
 end
 
 function ns.StopConfiguration()
@@ -646,18 +646,16 @@ do
         local conf = Hekili.DB.profile.displays[ self.id ]
 
         if conf.keybindings and conf.keybindings.enabled then
-            local cPort = conf.keybindings.cPortOverride and ConsolePort ~= nil
-
             for i, b in ipairs( self.Buttons ) do
                 local r = self.Recommendations[i]
                 if r then
                     local a = r.actionName
 
                     if a then                        
-                        r.keybind = Hekili:GetBindingForAction( r.actionName, conf, i )
+                        r.keybind, r.keybindFrom = Hekili:GetBindingForAction( r.actionName, conf, i )
                     end
 
-                    if i == 1 or ( conf.keybindings.queued and not cPort ) then
+                    if i == 1 or conf.keybindings.queued then
                         b.Keybinding:SetText( r.keybind )
                     else
                         b.Keybinding:SetText( nil )
@@ -679,7 +677,8 @@ do
         Primary = 0.1,
         AOE = 0.2,
         Interrupts = 1,
-        Defensives = 1
+        Defensives = 1,
+        Cooldowns = 0.2
     }
 
     local LRC = LibStub("LibRangeCheck-2.0")
@@ -763,7 +762,7 @@ do
                         b.Caption:SetText(nil)
                     end
 
-                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued and not ( conf.keybindings.cPortOverride and ConsolePort ~= nil ) ) then
+                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
                         b.Keybinding:SetText( keybind )
                     else
                         b.Keybinding:SetText(nil)
@@ -820,13 +819,19 @@ do
         if Hekili.freshFrame and not Hekili.Pause then
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
-            local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
 
             if self.refreshTimer < 0 or ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) ) or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 Hekili:ProcessHooks( self.id )
                 self.lastUpdate = now
                 self.criticalUpdate = false
                 self.superUpdate = false
+
+                local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
+
+                if UnitChannelInfo( "player" ) then
+                    refreshRate = refreshRate * 2
+                end
+    
                 self.refreshTimer = refreshRate
 
                 table.wipe( self.eventsTriggered )
@@ -930,21 +935,25 @@ do
                         local _, unusable
 
                         if a.itemCd or a.item then
-                            unusable = not IsUsableItem(a.itemCd or a.item)
+                            unusable = not IsUsableItem( a.itemCd or a.item )
                         else
-                            _, unusable = IsUsableSpell(a.actualName or a.name)
+                            _, unusable = IsUsableSpell( a.actualName or a.name )
                         end
 
                         if i == 1 and conf.delays.fade then
                             local delay = r.exact_time - now            
                             local moment = 0
+
+                            local start, duration = 0, 0
                 
-                            local start, duration = GetSpellCooldown( 61304 )
-                            if start > 0 then moment = start + duration - now end
+                            if a.gcd ~= "off" then
+                                start, duration = GetSpellCooldown( 61304 )
+                                if start > 0 then moment = start + duration - now end
+                            end
     
                             local rStart, rDuration
                             if a.item then
-                                rStart, rDuration = GetItemCooldown( a.id )
+                                rStart, rDuration = GetItemCooldown( a.item )
                             else
                                 rStart, rDuration = GetSpellCooldown( a.id )
                             end
@@ -1066,15 +1075,19 @@ do
             local moment = 0
 
             if delay > 0 then
-                local start, duration = GetSpellCooldown( 61304 )
-                if start > 0 then moment = start + duration - now end
+                local start, duration = 0, 0
+
+                if a.gcd ~= "off" then
+                    start, duration = GetSpellCooldown( 61304 )
+                    if start > 0 then moment = start + duration - now end
+                end
 
                 _, _, _, start, duration = UnitCastingInfo( "player" )
                 if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
 
                 local rStart, rDuration
                 if a.item then
-                    rStart, rDuration = GetItemCooldown( a.id )
+                    rStart, rDuration = GetItemCooldown( a.item )
                 else
                     rStart, rDuration = GetSpellCooldown( a.id )
                 end
@@ -1198,9 +1211,13 @@ do
                 end
 
                 if i == 1 and conf.delays.extend and rec.time > 0 and rec.exact_time > max( now, start + duration ) then
-                -- if i == 1 and conf.delays.extend and rec.exact_time > max( now, start + duration ) then
-                    start = start > 0 and start or state.gcd.lastStart
-                    duration = rec.exact_time - start
+                    if rec.interrupt and rec.startCast then
+                        start = rec.startCast
+                        duration = rec.exact_time - start
+                    else
+                        start = start > 0 and start or state.gcd.lastStart
+                        duration = rec.exact_time - start
+                    end
                 end
 
                 if cd.lastStart ~= start or cd.lastDuration ~= duration then
@@ -1551,6 +1568,12 @@ do
             end
         end
 
+        if d.forceElvUpdate then
+            local E = _G.ElvUI and ElvUI[1]
+            E:UpdateCooldownOverride( 'global' )
+            d.forceElvUpdate = nil
+        end
+
         -- Performance Information
         -- Time Spent
         d.combatTime = {
@@ -1657,6 +1680,8 @@ do
                         dispActive[i] = ( profile.toggles.interrupts.value and profile.toggles.interrupts.separate ) and 1 or nil
                     elseif i == 'Defensives' then
                         dispActive[i] = ( profile.toggles.defensives.value and profile.toggles.defensives.separate ) and 1 or nil
+                    elseif i == 'Cooldowns' then
+                        dispActive[i] = ( profile.toggles.cooldowns.value and profile.toggles.cooldowns.separate ) and 1 or nil
                     else
                         dispActive[i] = 1
                     end
@@ -1901,10 +1926,21 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
-        if _G["ElvUI"] and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) and not b.Cooldown.elvRegistered then
-            local E = unpack( ElvUI )            
-            E:RegisterCooldown( b.Cooldown )
-            b.Cooldown.elvRegistered = true
+        if _G["ElvUI"] and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) then
+            local E = unpack( ElvUI )
+
+            local cd = b.Cooldown.CooldownSettings or {}
+            cd.font = E.Libs.LSM:Fetch( "font", E.db.cooldown.fonts.font )
+            cd.fontSize = E.db.cooldown.fonts.fontSize
+            cd.fontOutline = E.db.cooldown.fonts.fontOutline
+            b.Cooldown.CooldownSettings = cd
+
+            if not b.Cooldown.elvRegistered then
+                E:RegisterCooldown( b.Cooldown )
+                b.Cooldown.elvRegistered = true
+            end
+
+            d.forceElvUpdate = true
         end
 
         -- Backdrop (for borders)
@@ -2108,7 +2144,7 @@ end
 -- Buttons (as frames) are never deleted, but should get reused effectively.
 
 local builtIns = {
-    "Primary", "AOE", "Interrupts", "Defensives"
+    "Primary", "AOE", "Cooldowns", "Interrupts", "Defensives"
 }
 
 function Hekili:BuildUI()
@@ -2396,6 +2432,18 @@ function Hekili:ShowDiagnosticTooltip( q )
             end
         end
     end
+
+    if q.pack and q.listName and q.action then
+        local entry = rawget( self.DB.profile.packs, q.pack )
+        entry = entry and entry.lists[ q.listName ]
+        entry = entry and entry[ q.action ]
+
+        if entry and entry.description and entry.description:len() > 0 then
+            tt:AddLine( " " )
+            tt:AddLine( entry.description, 0, 0.7, 1, true )
+        end
+    end
+
     tt:Show()
 end
 

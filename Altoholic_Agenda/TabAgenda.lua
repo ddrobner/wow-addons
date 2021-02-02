@@ -18,6 +18,7 @@ addon:Controller("AltoholicUI.TabAgenda", {
 		
 		addon:RegisterMessage("DATASTORE_ITEM_COOLDOWN_UPDATED", OnCalendarDataUpdated, frame)
 		addon:RegisterMessage("DATASTORE_CALENDAR_SCANNED", OnCalendarDataUpdated, frame)
+		addon:RegisterMessage("DATASTORE_DUNGEONS_SCANNED", OnCalendarDataUpdated, frame)
 	end,
 	HideAll = function(frame)
 		frame.Calendar:Hide()

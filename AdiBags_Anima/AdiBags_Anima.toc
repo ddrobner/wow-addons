@@ -1,0 +1,7 @@
+## Interface: 90002
+## Title: AdiBags - Anima
+## Notes: Adds an Anima items filter to AdiBags.
+## Author: Saxayone
+## Version: 1.0
+## Dependencies: AdiBags
+AdiBags_Anima.lua

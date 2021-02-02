@@ -98,10 +98,11 @@ function RR:GetBonusReputation(amtBase, factionID)
 end
 
 function RR:Show()
-	local numRepFactions = GetNumQuestLogRewardFactions()
+	local rewardsFrame, lastFrame = _G.QuestInfo_ShowRewards()
+
+	if not rewardsFrame then return end
 
 	local buttonIndex = 1
-	local rewardsFrame, lastFrame = _G.QuestInfo_ShowRewards()
 	local rewardButtons = rewardsFrame.RewardButtons;
 	for index, rewardButton in ipairs(rewardButtons) do
 		rewardButton:EnableMouse(true)
@@ -111,6 +112,7 @@ function RR:Show()
 		end
 	end
 
+	local numRepFactions = GetNumQuestLogRewardFactions()
 	if numRepFactions == 0 then
 		return
 	end
@@ -197,10 +199,6 @@ function RR:Show()
 			else
 				questItem:SetPoint('TOPLEFT', QuestInfo_GetRewardButton(rewardsFrame, buttonIndex - 1) or lastFrame, 'TOPRIGHT', 1, 0)
 			end
-		else
-			questItem:SetPoint('TOPLEFT', lastFrame, 'BOTTOMLEFT', 0, -REWARDS_SECTION_OFFSET)
-			Height = Height + buttonHeight + REWARDS_SECTION_OFFSET
-			lastFrame = questItem
 		end
 
 		buttonIndex = buttonIndex + 1
@@ -211,20 +209,22 @@ function RR:Show()
 		_G.QuestInfoFrame.rewardsFrame.ItemReceiveText:SetPoint(a, b, c, d, e - ((((buttonIndex - 1) % 2) == 1 and (((buttonIndex - 1) / 2) * (buttonHeight + REWARDS_SECTION_OFFSET)) or 0)))
 	end
 
-	_G.QuestInfoFrame.rewardsFrame:SetHeight(Height)
+	_G.QuestInfoFrame.rewardsFrame:SetHeight(Height + ((buttonIndex / 2) * buttonHeight))
 end
 
 function RR:GetOptions()
-	PA.Options.args.ReputationReward = PA.ACH:Group(RR.Title, RR.Description, nil, nil, function(info) return RR.db[info[#info]] end, function(info, value) RR.db[info[#info]] = value end)
-	PA.Options.args.ReputationReward.args.Description = PA.ACH:Description(RR.Description, 0)
-	PA.Options.args.ReputationReward.args.Enable = PA.ACH:Toggle(PA.ACL['Enable'], nil, 1, nil, nil, nil, nil, function(info, value) RR.db[info[#info]] = value if (not RR.isEnabled) then RR:Initialize() else _G.StaticPopup_Show('PROJECTAZILROKA_RL') end end)
+	local ReputationReward = PA.ACH:Group(RR.Title, RR.Description, nil, nil, function(info) return RR.db[info[#info]] end, function(info, value) RR.db[info[#info]] = value end)
+	PA.Options.args.ReputationReward = ReputationReward
 
-	PA.Options.args.ReputationReward.args.General = PA.ACH:Group(PA.ACL['General'], nil, 2)
-	PA.Options.args.ReputationReward.args.General.inline = true
-	PA.Options.args.ReputationReward.args.General.args.ShowAll = PA.ACH:Toggle(PA.ACL['Show All Reputation'], nil, 1)
+	ReputationReward.args.Description = PA.ACH:Description(RR.Description, 0)
+	ReputationReward.args.Enable = PA.ACH:Toggle(PA.ACL['Enable'], nil, 1, nil, nil, nil, nil, function(info, value) RR.db[info[#info]] = value if (not RR.isEnabled) then RR:Initialize() else _G.StaticPopup_Show('PROJECTAZILROKA_RL') end end)
 
-	PA.Options.args.ReputationReward.args.AuthorHeader = PA.ACH:Header(PA.ACL['Authors:'], -2)
-	PA.Options.args.ReputationReward.args.Authors = PA.ACH:Description(RR.Authors, -1, 'large')
+	ReputationReward.args.General = PA.ACH:Group(PA.ACL['General'], nil, 2)
+	ReputationReward.args.General.inline = true
+	ReputationReward.args.General.args.ShowAll = PA.ACH:Toggle(PA.ACL['Show All Reputation'], nil, 1)
+
+	ReputationReward.args.AuthorHeader = PA.ACH:Header(PA.ACL['Authors:'], -2)
+	ReputationReward.args.Authors = PA.ACH:Description(RR.Authors, -1, 'large')
 end
 
 function RR:BuildProfile()

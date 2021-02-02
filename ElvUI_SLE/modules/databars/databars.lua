@@ -1,4 +1,4 @@
-local SLE, _, E = unpack(select(2, ...))
+﻿local SLE, _, E = unpack(select(2, ...))
 local DB = SLE:NewModule('DataBars', 'AceHook-3.0', 'AceEvent-3.0')
 
 --GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter

@@ -16,127 +16,7 @@ local upper  = string.upper
 ns.PTR = select( 4, GetBuildInfo() ) > 90002
 
 
-ns.Patrons = {
-    -- Extreme
-    "Aern",
-    "Ajukraizy",
-    "Akh270",
-    "Alasha",
-    "Aunt Jeremimah",
-    "Bsirk",
-    "Calmac",
-    "Drako",
-    "Elmer",
-    "Evo",
-    "Guycrush Fleetwood",
-    "Merlok",
-    "Rusah",
-    "Spaten",
-    "Spy",
-    "Stevi",
-    "Thecasual_tryhard",
-    "Thordros",
-    "WhoaIsJustin",
-    "Zyon",
-
-    -- Supreme
-    "Abuna",
-    "aerix88",
-    "Annddyypandy",
-    "Arkhon",
-    "aro725",
-    "Artoo",
-    "Ash",
-    "av8ordoc",
-    "Battle Hermit Funshine",
-    "Belatar",
-    "Borelia",
-    "Contestio",
-    "Cortland",
-    "Cruz",
-    "Dane",
-    "Dez",
-    "Drift",
-    "Garumako",
-    "Jacii",
-    "jawj",
-    "Jenkz",
-    "Kamboozle",
-    "KayGee",
-    "Leorus",
-    "Manni",
-    "mojodisu.",
-    "mrminus",
-    "Mumrikk",
-    "Neo90",
-    "Nokura",
-    "nomiss",
-    "ODB/Tilt",
-    "Ramen",
-    "Rebdull",
-    "REZORT",
-    "Rivertam",
-    "Shakeykev",
-    "Skeletor",
-    "Smiling6Bob9",
-    "Stalorin",
-    "Torsti",
-    "Ulti",
-    "Wonder",
-	"Ytsejam",
-	
-	-- Patron
-    "Alarius",
-    "alcaras",
-    "ApexPlatypus",
-    "Archxlock",
-    "Aristocles",
-    "cafasdon",
-    "chckxy",
-    "Chimmi",
-    "Coan",
-    "CptTroll",
-    "Daz",
-    "Dele",
-    "DerGuteFee",
-    "djthomp",
-    "Grayscale",
-    "Himea",
-    "Hollaputt",
-    "Kingreboot",
-    "Loraniden",
-    "Lovien",
-    "MrBean",
-    "Muerr",
-    "muze",
-    "neurolol",
-    "Nighteyez",
-    "Niromi",
-    "nqrse",
-    "RIP",
-    "Roodie",
-    "Samuraiwillz501",
-    "sarrge",
-    "Sarthol",
-    "Scro",
-    "Seniroth",
-    "Slem",
-    "Sludgebomb (Vagos)",
-    "Srata",
-    "Ted",
-    "Tekfire",
-    "Tevka",
-    "Tic",
-    "Tobi",
-    "tsukari",
-    "Vaxum",
-    "Wargus (Just 'Gus)",
-    "Weedwalker",
-    "Zarggg",
-    "MARU",
-	"HXL",
-}
-table.sort( ns.Patrons, function( a, b ) return upper( a ) < upper( b ) end  )
+ns.Patrons = "Abom, Abuna, aerix88, Aern, Aggronaught, Akh270, Alarius, Alasha, alcaras, Amera, Annddyypandy, ApexPlatypus, aphoenix, Archxlock, Aristocles, Arkhon, aro, Artoo, Ash, Aunt Jeremimah, av8ordoc, Belatar, Borelia, Brangeddon, Bsirk, cafasdon, Cele, Chimmi, Coan, Cortland, CptTroll, Cruz, Dane, DarkSparrow, Daz, DB, Dele, DerGuteFee, Dez, Dilvish, djthomp, Drethii, Elmer, Evo, Excitedguy, Feral, fuon, Garumako, glue, Graemec, Grayscale, Grechka, Guycrush Fleetwood, Himea, Hollaputt, Hungrypilot, HXL, Jacii, jawj, Katurn, KayGee, Kingreboot, Kittykiller, Lava Guava, Leorus, Loraniden, LordofWar, Lovien, Lump, Manni, MARU, mr. jing0, Mr_Hunter, MrBean, mrminus, MrSmurfy, Muerr, Mumrikk, muze, Nelix, neurolol, Nighteyez, Nikö, Nissa/Laethri, Nok, nomiss, nqrse, ODB/Tilt, Parameshvar, Rage, Rebdull, RIP, Rivertam, Roodie, Rusah, Samuraiwillz501, sarrge, Sarthol, Sebstar, Seniroth, seriallos, Shakeykev, Shuck, Skeletor, Slem, Smalls, Smiling6Bob9, Spaten, Spy, Srata, Stevi, Stonebone, Ted, Tekfire, Thordros, Tic, Tobi, todd, Torsti, Trikki, Tropical, tsukari, Ulti, Val (Nálá/Bóomah), Vaxum, Wargus (Just 'Gus), Weedwalker, Wonder, Xing, Ytsejam, zab, Zarggg, Zyon"
 
 
 
@@ -331,6 +211,8 @@ local snapshots = ns.snapshots
 
 function Hekili:SaveDebugSnapshot( dispName )
 
+    local snapped = false
+
 	for k, v in pairs( debug ) do
 		
 		if dispName == nil or dispName == k then
@@ -342,11 +224,67 @@ function Hekili:SaveDebugSnapshot( dispName )
 				v.log[ i ] = nil
 			end
 
-			table.insert( v.log, 1, self:GenerateProfile() )
-			table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+            -- Store aura data.
+            local auraString = "\nplayer_buffs:"
+            local now = GetTime()
+
+            local class = Hekili.Class
+
+            for i = 1, 40 do
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "player", i )
+
+                if not name then break end
+
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+            end
+
+            auraString = auraString .. "\n\nplayer_debuffs:"
+
+            for i = 1, 40 do
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "player", i )
+
+                if not name then break end
+
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+            end
+
+
+            if not UnitExists( "target" ) then
+                auraString = auraString .. "\n\ntarget_auras:  target does not exist"
+            else
+                auraString = auraString .. "\n\ntarget_buffs:"
+                
+                for i = 1, 40 do
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "target", i )
+    
+                    if not name then break end
+    
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                end
+    
+                auraString = auraString .. "\n\ntarget_debuffs:"
+
+                for i = 1, 40 do
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "target", i, "PLAYER" )
+    
+                    if not name then break end
+    
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                end
+            end
+
+            auraString = auraString .. "\n\n"
+
+            table.insert( v.log, 1, auraString )
+            table.insert( v.log, 1, self:GenerateProfile() )
+            table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+            
+            snapped = true
 		end
 
     end
+
+    return snapped
 
 end
 

@@ -1,14 +1,14 @@
 --> customized display script
-	
+
 	local _detalhes = 		_G._detalhes
 	local gump = 			_detalhes.gump
 	local _
-	
+
 	_detalhes.custom_function_cache = {}
-	
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> local pointers
-	
+
 	local _cstr = string.format --lua local
 	local _math_floor = math.floor --lua local
 	local _table_sort = table.sort --lua local
@@ -24,7 +24,7 @@
 	local _unpack = unpack --lua local
 	local _type = type --lua local
 	local _pcall = pcall -- lua local
-	
+
 	local _GetSpellInfo = _detalhes.getspellinfo -- api local
 	local _IsInRaid = IsInRaid -- api local
 	local _IsInGroup = IsInGroup -- api local
@@ -32,34 +32,34 @@
 	local _GetNumPartyMembers = GetNumPartyMembers or GetNumSubgroupMembers -- api local
 	local _GetNumRaidMembers = GetNumRaidMembers or GetNumGroupMembers -- api local
 	local _GetUnitName = GetUnitName -- api local
-	
+
 	local _string_replace = _detalhes.string.replace --details api
 	local Loc = LibStub ("AceLocale-3.0"):GetLocale ( "Details" )
-	
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> constants
 
 	local atributo_custom = _detalhes.atributo_custom
 	atributo_custom.mt = {__index = atributo_custom}
-	
+
 	local combat_containers = {
 		["damagedone"] = 1,
 		["healdone"] = 2,
 	}
-	
+
 	--> hold the mini custom objects
 	atributo_custom._InstanceActorContainer = {}
 	atributo_custom._InstanceLastCustomShown = {}
 	atributo_custom._InstanceLastCombatShown = {}
 	atributo_custom._TargetActorsProcessed = {}
-	
+
 	local ToKFunctions = _detalhes.ToKFunctions
 	local SelectedToKFunction = ToKFunctions [1]
 	local FormatTooltipNumber = ToKFunctions [8]
 	local TooltipMaximizedMethod = 1
 	local UsingCustomRightText = false
 	local UsingCustomLeftText = false
-	
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> core
 
@@ -78,22 +78,22 @@
 
 		--> save the custom name in the instance
 		instance.customName = custom_object:GetName()
-		
+
 		--> get the container holding the custom actor objects for this instance
 		local instance_container = atributo_custom:GetInstanceCustomActorContainer (instance)
-		
+
 		local last_shown = atributo_custom._InstanceLastCustomShown [instance:GetId()]
 		if (last_shown and last_shown ~= custom_object:GetName()) then
 			instance_container:WipeCustomActorContainer()
 		end
 		atributo_custom._InstanceLastCustomShown [instance:GetId()] = custom_object:GetName()
-		
+
 		local last_combat_shown = atributo_custom._InstanceLastCombatShown [instance:GetId()]
 		if (last_combat_shown and last_combat_shown ~= combat) then
 			instance_container:WipeCustomActorContainer()
 		end
 		atributo_custom._InstanceLastCombatShown [instance:GetId()] = combat
-		
+
 		--> declare the main locals
 		local total = 0
 		local top = 0
@@ -104,9 +104,9 @@
 
 			--> be save reseting the values on every refresh
 			instance_container:ResetCustomActorContainer()
-		
+
 			local func
-			
+
 			if (_detalhes.custom_function_cache [instance.customName]) then
 				func = _detalhes.custom_function_cache [instance.customName]
 			else
@@ -157,7 +157,7 @@
 			
 			local okey, _total, _top, _amount = _pcall (func, combat, instance_container, instance)
 			if (not okey) then
-				_detalhes:Msg ("|cFFFF9900error on custom display function|r:", total)
+				_detalhes:Msg ("|cFFFF9900error on custom display function|r:", _total)
 				return _detalhes:EndRefresh (instance, 0, combat, combat [1])
 			end
 			
@@ -757,6 +757,9 @@
 	-- ~add
 	function atributo_custom:AddValue (actor, actortotal, checktop, name_complement)
 		local actor_table = self:GetActorTable (actor, name_complement)
+		if (not getmetatable(actor)) then
+			_setmetatable(actor,atributo_custom.mt)
+		end
 		actor_table.my_actor = actor
 		actor_table.value = actor_table.value + actortotal
 		
@@ -845,6 +848,7 @@
 				classe = class,
 				value = _detalhes:GetOrderNumber(),
 				is_custom = true,
+				color = actor.color,
 			}, atributo_custom.mt)
 			
 			new_actor.name_complement = name_complement
@@ -1773,7 +1777,7 @@
 			desc = Loc ["STRING_CUSTOM_MYSPELLS_DESC"],
 			source = false,
 			target = false,
-			script_version = 7,
+			script_version = 8,
 			script = [[
 				--get the parameters passed
 				local combat, instance_container, instance = ...
@@ -1936,14 +1940,7 @@
 			    end
 			    
 			    GC:AddStatusBar (100, 1, R, G, B, A)
-			    
-			    --GC:AddLine (" ")
-			    
-			    GC:AddLine ("Multistrike: ", spell.m_amt .. " (" ..floor ( spell.m_amt/total_hits*100) .. "%)")
-			    GC:AddStatusBar (100, 1, R, G, B, A)
-			    
-			    GC:AddLine ("On Normal / On Critical:", spell.m_amt - spell.m_crit .. "  / " .. spell.m_crit)
-			    GC:AddStatusBar (100, 1, R, G, B, A)
+
 			    
 			elseif (spell.n_curado) then
 			    
@@ -2002,14 +1999,6 @@
 				GC:AddLine ("Average / E-Hps: ",  "0 / 0")    
 			    end
 			    
-			    GC:AddStatusBar (100, 1, R, G, B, A)
-			    
-			    --GC:AddLine (" ")
-			    
-			    GC:AddLine ("Multistrike: ", spell.m_amt .. " (" ..floor ( spell.m_amt/total_hits*100) .. "%)")
-			    GC:AddStatusBar (100, 1, R, G, B, A)
-			    
-			    GC:AddLine ("On Normal / On Critical:", spell.m_amt - spell.m_crit .. "  / " .. spell.m_crit)
 			    GC:AddStatusBar (100, 1, R, G, B, A)
 			end
 			]],

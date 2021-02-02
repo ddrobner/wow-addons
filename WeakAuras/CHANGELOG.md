@@ -1,15 +1,20 @@
-# [3.1.1](https://github.com/WeakAuras/WeakAuras2/tree/3.1.1) (2020-11-18)
+# [3.1.9](https://github.com/WeakAuras/WeakAuras2/tree/3.1.9) (2021-01-26)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.1.0...3.1.1)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.1.8...3.1.9)
 
 ## Highlights
 
- bug fix for missing auras 
+ - bug fixes 
 
 ## Commits
 
 InfusOnWoW (2):
 
-- Templates: Move Resources to proper section
-- BuffTrigger 2: Fix missing auras
+- Fix oversight in 7a3d5c762 breaking remaining time check for
+- Clamp tooltips to the screen
+
+Stanzilla (2):
+
+- master -> main
+- Create CODE_OF_CONDUCT.md
 

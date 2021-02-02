@@ -527,12 +527,12 @@ local function OnTradeSkillListUpdate(self)
     
     if not currentCraftRecipeID then return end
     local recipeID = currentCraftRecipeID
-    currentCraftRecipeID = nil
     
     local cooldown, isDayCooldown, charges, maxCharges = C_TradeSkillUI.GetRecipeCooldown(recipeID)
     local info = C_TradeSkillUI.GetRecipeInfo(recipeID)
     
 	if cooldown then
+        currentCraftRecipeID = nil
         if isDayCooldown then
             cooldown = DataStore:GetSecondsUntilDailyReset()
         end

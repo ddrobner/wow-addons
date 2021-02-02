@@ -1,5 +1,5 @@
 --- Kaliel's Tracker
---- Copyright (c) 2012-2020, Marouan Sabbagh <mar.sabbagh@gmail.com>
+--- Copyright (c) 2012-2021, Marouan Sabbagh <mar.sabbagh@gmail.com>
 --- All Rights Reserved.
 ---
 --- This file is part of addon Kaliel's Tracker.
@@ -19,8 +19,10 @@ local helpNumPages = 11
 local cTitle = "|cffffd200"
 local cBold = "|cff00ffe3"
 local cWarning = "|cffff7f00"
+local cWarning2 = "|cffff0000"
 local cDots = "|cff808080"
 local offs = "\n|T:1:9|t"
+local offs2 = "\n|T:1:18|t"
 local beta = "|cffff7fff[Beta]|r"
 local new = "|cffff7fff[NEW]|r"
 
@@ -146,8 +148,11 @@ local function SetupTutorials()
 					offs.."of the quest.\n"..
 					"- You can set "..cBold.."[key bind]|r to use quest item. Key set up in "..KT.title..
 					offs.."Options. Active Button uses the same key bind as the Extra Action Button.\n"..
-					"- Button is movable using some addons (e.g. Bartender4, MoveAnything)."..
-					offs.."For position change, move \"Extra Action Button\" resp. \"Extra Action Bar\".\n\n"..
+					"- Button is movable using:"..
+					offs.."  - own mover (free move) - see Options > section \"Quest item buttons\""..
+					offs2.."  > button \"Unlock\","..
+					offs.."  - some addons (move with Extra Action Button) - Bartender4, Dominos,"..
+					offs2.."  ElvUI, Tukui.\n\n"..
 					cWarning.."Warning:|r\n"..
 					"- Active Button works only for tracked quests.\n"..
 					"- When tracker is collapsed, Active Button feature is paused.",
@@ -198,25 +203,28 @@ local function SetupTutorials()
 			shineRight = 11,
 		},
 		{	-- 11
-			text = cTitle.."         What's NEW in version |r|cffffffff4.2.4|r\n\n"..
-					"|TInterface\\Scenarios\\LegionInvasion:41:42:-4:0:512:512:314:373:144:206|t Special gift - |cffff7fffIcecrown Rare Monitor|r\n\n"..
-					"- UPDATED - Icecrown Rare Monitor - Rares now spawn every 10 minutes"..
-					offs.."(update for EU / NA zones)\n\n"..
+			text = cTitle.."         What's NEW in version |r|cffffffff4.2.13|r\n\n"..
+					"- FIXED - Game freezing after long combat\n"..
+					"- FIXED - LUA Error after Accepting Quest, when active Auto Zone tracking"..
+					offs.."and active ElvUI\n"..
+					"- FIXED - Quest item buttons - visible during Pet Battles after some user actions\n"..
+					"- FIXED - Active Button - Quest item of selected Campaign Quest (with yellow"..
+					offs.."POI button) is not displayed\n"..
+					"- UPDATED - Options - added new Strata option \"BACKGROUND\"\n"..
+					"- UPDATED - Addon support - ElvUI 12.17, Tukui 20.14, SpartanUI 6.0.17\n\n"..
 
-					"|cffff0000Take a look Options and configure Rare Monitor correctly!|r\n"..
-					"Now you don't need add UTC offset to field \"Timer Correction\". This field now use only for cosmetic time correction.\n\n"..
-
-                    cTitle.."WoW 9.0.1 - Known issues w/o solution|r\n"..
+                    cTitle.."WoW 9.0.2 - Known issues w/o solution|r\n"..
                     "- Clicking on tracked quests or achievements has no response during combat.\n"..
                     "- Header buttons Q and A don't work during combat.\n\n"..
 
 					cTitle.."Issue reporting|r\n"..
 					"For reporting please use "..cBold.."Tickets|r instead of Comments on CurseForge.\n\n\n\n"..
 
-					cWarning.."Before reporting of errors, please deactivate other addons and make sure the bug is not caused by a collision with another addon.|r",
+					cWarning.."Before reporting of error, please deactivate all other addons and make sure the bug is not caused by a collision with another addon.|r\n\n"..
+					cWarning2.."All error reports with general information \"addon does not work\" or only with an error log without a description, I ignore|r ... Please don't waste my time.",
 			textY = -20,
 			editbox = "https://www.curseforge.com/wow/addons/kaliels-tracker/issues",
-			editboxBottom = 40,
+			editboxBottom = 75,
 			shine = KTF,
 			shineTop = 5,
 			shineBottom = -5,

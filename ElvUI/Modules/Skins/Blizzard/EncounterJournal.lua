@@ -197,16 +197,9 @@ function S:Blizzard_EncounterJournal()
 	EJ.searchBox:Point('TOPLEFT', EJ.navBar, 'TOPRIGHT', 4, 0)
 
 	local InstanceSelect = EJ.instanceSelect
+	InstanceSelect.bg:Kill()
 
-	EJ.instanceSelect.bg:Kill()
 	S:HandleDropDownBox(InstanceSelect.tierDropDown)
-	EJ.instanceSelect.tierDropDown:HookScript('OnShow', function(s)
-		local text = s.Text
-		local a, b, c, d, e = text:GetPoint()
-		text:Point(a, b, c, d + 10, e - 4)
-		text:Width(s:GetWidth() / 1.4)
-	end)
-
 	S:HandleScrollBar(InstanceSelect.scroll.ScrollBar, 6)
 	HandleTopTabs(InstanceSelect.suggestTab)
 	HandleTopTabs(InstanceSelect.dungeonsTab)
@@ -458,8 +451,7 @@ function S:Blizzard_EncounterJournal()
 			local rewardData = sugg.reward.data
 			if rewardData then
 				if not sugg.reward.icon.backdrop then
-					sugg.reward.icon:CreateBackdrop()
-					sugg.reward.icon.backdrop:SetFrameLevel(3)
+					sugg.reward.icon:CreateBackdrop(nil, nil, nil, nil, nil, nil, nil, 3)
 				end
 
 				sugg.reward.icon:SetMask('')
@@ -494,6 +486,8 @@ function S:Blizzard_EncounterJournal()
 	local LootJournal = EJ.LootJournal
 	HandleButton(LootJournal.ClassDropDownButton, true)
 	LootJournal.ClassDropDownButton:SetFrameLevel(10)
+	HandleButton(LootJournal.RuneforgePowerFilterDropDownButton, true)
+	LootJournal.RuneforgePowerFilterDropDownButton:SetFrameLevel(10)
 
 	_G.EncounterJournal.LootJournal:CreateBackdrop('Transparent')
 	local parch = _G.EncounterJournal.LootJournal:GetRegions()

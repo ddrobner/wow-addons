@@ -1,5 +1,5 @@
 --- Kaliel's Tracker
---- Copyright (c) 2012-2020, Marouan Sabbagh <mar.sabbagh@gmail.com>
+--- Copyright (c) 2012-2021, Marouan Sabbagh <mar.sabbagh@gmail.com>
 --- All Rights Reserved.
 ---
 --- This file is part of addon Kaliel's Tracker.
@@ -26,17 +26,17 @@ local KTwarning = "  |cff00ffffAddon "..KT.title.." is active.  "
 
 -- Masque
 local function Masque_SetSupport()
-    if db.addonMasque and MSQ then
-        msqGroup1 = MSQ:Group(KT.title, "Quest Item Button")
-        msqGroup2 = MSQ:Group(KT.title, "Active Button")
-        hooksecurefunc(msqGroup2, "Enable", function(self)
+    if M.isLoadedMasque then
+        msqGroup1 = MSQ:Group(KT.title, "Quest Item Buttons")
+        msqGroup2 = MSQ:Group(KT.title, "Quest Active Button")
+        hooksecurefunc(msqGroup2, "__Enable", function(self)
             for button in pairs(self.Buttons) do
                 if button.Style then
                     button.Style:SetAlpha(0)
                 end
             end
         end)
-        hooksecurefunc(msqGroup2, "Disable", function(self)
+        hooksecurefunc(msqGroup2, "__Disable", function(self)
             for button in pairs(self.Buttons) do
                 if button.Style then
                     button.Style:SetAlpha(1)
@@ -48,7 +48,7 @@ end
 
 -- ElvUI
 local function ElvUI_SetSupport()
-    if KT:CheckAddOn("ElvUI", "12.06", true) then
+    if KT:CheckAddOn("ElvUI", "12.17", true) then
         local E = unpack(_G.ElvUI)
         local B = E:GetModule("Blizzard")
         B.SetObjectiveFrameAutoHide = function() end  -- preventive
@@ -73,7 +73,7 @@ end
 
 -- Tukui
 local function Tukui_SetSupport()
-    if KT:CheckAddOn("Tukui", "20.04", true) then
+    if KT:CheckAddOn("Tukui", "20.14", true) then
         local T = unpack(_G.Tukui)
         T.Miscellaneous.ObjectiveTracker.Enable = function() end
     end
@@ -81,10 +81,9 @@ end
 
 -- RealUI
 local function RealUI_SetSupport()
-    if KT:CheckAddOn("nibRealUI", "2.2.3", true) then
+    if KT:CheckAddOn("nibRealUI", "2.2.5", true) then
         local R = _G.RealUI
         R:SetModuleEnabled("Objectives Adv.", false)
-        -- Fade
         local bck_UIFrameFadeIn = UIFrameFadeIn
         function UIFrameFadeIn(frame, ...)
             if frame ~= OTF then bck_UIFrameFadeIn(frame, ...) end
@@ -112,15 +111,19 @@ end
 
 -- SpartanUI
 local function SpartanUI_SetSupport()
-    if KT:CheckAddOn("SpartanUI", "6.0.10", true) then
+    if KT:CheckAddOn("SpartanUI", "6.0.17", true) then
         SUI.DB.DisabledComponents.Objectives = true
         local module = SUI:GetModule("Component_Objectives")
         local bck_module_OnEnable = module.OnEnable
         function module:OnEnable()
             if SUI.DB.DisabledComponents.Objectives then
-                module:BuildOptions()
                 local options = SUI.opt.args.ModSetting.args
-                options.Objectives.disabled = true
+                options.Objectives = {
+                    type = "group",
+                    name = SUI.L.Objectives,
+                    disabled = true,
+                    args = {},
+                }
                 options.Components.args.Objectives.disabled = true
                 options.Components.args[addonName.."Warning"] = {
                     name = "\n"..KTwarning,
@@ -134,6 +137,7 @@ local function SpartanUI_SetSupport()
     end
 end
 
+-- Aurora
 local function Aurora_SetCompatibility()
     if IsAddOnLoaded("Aurora") then
         if not IsAddOnLoaded("Aurora_Extension") then
@@ -175,6 +179,16 @@ local function DQE_SetCompatibility()
     end
 end
 
+-- MoveAnything
+local function MoveAnything_SetCompatibility()
+    if IsAddOnLoaded("MoveAnything") then
+        MovAny:ResetFrame("ObjectiveTrackerFrameMover")
+        MovAny:ResetFrame("ObjectiveTrackerFrameScaleMover")
+        MovAny.lVirtualMovers.ObjectiveTrackerFrameMover = nil
+        MovAny.lVirtualMovers.ObjectiveTrackerFrameScaleMover = nil
+    end
+end
+
 --------------
 -- External --
 --------------
@@ -182,7 +196,11 @@ end
 function M:OnInitialize()
     _DBG("|cffffff00Init|r - "..self:GetName(), true)
     db = KT.db.profile
-    KT:CheckAddOn("Masque", "9.0.2")
+    self.isLoadedMasque = (KT:CheckAddOn("Masque", "9.0.4") and db.addonMasque)
+
+    if self.isLoadedMasque then
+        KT:Alert_IncompatibleAddon("Masque", "9.0.4")
+    end
 end
 
 function M:OnEnable()
@@ -196,6 +214,7 @@ function M:OnEnable()
     Aurora_SetCompatibility()
     Chinchilla_SetCompatibility()
     DQE_SetCompatibility()
+    MoveAnything_SetCompatibility()
 end
 
 -- Masque

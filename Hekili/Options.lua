@@ -246,7 +246,12 @@ local oneTimeFixes = {
             p.specs[ 261 ].settings.mfd_waste = nil
         end
     end,
-            
+
+    resetAllPotions_20201209 = function( p )
+        for id in pairs( p.specs ) do
+            p.specs[ id ].potion = nil
+        end
+    end,
 }
 
 
@@ -455,6 +460,7 @@ local actionTemplate = {
     action = "wait",
     criteria = "",
     caption = "",
+    description = "",
 
     -- Shared Modifiers
     chain = 0,  -- NYI
@@ -462,6 +468,7 @@ local actionTemplate = {
 
     cycle_targets = 0,
     max_cycle_targets = 3,
+    max_energy = 0,
 
     interrupt = 0,  --NYI
     interrupt_if = "",  --NYI
@@ -559,6 +566,7 @@ function Hekili:GetDefaults()
                     key = "ALT-SHIFT-R",
                     value = false,
                     override = false,
+                    separate = false,
                 },
 
                 defensives = {
@@ -658,7 +666,7 @@ function Hekili:GetDefaults()
                     displayPoint = "TOP",
                     anchorPoint = "BOTTOM",
 
-                    x = -55,
+                    x = 0,
                     y = -225,
 
                     numIcons = 3,
@@ -680,7 +688,7 @@ function Hekili:GetDefaults()
 
                     name = "AOE",
 
-                    x = -55,
+                    x = 0,
                     y = -170,
 
                     numIcons = 3,
@@ -696,6 +704,29 @@ function Hekili:GetDefaults()
                     },
                 },
 
+                Cooldowns = {
+                    enabled = true,
+                    builtIn = true,
+
+                    name = "Cooldowns",
+                    filter = 'cooldowns',
+
+                    x = 0,
+                    y = -280,
+
+                    numIcons = 1,
+                    order = 3,
+
+                    flash = {
+                        color = { 0, 0, 1, 1 },
+                    },
+
+                    glow = {
+                        enabled = true,
+                        mode = "autocast",
+                    },
+                },
+
                 Defensives = {
                     enabled = true,
                     builtIn = true,
@@ -703,11 +734,11 @@ function Hekili:GetDefaults()
                     name = "Defensives",
                     filter = 'defensives',
 
-                    x = -165,
+                    x = -110,
                     y = -225,
 
                     numIcons = 1,
-                    order = 3,
+                    order = 4,
 
                     flash = {
                         color = { 0, 0, 1, 1 },
@@ -726,11 +757,11 @@ function Hekili:GetDefaults()
                     name = "Interrupts",
                     filter = 'interrupts',
 
-                    x = -110,
+                    x = -55,
                     y = -225,
 
                     numIcons = 1,
-                    order = 4,
+                    order = 5,
 
                     flash = {
                         color = { 1, 1, 1, 1 },
@@ -1052,6 +1083,7 @@ do
 
         if name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " " .. name
         elseif name == "Interrupts" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
+        elseif name == "Cooldowns" then fancyName = NewFeature .. " " .. name
         else fancyName = name end
 
         return {
@@ -1085,7 +1117,7 @@ do
                                 name = "Enabled",
                                 desc = "If disabled, this display will not appear under any circumstances.",
                                 order = 0.5,
-                                hidden = function () return name == "Primary" or name == "AOE" or name == "Defensives" or name == "Interrupts" end
+                                hidden = function () return name == "Primary" or name == "AOE" or name == "Cooldowns"  or name == "Defensives" or name == "Interrupts" end
                             },
 
                             elvuiCooldown = {
@@ -1110,7 +1142,7 @@ do
                                     local n = #info
                                     local display = info[2]
 
-                                    if display == "Interrupts" or display == "Defensives" then
+                                    if display == "Defensives" or display == "Interrupts" then
                                         return true
                                     end
 
@@ -3067,8 +3099,8 @@ ns.AbilitySettings = function ()
 
                         abilityToggles[ 'none' ] = 'None'
                         abilityToggles[ 'default' ] = 'Default' .. ( ability.toggle and ( ' |cFFFFD100(' .. ability.toggle .. ')|r' ) or ' |cFFFFD100(none)|r' )
-                        abilityToggles[ 'defensives' ] = 'Defensives'
                         abilityToggles[ 'cooldowns' ] = 'Cooldowns'
+                        abilityToggles[ 'defensives' ] = 'Defensives'
                         abilityToggles[ 'interrupts' ] = 'Interrupts'
                         abilityToggles[ 'potions' ] = 'Potions'
 
@@ -3333,20 +3365,34 @@ do
         apl = "\n" .. apl
         apl = apl:gsub( "actions(%+?)=", "actions.default%1=" )
 
-        for list, action in apl:gmatch( "\nactions%.(%S-)%+?=/?([^\n^$]*)" ) do
-            lists[ list ] = lists[ list ] or ""
+        local comment
 
-            --[[ if action:sub( 1, 6 ) == "potion" then
-                local potion = action:match( ",name=(.-),") or action:match( ",name=(.-)$" ) or class.potion or ""
-                action = action:gsub( potion, "\"" .. potion .. "\"" )
-            end ]]
+        for line in apl:gmatch( "\n([^\n^$]*)") do
+            local newComment = line:match( "^# (.+)" )
+            if newComment then comment = newComment end
 
-            if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
-                local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
-                if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
+            local list, action = line:match( "^actions%.(%S-)%+?=/?([^\n^$]*)" )
+
+            if list and action then
+                lists[ list ] = lists[ list ] or ""
+
+                --[[ if action:sub( 1, 6 ) == "potion" then
+                    local potion = action:match( ",name=(.-),") or action:match( ",name=(.-)$" ) or class.potion or ""
+                    action = action:gsub( potion, "\"" .. potion .. "\"" )
+                end ]]
+
+                if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
+                    local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
+                    if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
+                end
+
+                if comment then
+                    action = action .. ',description=' .. comment:gsub( ",", ";" )
+                    comment = nil
+                end
+
+                lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
             end
-
-            lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
         end
 
         local count = 0
@@ -3487,8 +3533,8 @@ local specs = {}
 local activeSpec
 
 local function GetCurrentSpec()
-    local id, name = GetSpecializationInfo( GetSpecialization() )
-    return activeSpec or id
+    activeSpec = activeSpec or GetSpecializationInfo( GetSpecialization() )
+    return activeSpec
 end
 
 local function SetCurrentSpec( _, val )
@@ -3598,7 +3644,7 @@ do
         local spec = GetCurrentSpec()
 
         self.DB.profile.specs[ spec ].abilities[ ability ][ option ] = val
-        if option == "toggle" then Hekili:EmbedSpecOptions() end
+        if option == "toggle" then Hekili:EmbedAbilityOption( nil, ability ) end
     end
 
     function Hekili:GetAbilityOption( info )
@@ -3618,7 +3664,7 @@ do
         local spec = GetCurrentSpec()
 
         self.DB.profile.specs[ spec ].items[ item ][ option ] = val
-        if option == "toggle" then Hekili:EmbedSpecOptions() end
+        if option == "toggle" then Hekili:EmbedSpecOption( nil, item ) end
     end
 
     function Hekili:GetItemOption( info )
@@ -3630,6 +3676,131 @@ do
         return self.DB.profile.specs[ spec ].items[ item ][ option ]
     end
 
+
+    function Hekili:EmbedAbilityOption( db, key )
+        db = db or self.Options
+        if not db or not key then return end
+
+        local ability = class.abilities[ key ]
+        if not ability then return end
+
+        local toggles = {}
+
+        local k = class.abilityList[ ability.key ]
+        local v = ability.key
+
+        if not k or not v then return end
+
+        local useName = class.abilityList[ v ] and class.abilityList[v]:match("|t (.+)$") or ability.name
+
+        if not useName then
+            Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOption.", ability.key or "no_id", ability.id or 0 )
+            useName = ability.key or ability.id or "???"
+        end
+
+        local option = db.args.abilities.plugins.actions[ v ] or {}
+
+        option.type = "group"
+        option.name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. useName .. "|r" end
+        option.order = 1
+        option.set = "SetAbilityOption"
+        option.get = "GetAbilityOption"
+        option.args = {
+            disabled = {
+                type = "toggle",
+                name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
+                desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
+                    "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
+                width = 1.5,
+                order = 1,
+            },
+
+            boss = {
+                type = "toggle",
+                name = "Boss Encounter Only",
+                desc = "If checked, the addon will not recommend " .. k .. " unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                width = 1.5,
+                order = 1.1,
+            },                    
+
+            keybind = {
+                type = "input",
+                name = "Override Keybind Text",
+                desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                    "This can be helpful if the addon incorrectly detects your keybindings.",
+                validate = function( info, val )
+                    val = val:trim()
+                    if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                    return true
+                end,
+                width = 1.5,
+                order = 2,
+            },
+
+            toggle = {
+                type = "select",
+                name = "Require Toggle",
+                desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
+                    "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
+                width = 1.5,
+                order = 3,
+                values = function ()
+                    table.wipe( toggles )
+
+                    local t = class.abilities[ v ].toggle or "none"
+                    if t == "essences" then t = "covenants" end
+
+                    toggles.none = "None"
+                    toggles.default = "Default |cffffd100(" .. t .. ")|r"
+                    toggles.cooldowns = "Cooldowns"
+                    toggles.essences = "Covenants"
+                    toggles.defensives = "Defensives"
+                    toggles.interrupts = "Interrupts"
+                    toggles.potions = "Potions"
+                    toggles.custom1 = "Custom 1"
+                    toggles.custom2 = "Custom 2"
+
+                    return toggles
+                end,
+            },
+
+            targetMin = {
+                type = "range",
+                name = "Minimum Targets",
+                desc = "If set above zero, the addon will only allow " .. k .. " to be recommended, if there are at least this many detected enemies.  All other action list conditions must also be met.\nSet to zero to ignore.",
+                width = 1.5,
+                min = 0,
+                max = 15,
+                step = 1,
+                order = 3.1,
+            },
+
+            targetMax = {
+                type = "range",
+                name = "Maximum Targets",
+                desc = "If set above zero, the addon will only allow " .. k .. " to be recommended if there are this many detected enemies (or fewer).  All other action list conditions must also be met.\nSet to zero to ignore.",
+                width = 1.5,
+                min = 0,
+                max = 15,
+                step = 1,
+                order = 3.2,
+            },
+
+            clash = {
+                type = "range",
+                name = "Clash",
+                desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                    "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
+                width = 3,
+                min = -1.5,
+                max = 1.5,
+                step = 0.05,
+                order = 4,
+            },
+        }
+
+        db.args.abilities.plugins.actions[ v ] = option
+    end
 
     function Hekili:EmbedAbilityOptions( db )
         db = db or self.Options
@@ -3707,9 +3878,9 @@ do
 
                             toggles.none = "None"
                             toggles.default = "Default |cffffd100(" .. t .. ")|r"
-                            toggles.defensives = "Defensives"
-                            toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
+                            toggles.essences = "Covenants"
+                            toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
                             toggles.custom1 = "Custom 1"
@@ -3757,8 +3928,123 @@ do
 
             db.args.abilities.plugins.actions[ v ] = option
         end
+    end
 
-        self.NewSpellInfo = false
+
+    function Hekili:EmbedItemOption( db, item )
+        db = db or self.Options
+        if not db then return end
+
+        local ability = class.abilities[ item ]
+        local toggles = {}
+
+        local k = class.itemList[ ability.item ] or ability.name
+        local v = ability.itemKey or ability.key
+
+        if not item or not ability.item or not k then
+            Hekili:Error( "Unable to find %s / %s / %s in the itemlist.", item or "unknown", ability.item or "unknown", k or "unknown" )
+            return
+        end
+
+        local option = db.args.items.plugins.equipment[ v ] or {}
+
+        option.type = "group"
+        option.name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. ability.name .. "|r" end
+        option.order = 1
+        option.set = "SetItemOption"
+        option.get = "GetItemOption"
+        option.args = {
+            disabled = {
+                type = "toggle",
+                name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
+                desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
+                    "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
+                width = 1.5,
+                order = 1,
+            },
+
+            boss = {
+                type = "toggle",
+                name = "Boss Encounter Only",
+                desc = "If checked, the addon will not recommend " .. k .. " via [Use Items] unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                width = 1.5,
+                order = 1.1,
+            },
+
+            keybind = {
+                type = "input",
+                name = "Override Keybind Text",
+                desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                    "This can be helpful if the addon incorrectly detects your keybindings.",
+                validate = function( info, val )
+                    val = val:trim()
+                    if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                    return true
+                end,
+                width = 1.5,
+                order = 2,
+            },
+
+            toggle = {
+                type = "select",
+                name = "Require Toggle",
+                desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
+                    "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
+                width = 1.5,
+                order = 3,
+                values = function ()
+                    table.wipe( toggles )
+
+                    toggles.none = "None"
+                    toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
+                    toggles.cooldowns = "Cooldowns"
+                    toggles.essences = "Covenants"
+                    toggles.defensives = "Defensives"
+                    toggles.interrupts = "Interrupts"
+                    toggles.potions = "Potions"
+                    toggles.custom1 = "Custom 1"
+                    toggles.custom2 = "Custom 2"
+
+                    return toggles
+                end,
+            },
+
+            --[[ clash = {
+                type = "range",
+                name = "Clash",
+                desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                    "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
+                width = "full",
+                min = -1.5,
+                max = 1.5,
+                step = 0.05,
+                order = 4,
+            }, ]]
+
+            targetMin = {
+                type = "range",
+                name = "Minimum Targets",
+                desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are at least this many detected enemies.\nSet to zero to ignore.",
+                width = 1.5,
+                min = 0,
+                max = 15,
+                step = 1,
+                order = 5,
+            },
+
+            targetMax = {
+                type = "range",
+                name = "Maximum Targets",
+                desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are this many detected enemies (or fewer).\nSet to zero to ignore.",
+                width = 1.5,
+                min = 0,
+                max = 15,
+                step = 1,
+                order = 6,
+            },
+        }
+
+        db.args.items.plugins.equipment[ v ] = option
     end
 
 
@@ -3770,8 +4056,9 @@ do
         local toggles = {}
 
         for k, v in pairs( class.abilities ) do
-            if v.item and not abilities[ v.itemKey or v.key ] and class.itemList[ v.item ] then
-                abilities[ class.itemList[ v.item ] ] = v.itemKey or v.key
+            if v.item and not abilities[ v.itemKey or v.key ] then
+                local name = class.itemList[ v.item ] or v.name
+                if name then abilities[ name ] = v.itemKey or v.key end
             end
         end
 
@@ -3827,9 +4114,9 @@ do
 
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
-                            toggles.defensives = "Defensives"
-                            toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
+                            toggles.essences = "Covenants"
+                            toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
                             toggles.custom1 = "Custom 1"
@@ -4254,7 +4541,7 @@ do
                                 potion = {
                                     type = "select",
                                     name = "Default Potion",
-                                    desc = "When recommending a potion, the addon will suggest this potion unless unless the action list specifies otherwise.",
+                                    desc = "When recommending a potion, the addon will suggest this potion unless the action list specifies otherwise.",
                                     order = 2,
                                     width = 3,
                                     values = function ()
@@ -4428,7 +4715,7 @@ do
                                 damageRange = {
                                     type = "range",
                                     name = "Filter Damaged Enemies by Range",
-                                    desc = "If set above 0, the addon will attempt to avoid counting targets that have were out of range when last seen.  This is based on cached data and may be inaccurate.",
+                                    desc = "If set above 0, the addon will attempt to avoid counting targets that were out of range when last seen.  This is based on cached data and may be inaccurate.",
                                     width = "full",
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     min = 0,
@@ -4504,7 +4791,8 @@ do
                             args = {
                                 toggleDesc = {
                                     type = "description",
-                                    name = "This section controls which abilities are enabled/disabled when you toggle each category when in this specialization.  Gear and Trinkets can be adjusted via their own section (left).",
+                                    name = "This section shows which Abilities are enabled/disabled when you toggle each category when in this specialization.  Gear and Trinkets can be adjusted via their own section (left).\n\n" ..
+                                        "Removing an ability from its toggle leaves it |cFF00FF00ENABLED|r regardless of whether the toggle is active.",
                                     fontSize = "medium",
                                     order = 1,
                                     width = 3,
@@ -4695,6 +4983,7 @@ do
     local toggleToNumber = {
         cycle_targets = true,
         for_next = true,
+        max_energy = true,
         strict = true,
         use_off_gcd = true,
         use_while_casting = true,
@@ -5561,11 +5850,13 @@ do
                                 },
 
                                 warnings = {
-                                    type = "input",
-                                    name = "Import Log",
-                                    desc = "If this pack's action lists were imported from a SimulationCraft profile, any details logged at import are included here.",
+                                    type = "description",
+                                    name = function ()
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                        return "|cFFFFD100Import Log|r\n" .. ( p.warnings ) .. "\n\n"
+                                    end,
                                     order = 5,
-                                    multiline = 10,
+                                    fontSize = "medium",
                                     width = "full",                                
                                     hidden = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
@@ -5903,7 +6194,7 @@ do
                                     hidden = function () return packControl.makingNew end,
                                 },
 
-                                actionGroup = {
+                                --[[ actionGroup = {
                                     type = "group",
                                     inline = true,
                                     name = "",
@@ -5929,12 +6220,12 @@ do
                                                 local p = rawget( Hekili.DB.profile.packs, pack )
                                                 return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not p.lists[ packControl.listName ][ id ]
                                             end,
-                                            args = {
+                                            args = { ]]
                                                 enabled = {
                                                     type = "toggle",
                                                     name = "Enabled",
                                                     desc = "If disabled, this entry will not be shown even if its criteria are met.",
-                                                    order = 0,
+                                                    order = 3.0,
                                                     width = "full",
                                                 },
 
@@ -5943,7 +6234,7 @@ do
                                                     name = "Action",
                                                     desc = "Select the action that will be recommended when this entry's criteria are met.",
                                                     values = class.abilityList,
-                                                    order = 1,
+                                                    order = 3.1,
                                                     width = 1.5,
                                                 },
 
@@ -5953,7 +6244,7 @@ do
                                                     desc = "Captions are |cFFFF0000very|r short descriptions that can appear on the icon of a recommended ability.\n\n" ..
                                                         "This can be useful for understanding why an ability was recommended at a particular time.\n\n" ..
                                                         "Requires Captions to be Enabled on each display.",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.5,
                                                     validate = function( info, val )
                                                         val = val:trim()
@@ -5989,7 +6280,7 @@ do
 
                                                         return v
                                                     end,
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.2,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6000,7 +6291,7 @@ do
                                                 buff_name = {
                                                     type = "select",
                                                     name = "Buff Name",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.5,
                                                     desc = "Specify the buff to remove.",
                                                     values = class.auraList,
@@ -6013,7 +6304,7 @@ do
                                                 potion = {
                                                     type = "select",
                                                     name = "Potion",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     -- width = "full",
                                                     values = class.potionList,
                                                     hidden = function ()
@@ -6026,7 +6317,7 @@ do
                                                 sec = {
                                                     type = "input",
                                                     name = "Seconds",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.2,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6034,17 +6325,38 @@ do
                                                     end,
                                                 },
 
+                                                max_energy = {
+                                                    type = "toggle",
+                                                    name = "Max Energy",
+                                                    order = 3.2,
+                                                    width = 1.2,
+                                                    desc = "When checked, this entry will require that the player have enough energy to trigger Ferocious Bite's full damage bonus.",
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        return e.action ~= "ferocious_bite"
+                                                    end,
+                                                },
+
+                                                description = {
+                                                    type = "input",
+                                                    name = "Description",
+                                                    desc = "This allows you to provide text that explains this entry, which will show when you Pause and mouseover the ability to see " ..
+                                                        "why this entry was recommended.",
+                                                    order = 3.205,
+                                                    width = "full",
+                                                },
+
                                                 lb01 = {
                                                     type = "description",
                                                     name = "",
-                                                    order = 2.1,
+                                                    order = 3.21,
                                                     width = "full"
                                                 },
 
                                                 var_name = {
                                                     type = "input",
                                                     name = "Variable Name",
-                                                    order = 3,
+                                                    order = 3.3,
                                                     width = 1.5,
                                                     desc = "Specify a name for this variable.  Variables must be lowercase with no spaces or symbols aside from the underscore.",
                                                     validate = function( info, val )
@@ -6080,7 +6392,7 @@ do
                                                         setif = "Set Value If...",
                                                         sub = "Subtract Value",
                                                     },
-                                                    order = 3.1,
+                                                    order = 3.31,
                                                     width = 1.5,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6092,7 +6404,7 @@ do
                                                     type = "group",
                                                     inline = true,
                                                     name = "",
-                                                    order = 5,
+                                                    order = 3.5,
                                                     args = {
                                                         for_next = {
                                                             type = "toggle",
@@ -6149,7 +6461,7 @@ do
                                                 criteria = {
                                                     type = "input",
                                                     name = "Conditions",
-                                                    order = 6,
+                                                    order = 3.6,
                                                     width = "full",
                                                     multiline = 6,
                                                     dialogControl = "HekiliCustomEditor",
@@ -6189,7 +6501,7 @@ do
                                                     type = "input",
                                                     name = "Value",
                                                     desc = "Provide the value to store (or calculate) when this variable is invoked.",
-                                                    order = 6.1,
+                                                    order = 3.61,
                                                     width = "full",
                                                     multiline = 3,
                                                     dialogControl = "HekiliCustomEditor",
@@ -6233,7 +6545,7 @@ do
                                                     type = "input",
                                                     name = "Value Else",
                                                     desc = "Provide the value to store (or calculate) if this variable's conditions are not met.",
-                                                    order = 6.2,
+                                                    order = 3.62,
                                                     width = "full",
                                                     multiline = 3,
                                                     dialogControl = "HekiliCustomEditor",
@@ -6272,7 +6584,7 @@ do
                                                         -- if not e.criteria or e.criteria:trim() == "" then return true end
                                                         return e.action ~= "variable" or e.op == "reset" or e.op == "ceil" or e.op == "floor"
                                                     end,
-                                                },                                                
+                                                },
 
                                                 showModifiers = {
                                                     type = "toggle",
@@ -6479,11 +6791,11 @@ do
                                                         local p = rawget( Hekili.DB.profile.packs, pack )
                                                         return #p.lists[ packControl.listName ] < 2 
                                                     end
-                                                } ]]
+                                                }
                                             },
-                                        },                                    
+                                        },
                                     }
-                                },
+                                }, ]]
 
                                 newListGroup = {
                                     type = "group",
@@ -6743,12 +7055,34 @@ do
                             order = 2,                            
                         },
 
+                        separate = {
+                            type = "toggle",
+                            name = NewFeature .. " Show Separately",
+                            desc = "If checked, cooldown abilities will be shown separately in your Cooldowns Display.\n\n" ..
+                                "This is an experimental feature and may not work well for some specializations.",
+                            order = 3,
+                        },
+
+                        lineBreak = {
+                            type = "description",
+                            name = "",
+                            width = "full",
+                            order = 3.1,
+                        },
+
+                        indent = {
+                            type = "description",
+                            name = "",
+                            width = 1,
+                            order = 3.2
+                        },
+
                         override = {
                             type = "toggle",
                             name = "Bloodlust Override",
                             desc = "If checked, when Bloodlust (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked.",
-                            order = 3,
-                        },
+                            order = 4,
+                        }
                     }
                 },
 
@@ -7752,27 +8086,27 @@ function Hekili:GenerateProfile()
         if state.covenant[ v ] then covenant = v; break end
     end
 
-    local traits
-    for k, v in orderedPairs( s.azerite ) do
-        if v.rank > 0 then
-            if traits then traits = format( "%s\n    %s = %d", traits, k, v.rank )
-            else traits = format( "%s = %d", k, v.rank ) end
+    local conduits
+    for k,v in orderedPairs( s.conduit ) do
+        if v.enabled then
+            if conduits then conduits = format( "%s\n   %s = %d", conduits, k, v.rank )
+            else conduits = format( "%s = %d", k, v.rank ) end
         end
     end
 
-    local essences
-    local major, minors
-
-    for k, v in orderedPairs( s.essence ) do
-        if v.rank > 0 then
-            if v.major then major = format( "[%s] = %d", k, v.rank )
-            else
-                if minors then minors = format( "%s, %s = %d", minors, k, v.rank )
-                else minors = format( "%s = %d", k, v.rank ) end
-            end
-        end
+    local soulbinds
+    
+    local activeBind = C_Soulbinds.GetActiveSoulbindID()
+    if activeBind then
+        soulbinds = "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]"
     end
-    essences = format( "%s, %s", major or "[none]", minors or "none" )
+
+    for k,v in orderedPairs( s.soulbind ) do
+        if v.enabled then
+            if soulbinds then soulbinds = format( "%s\n   %s = %d", soulbinds, k, v.rank )
+            else soulbinds = format( "%s = %d", k, v.rank ) end
+        end
+    end    
 
     local sets
     for k, v in orderedPairs( class.gear ) do
@@ -7832,9 +8166,9 @@ function Hekili:GenerateProfile()
         "talents: %s\n\n" ..
         "pvptalents: %s\n\n" ..
         "covenant: %s\n\n" ..
-        "azerite: %s\n\n" ..
-        "essences: %s\n\n" ..
-        "sets/legendaries/artifacts: %s\n\n" ..
+        "conduits: %s\n\n" ..
+        "soulbinds: %s\n\n" ..
+        "sets: %s\n\n" ..
         "gear: %s\n\n" ..
         "legendaries: %s\n\n" ..
         "itemIDs: %s\n\n" ..
@@ -7847,8 +8181,8 @@ function Hekili:GenerateProfile()
         talents or "none",
         pvptalents or "none",
         covenant or "none",
-        traits or "none",
-        essences or "none",
+        conduits or "none",
+        soulbinds or "none",
         sets or "none",
         gear or "none",
         legendaries or "none",
@@ -7873,80 +8207,72 @@ function Hekili:GetOptions()
                 order = 10,
                 childGroups = "tab",
                 args = {
-                    topRow = {
-                        type = "group",
-                        inline = true,
-                        name = "",
-                        order = 1,
-                        width = "full",
-                        args = {
-                            enabled = {
-                                type = "toggle",
-                                name = "Enabled",
-                                desc = "Enables or disables the addon.",
-                                order = 1
-                            },
+                    enabled = {
+                        type = "toggle",
+                        name = "Enabled",
+                        desc = "Enables or disables the addon.",
+                        order = 1
+                    },
 
-                            minimapIcon = {
-                                type = "toggle",
-                                name = "Hide Minimap Icon",
-                                desc = "If checked, the minimap icon will be hidden.",
-                                order = 2,
-                            },
-                        },                      
+                    minimapIcon = {
+                        type = "toggle",
+                        name = "Hide Minimap Icon",
+                        desc = "If checked, the minimap icon will be hidden.",
+                        order = 2,
                     },
 
                     welcome = {
-                        type = "group",
+                        type = 'description',
                         name = "",
-                        inline = true,
+                        fontSize = "medium",
+                        image = "Interface\\Addons\\Hekili\\Textures\\Taco256",
+                        imageWidth = 192,
+                        imageHeight = 192,
                         order = 5,
-                        args = {
-                            desc = {
-                                type = 'description',
-                                name = function ()
-                                    local output = "\n|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n"
-
-                                    for i, name in ipairs( ns.Patrons ) do
-                                        if i == 1 then
-                                            output = output .. name
-                                        elseif i == #ns.Patrons then
-                                            output = output .. ", and " .. name .. "."
-                                        else
-                                            output = output .. ", " .. name
-                                        end
-                                    end
-
-                                    output = output .. "\n\nPlease see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n"
-                                    return output
-                                end,
-                                image = "Interface\\Addons\\Hekili\\Textures\\LOGO-ORANGE",
-                                imageWidth = 150,
-                                imageHeight = 150,
-                                fontSize = "medium",
-                                order = 2,
-                                width = "full"
-                            },
-
-                            curse = {
-                                type = 'input',
-                                name = "Twitch / Curse",
-                                order = 3,
-                                get = function () return "https://www.curseforge.com/wow/addons/hekili" end,
-                                set = function () end,
-                                width = "full",
-                            },
-
-                            github = {
-                                type = "input",
-                                name = "GitHub",
-                                order = 4,
-                                get = function () return "http://github.com/Hekili/hekili/" end,
-                                set = function () end,
-                                width = "full",
-                            },
-                        }
+                        width = "full"
                     },
+
+                    supporters = {
+                        type = "description",
+                        name = function ()
+                            return "|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n" .. ns.Patrons .. ".\n\n" ..
+                                "Please see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n\n"
+                        end,
+                        fontSize = "medium",
+                        order = 6,
+                        width = "full"
+                    },
+
+                    curse = {
+                        type = "input",
+                        name = "Curse",
+                        order = 10,
+                        get = function () return "https://www.curseforge.com/wow/addons/hekili" end,
+                        set = function () end,
+                        width = "full",
+                        dialogControl = "SFX-Info-URL",
+                    },
+
+                    github = {
+                        type = "input",
+                        name = "GitHub",
+                        order = 11,
+                        get = function () return "https://github.com/Hekili/hekili/" end,
+                        set = function () end,
+                        width = "full",
+                        width = "full",
+                        dialogControl = "SFX-Info-URL",
+                    },
+
+                    simulationcraft = {
+                        type = "input",
+                        name = "SimC",
+                        order = 12,
+                        get = function () return "https://github.com/simulationcraft/simc/wiki" end,
+                        set = function () end,
+                        width = "full",
+                        dialogControl = "SFX-Info-URL",
+                    }
                 }
             },
 
@@ -8024,6 +8350,7 @@ function Hekili:GetOptions()
                         width = "full",
                         get = function() return "http://github.com/Hekili/hekili/issues" end,
                         set = function() return end,
+                        dialogControl = "SFX-Info-URL"
                     },
                 }
             },
@@ -8156,7 +8483,7 @@ function Hekili:GetOptions()
 end
 
 
-function Hekili:TotalRefresh()
+function Hekili:TotalRefresh( noOptions )
 
     if Hekili.PLAYER_ENTERING_WORLD then
         self:SpecializationChanged()
@@ -8176,13 +8503,19 @@ function Hekili:TotalRefresh()
     ns.checkImports()
 
     -- self:LoadScripts()
-    self:RefreshOptions()
+    if not noOptions then self:RefreshOptions() end
     self:UpdateDisplayVisibility()
     self:BuildUI()
 
     self:OverrideBinds()
 
-    LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
+    -- LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
+    
+    if WeakAuras and WeakAuras.ScanEvents then
+        for name in pairs( Hekili.DB.profile.toggles ) do
+            WeakAuras.ScanEvents( "HEKILI_TOGGLE" )
+        end
+    end
 
 end
 
@@ -8627,41 +8960,269 @@ function Hekili:SetOption( info, input, ... )
 end
 
 
-function Hekili:CmdLine( input )
-    if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == 'import' or input:trim() == 'skeleton' then
-        --[[ if InCombatLockdown() and input:trim() ~= 'force' then
-            Hekili:Print( "This addon cannot be configured while in combat." )
+
+do
+    local validCommands = {
+        makedefaults = true,
+        import = true,
+        skeleton = true,
+        recover = true,
+        
+        profile = true,
+        set = true,
+        enable = true,
+        disable = true
+    }
+
+    local info = {}
+
+
+    function Hekili:CmdLine( input )
+        if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == "import" or input:trim() == "skeleton" then
+            if input:trim() == 'makedefaults' then
+                Hekili.MakeDefaults = true
+
+            elseif input:trim() == 'import' then
+                Hekili.AllowSimCImports = true
+
+            elseif input:trim() == 'skeleton' then
+                self:StartListeningForSkeleton()
+                self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
+                self:Print( "See the Skeleton tab for more information. ")
+                Hekili.Skeleton = ""
+            end
+            ns.StartConfiguration()
             return
-        end ]]
-        if input:trim() == 'makedefaults' then
-            Hekili.MakeDefaults = true
-        elseif input:trim() == 'import' then
-            Hekili.AllowSimCImports = true
-        elseif input:trim() == 'skeleton' then
-            self:StartListeningForSkeleton()
-            self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
-            self:Print( "See the Skeleton tab for more information. ")
-            Hekili.Skeleton = ""
+
+        elseif input:trim() == "center" then                
+            for i, v in ipairs( Hekili.DB.profile.displays ) do
+                ns.UI.Buttons[i][1]:ClearAllPoints()
+                ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
+            end
+            self:SaveCoordinates()
+            return
+
+        elseif input:trim() == "recover" then
+            self.DB.profile.displays = {}
+            self.DB.profile.actionLists = {}
+            self:RestoreDefaults()
+            -- ns.convertDisplays()
+            self:BuildUI()
+            self:Print("Default displays and action lists restored.")
+            return
+        
         end
-        ns.StartConfiguration()
 
-    elseif input:trim() == 'center' then                
-        for i, v in ipairs( Hekili.DB.profile.displays ) do
-            ns.UI.Buttons[i][1]:ClearAllPoints()
-            ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
+        if input then
+            input = input:trim()
+            local args = {}
+
+            for arg in string.gmatch( input, "%S+" ) do
+                insert( args, lower( arg ) )
+            end
+
+            if args[1] == "set" then
+                local spec = Hekili.DB.profile.specs[ state.spec.id ]
+                local prefs = spec.settings
+                local settings = class.specs[ state.spec.id ].settings
+
+                local index
+
+                if args[2] then
+                    if args[2] == "target_swap" then
+                        index = -1
+                    else
+                        for i, setting in ipairs( settings ) do
+                            if setting.name == args[2] then
+                                index = i
+                                break
+                            end
+                        end
+                    end
+                end
+
+                if #args == 1 or not index then
+                    -- No arguments, list options.
+                    local output = "Use |cFFFFD100/hekili set|r to adjust your specialization options via chat or macros.\n\nOptions for " .. state.spec.name .. " are:"
+
+                    local hasToggle, hasNumber = true, false
+                    local exToggle, exNumber
+
+                    for i, setting in ipairs( settings ) do
+                        if setting.info.type == "toggle" then
+                            output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
+                            exToggle = setting.name
+                        elseif setting.info.type == "range" then
+                            output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
+                            hasNumber = true
+                            exNumber = setting.name
+                        end
+                    end
+
+                    output = format( "%s\n - |cFFFFD100target_swap|r = |cFF00FF00%s|r (%s)", output, spec.cycle and "ON" or "OFF", "Recommend Target Swaps" )
+
+                    if not hasToggle and not hasNumber then
+                        output = output .. "cFFFFD100<none>|r"
+                    end
+
+                    if hasToggle then
+                        output = format( "%s\n\nTo set a |cFFFFD100toggle|r, use the following commands:\n" ..
+                            " - Switch On/Off:  |cFFFFD100/hek set %s|r\n" ..
+                            " - Set to On:  |cFFFFD100/hek set %s on|r\n" ..
+                            " - Set to Off:  |cFFFFD100/hek set %s off|r\n" ..
+                            " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exToggle, exToggle, exToggle, exToggle )
+                    end
+
+                    if hasNumber then
+                        output = format( "%s\n\nTo set a |cFFFFD100number|r value, use the following commands:\n" ..
+                            " - Set to #:  |cFFFFD100/hek set %s #|r\n" ..
+                            " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exNumber, exNumber )
+                    end
+
+                    Hekili:Print( output )
+                    return
+                end
+
+                -- Two or more arguments, we're setting (or querying).
+
+                if index == -1 then
+                    local to
+
+                    if args[3] then
+                        if args[3] == "on" then to = true
+                        elseif args[3] == "off" then to = false
+                        elseif args[3] == "default" then to = false
+                        else
+                            Hekili:Print( format( "'%s' is not a valid option for |cFFFFD100%s|r.", args[3] ) )
+                            return
+                        end
+                    else
+                        to = not spec.cycle
+                    end
+                    
+                    Hekili:Print( format( "Recommend Target Swaps set to %s.", ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
+
+                    spec.cycle = to
+
+                    Hekili:ForceUpdate( "CLI_TOGGLE" )
+                    return
+                end                    
+
+                local setting = settings[ index ]
+
+                if setting.info.type == "toggle" then
+                    local to
+
+                    if args[3] then
+                        if args[3] == "on" then to = true
+                        elseif args[3] == "off" then to = false
+                        elseif args[3] == "default" then to = setting.default
+                        else
+                            Hekili:Print( format( "'%s' is not a valid option for |cFFFFD100%s|r.", args[3] ) )
+                            return
+                        end
+                    else
+                        to = not prefs[ setting.name ]
+                    end
+                    
+                    Hekili:Print( format( "%s set to %s.", setting.info.name, ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
+
+                    info[ 1 ] = setting.name
+                    setting.info.set( info, to )
+
+                    Hekili:ForceUpdate( "CLI_TOGGLE" )
+                    return
+
+                elseif setting.info.type == "range" then
+                    local to
+
+                    if args[3] == "default" then
+                        to = setting.default
+                    else
+                        to = tonumber( args[3] )
+                    end
+
+                    if to and ( ( setting.info.min and to < setting.info.min ) or ( setting.info.max and to > setting.info.max ) ) then
+                        Hekili:Print( format( "The value for %s must be between %s and %s.", args[2], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ) ) )
+                        return
+                    end
+
+                    if not to then
+                        Hekili:Print( format( "You must provide a number value for %s (or default).", args[2] ) )
+                        return
+                    end
+
+                    Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", setting.info.name, to ) )
+                    prefs[ setting.name ] = to
+                    Hekili:ForceUpdate( "CLI_NUMBER" )
+                    return
+
+                end
+
+            
+            elseif args[1] == "profile" then
+                if not args[2] then
+                    local output = "Use |cFFFFD100/hekili profile name|r to swap profiles via command-line or macro.\nValid profile |cFFFFD100name|rs are:"
+
+                    for name, prof in ns.orderedPairs( Hekili.DB.profiles ) do
+                        output = format( "%s\n - |cFFFFD100%s|r %s", output, name, Hekili.DB.profile == prof and "|cFF00FF00(current)|r" or "" )
+                    end
+
+                    output = format( "%s\nTo create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r.", output )
+
+                    Hekili:Print( output )
+                    return
+                end
+
+                local profileName = input:match( "%s+(.+)$" )
+
+                if not rawget( Hekili.DB.profiles, profileName ) then
+                    local output = format( "'%s' is not a valid profile name.\nValid profile |cFFFFD100name|rs are:", profileName )
+
+                    local count = 0
+
+                    for name, prof in ns.orderedPairs( Hekili.DB.profiles ) do
+                        count = count + 1
+                        output = format( "%s\n - |cFFFFD100%s|r %s", output, name, Hekili.DB.profile == prof and "|cFF00FF00(current)|r" or "" )
+                    end
+
+                    output = format( "%s\nTo create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r.", output )
+
+                    Hekili:Print( output )
+                    return
+                end
+
+                Hekili:Print( format( "Set profile to |cFF00FF00%s|r.", profileName ) )
+                self.DB:SetProfile( profileName )
+                return
+
+            elseif args[1] == "enable" or args[1] == "disable" then
+                local enable = args[1] == "enable"
+
+                for i, buttons in ipairs( ns.UI.Buttons ) do
+                    for j, _ in ipairs( buttons ) do
+                        if not enable then
+                            buttons[j]:Hide()
+                        else
+                            buttons[j]:Show()
+                        end
+                    end
+                end
+
+                self.DB.profile.enabled = enable
+    
+                if enable then
+                    Hekili:Print( "Addon |cFFFFD100ENABLED|r." )
+                    self:Enable()
+                else
+                    Hekili:Print( "Addon |cFFFFD100DISABLED|r." )
+                    self:Disable()
+                end
+
+            else
+                LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
+            end
         end
-        self:SaveCoordinates()
-
-    elseif input:trim() == 'recover' then
-        self.DB.profile.displays = {}
-        self.DB.profile.actionLists = {}
-        self:RestoreDefaults()
-        -- ns.convertDisplays()
-        self:BuildUI()
-        self:Print("Default displays and action lists restored.")
-
-    else
-        LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
     end
 end
 
@@ -9077,6 +9638,11 @@ local function Sanitize( segment, i, line, warnings )
 
     local times = 0
 
+    i, times = i:gsub( "==", "=" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Corrected equality check from '==' to '=' (" .. times .. "x)." )
+    end
+
     i, times = i:gsub( "([^%%])[ ]*%%[ ]*([^%%])", "%1 / %2" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted SimC syntax % to Lua division operator (/) (" .. times .. "x)." )
@@ -9090,6 +9656,66 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "covenant%.([%w_]+)%.enabled", "covenant.%1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'covenant.X.enabled' to 'covenant.X' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "talent%.([%w_]+)([%+%-%*%%/&|= ()<>])", "talent.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'talent.X' to 'talent.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "talent%.([%w_]+)$", "talent.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'talent.X' to 'talent.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "legendary%.([%w_]+)([%+%-%*%%/&|= ()<>])", "legendary.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'legendary.X' to 'legendary.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "legendary%.([%w_]+)$", "legendary.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'legendary.X' to 'legendary.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "([^%.])runeforge%.([%w_]+)([%+%-%*%%/=&| ()<>])", "%1runeforge.%2.enabled%3" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "([^%.])runeforge%.([%w_]+)$", "%1runeforge.%2.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "^runeforge%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "runeforge.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "^runeforge%.([%w_]+)$", "runeforge.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "conduit%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "conduit.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'conduit.X' to 'conduit.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "conduit%.([%w_]+)$", "conduit.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'conduit.X' to 'conduit.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "soulbind%.([%w_]+)([%+%-%*%%/&|= ()<>)])", "soulbind.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'soulbind.X' to 'soulbind.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "soulbind%.([%w_]+)$", "soulbind.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'soulbind.X' to 'soulbind.X.enabled' at EOL (" .. times .. "x)." )
     end
 
     i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
@@ -9410,6 +10036,10 @@ do
                             value = SpaceOut( value )
                         end
 
+                        if key == 'description' then
+                            value = value:gsub( ";", "," )
+                        end
+
                         result[ key ] = value
                     end
                 end
@@ -9424,6 +10054,7 @@ do
 
             if result.for_next then result.for_next = tonumber( result.for_next ) end
             if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
+            if result.max_energy then result.max_energy = tonumber( result.max_energy ) end
 
             if result.use_off_gcd then result.use_off_gcd = tonumber( result.use_off_gcd ) end
             if result.use_while_casting then result.use_while_casting = tonumber( result.use_while_casting ) end
@@ -9480,14 +10111,17 @@ function Hekili:TogglePause( ... )
         end
 
         self.Pause = true
-        self:SaveDebugSnapshot()
-        self:Print( "Snapshot saved." )
-        self.ActiveDebug = false
-
-        if not warnOnce then
-            Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
-            warnOnce = true
+        
+        if self:SaveDebugSnapshot() then
+            if not warnOnce then
+                self:Print( "Snapshot saved; snapshots are viewable via /hekili (until you reload your UI)." )
+                warnOnce = true
+            else
+                self:Print( "Snapshot saved." )
+            end
         end
+        
+        self.ActiveDebug = false
     else
         self.Pause = false
     end
@@ -9496,7 +10130,9 @@ function Hekili:TogglePause( ... )
 
     for _, group in pairs( ns.UI.Buttons ) do
         for _, button in pairs( group ) do
-            button:EnableMouse( MouseInteract )
+            if button:IsShown() then
+                button:EnableMouse( MouseInteract )
+            end
         end
     end
 

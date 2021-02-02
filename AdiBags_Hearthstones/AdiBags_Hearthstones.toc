@@ -1,4 +1,4 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: AdiBags - Hearthstones
 ## Notes: Adds various hearthing items to AdiBags virtual groups
 ## Notes-ruRU: Добавляют разные возвращающие предметы в виртуальные группы аддона.
@@ -12,12 +12,14 @@
 ## Notes-itIT: Aggiungi oggetti di teletrasporto ai gruppi virtuali di AdiBags
 ## Notes-frFR: Ajoute différents objets de type Pierre de foyer aux groupes virtuels d'AdiBags
 
-## Version: 9.0-release1
+## Version: 9.0-release2
 ## Author: Sygon of Lightbringer-US (Crimson Embers, Alliance)
-## X-Date: 2020-10-18T15:06:13Z
-## X-License: © 2016 - 2020 Paul "Myrroddin" Vandersypen, All Rights Reserved
+## X-Date: 2021-02-01T04:08:13Z
+## X-License: © 2016 - 2021 Paul "Myrroddin" Vandersypen, All Rights Reserved
 ## X-Category: Bags & Inventory
 ## Dependencies: AdiBags
+## X-Curse-Project-ID: 102083
+## X-WoWI-ID: 24173
 
 Localization.lua
 AdiBags_Hearthstones.lua

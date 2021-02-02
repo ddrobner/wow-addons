@@ -8,8 +8,8 @@ local perc1F = "%.1f"..PERCENT_SYMBOL
 
 XPerl_RequestConfig(function(New)
 	conf = New
-end, "$Revision: 1262 $")
-XPerl_SetModuleRevision("$Revision: 1262 $")
+end, "$Revision: 47918bb57417b34ae32de6069ae26a9958ae532a $")
+XPerl_SetModuleRevision("$Revision: 47918bb57417b34ae32de6069ae26a9958ae532a $")
 
 local IsClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 local LCD = IsClassic and LibStub and LibStub("LibClassicDurations", true)

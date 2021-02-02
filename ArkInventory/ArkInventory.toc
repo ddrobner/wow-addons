@@ -4,7 +4,7 @@
 ## Title-zhCN: [背包]ArkInventory 整合背包银行
 ## Author: Arkayenro - Khaz'goroth
 ## Email: arkayenro at gmail dot com
-## Version: 30945
+## Version: 30946
 ## X-ReleaseType: 
 ## SavedVariables: ARKINVDB
 
@@ -25,9 +25,6 @@
 ## X-Curse-Project-ID: 3651
 ## X-WoWI-ID: 6488
 
-
-Libs\LibStub\lib.xml
-Libs\CallBackHandler\lib.xml
 
 #@no-lib-strip@
 ArkInventoryExternals.xml

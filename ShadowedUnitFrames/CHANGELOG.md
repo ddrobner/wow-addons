@@ -1,11 +1,7 @@
 # Shadowed Unit Frames
 
-## [v4.3.3](https://github.com/Nevcairiel/ShadowedUnitFrames/tree/v4.3.3) (2020-11-19)
-[Full Changelog](https://github.com/Nevcairiel/ShadowedUnitFrames/compare/v4.3.2...v4.3.3) [Previous Releases](https://github.com/Nevcairiel/ShadowedUnitFrames/releases)
+## [v4.3.4](https://github.com/Nevcairiel/ShadowedUnitFrames/tree/v4.3.4) (2020-11-25)
+[Full Changelog](https://github.com/Nevcairiel/ShadowedUnitFrames/compare/v4.3.3...v4.3.4) [Previous Releases](https://github.com/Nevcairiel/ShadowedUnitFrames/releases)
 
-- Migrate UNIT\_HEALTH\_FREQUENT  
-- Remove pre-9.0 condition  
-- Update totem module level limits  
-- Update TOC for 9.0.2  
-- Fix luacheck  
-- Add Warlock Imp Dispel to curable  
+- Run a full update on UNIT\_TARGETABLE\_CHANGE for players  
+    This fixes eg. jumping down into the maw showing as "Offline"  

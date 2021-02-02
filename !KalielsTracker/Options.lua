@@ -1,5 +1,5 @@
 --- Kaliel's Tracker
---- Copyright (c) 2012-2020, Marouan Sabbagh <mar.sabbagh@gmail.com>
+--- Copyright (c) 2012-2021, Marouan Sabbagh <mar.sabbagh@gmail.com>
 --- All Rights Reserved.
 ---
 --- This file is part of addon Kaliel's Tracker.
@@ -25,7 +25,7 @@ local strsub = string.sub
 local db, dbChar
 local mediaPath = "Interface\\AddOns\\"..addonName.."\\Media\\"
 local anchors = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }
-local strata = { "LOW", "MEDIUM", "HIGH" }
+local strata = { "BACKGROUND", "LOW", "MEDIUM", "HIGH" }
 local flags = { [""] = "None", ["OUTLINE"] = "Outline", ["OUTLINE, MONOCHROME"] = "Outline Monochrome" }
 local textures = { "None", "Default (Blizzard)", "One line", "Two lines" }
 local modifiers = { [""] = "None", ["ALT"] = "Alt", ["CTRL"] = "Ctrl", ["ALT-CTRL"] = "Alt + Ctrl" }
@@ -98,8 +98,9 @@ local defaults = {
 		tooltipShowID = true,
         menuWowheadURL = true,
         menuWowheadURLModifier = "ALT",
-        questDefaultActionMap = false,
+        questDefaultActionMap = true,
 		questShowTags = true,
+		questShowZones = true,
 
 		messageQuest = true,
 		messageAchievement = true,
@@ -107,11 +108,6 @@ local defaults = {
 		sink20Sticky = false,
 		soundQuest = true,
 		soundQuestComplete = "KT - Default",
-
-		sIcecrownRares = true,
-		sIcecrownRaresRealmZone = "EU",
-		sIcecrownRaresTimerCorrection = 0,
-		sIcecrownRaresOnlyInZone = false,
 
 		modulesOrder = KT.BLIZZARD_MODULES,
 
@@ -123,7 +119,8 @@ local defaults = {
 		collapsed = false,
 		quests = {
 			num = 0,
-			favorites = {}
+			favorites = {},
+			cache = {}
 		},
 		achievements = {
 			favorites = {}
@@ -1108,14 +1105,54 @@ local options = {
                         },
 						questShowTags = {
 							name = "Show Quest tags",
-							desc = "Show / Hide Quest tags (quest level, quest type) inside the tracker and Quest Log.",
+							desc = "Show / Hide Quest tags (quest level, quest type) inside the tracker.",
 							type = "toggle",
 							set = function()
 								db.questShowTags = not db.questShowTags
 								ObjectiveTracker_Update()
-								QuestMapFrame_UpdateAll()
 							end,
 							order = 6.42,
+						},
+						questShowZones = {
+							name = "Show Quest Zones",
+							desc = "Show / Hide Quest Zones inside the tracker.",
+							type = "toggle",
+							set = function()
+								db.questShowZones = not db.questShowZones
+								ObjectiveTracker_Update()
+							end,
+							order = 6.43,
+						},
+						questAutoTrack = {
+							name = "Auto Quest tracking",
+							desc = "Quests are automatically watched when accepted. Uses Blizzard's value \"autoQuestWatch\".\n"..warning,
+							type = "toggle",
+							confirm = true,
+							confirmText = warning,
+							get = function()
+								return GetCVarBool("autoQuestWatch")
+							end,
+							set = function(_, value)
+								SetCVar("autoQuestWatch", value)
+								ReloadUI()
+							end,
+							order = 6.44,
+						},
+						questProgressAutoTrack = {
+							name = "Auto Quest progress tracking",
+							desc = "Quests are automatically watched when progress updated. Uses Blizzard's value \"autoQuestProgress\".\n"..warning,
+							type = "toggle",
+							width = "normal+half",
+							confirm = true,
+							confirmText = warning,
+							get = function()
+								return GetCVarBool("autoQuestProgress")
+							end,
+							set = function(_, value)
+								SetCVar("autoQuestProgress", value)
+								ReloadUI()
+							end,
+							order = 6.45,
 						},
 					},
 				},
@@ -1173,124 +1210,6 @@ local options = {
 								db.soundQuestComplete = value
 							end,
 							order = 8.11,
-						},
-					},
-				},
-				sec9 = {
-					name = "Special",
-					type = "group",
-					inline = true,
-					order = 0.5,
-					args = {
-						sIcecrownRaresImg = {
-							name = "",
-							type = "description",
-							width = 0.3,
-							image = "Interface\\Scenarios\\LegionInvasion",
-							imageCoords = { 0.61328125, 0.728515625, 0.28125, 0.40234375 },
-							imageWidth = 39,
-							imageHeight = 42,
-							order = 9.11,
-						},
-						sIcecrownRares = {
-							name = "Icecrown Rare Monitor "..beta,
-							desc = "Shows Shadowlands Pre-Patch Rares, which are spawns. "..cWarning.."This feature has not been tested much!|r",
-							descStyle = "inline",
-							type = "toggle",
-							width = 2.1,
-							confirm = true,
-							confirmText = warning,
-							set = function()
-								db.sIcecrownRares = not db.sIcecrownRares
-								if db.sIcecrownRares then
-									db.collapsed = false
-								end
-								db.modulesOrder = nil
-								ReloadUI()
-							end,
-							order = 9.12,
-						},
-						sIcecrownRaresSpacer2 = {
-							name = " ",
-							type = "description",
-							width = 0.6,
-							order = 9.13,
-						},
-						sIcecrownRaresSpacer1 = {
-							name = " ",
-							type = "description",
-							width = 0.3,
-							order = 9.21,
-						},
-						sIcecrownRaresRealmZone = {
-							name = "Realm Zone",
-							desc = "Select the Realm Zone where you are connecting for the correct Rares order.",
-							type = "select",
-							width = 0.8,
-							values = realmZones,
-							disabled = function()
-								return not db.sIcecrownRares
-							end,
-							get = function()
-								for k, v in pairs(realmZones) do
-									if db.sIcecrownRaresRealmZone == k then
-										return k
-									end
-								end
-							end,
-							set = function(_, value)
-								db.sIcecrownRaresRealmZone = value
-								KT.IcecrownRares:SetUserUtcOffset()
-								ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_ICECROWN_RARES)
-							end,
-							order = 9.22,
-						},
-						sIcecrownRaresTimerCorrection = {
-							name = "Timer Correction",
-							desc = "Rare timer correction in seconds. Positive and negative numbers are allowed.\n"..cWarning.."Use it when Rare spawns sooner or later than the timer shows.",
-							type = "input",
-							width = 0.8,
-							disabled = function()
-								return not db.sIcecrownRares
-							end,
-							get = function(info)
-								return tostring(db[info[#info]] or 0)
-							end,
-							set = function(_, value)
-								db.sIcecrownRaresTimerCorrection = tonumber(value) or 0
-								ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_ICECROWN_RARES)
-							end,
-							order = 9.23,
-						},
-						sIcecrownRaresOnlyInZone = {
-							name = "Show only in Icecrown",
-							descStyle = "inline",
-							type = "toggle",
-							width = 1.1,
-							disabled = function()
-								return not db.sIcecrownRares
-							end,
-							set = function()
-								db.sIcecrownRaresOnlyInZone = not db.sIcecrownRaresOnlyInZone
-								KT.IcecrownRares:SetUsed()
-								ObjectiveTracker_Update(OBJECTIVE_TRACKER_UPDATE_MODULE_ICECROWN_RARES)
-							end,
-							order = 9.24,
-						},
-						sIcecrownRaresSpacer3 = {
-							name = " ",
-							type = "description",
-							width = 0.3,
-							order = 9.31,
-						},
-						sIcecrownRaresDesc = {
-							name = "  Available actions:\n"..
-									"  - "..cBold.."Left Click|r - add waypoint (Blizzard or TomTom)\n"..
-									"  - "..cBold.."Right Click|r - remove waypoint (Blizzard or TomTom)\n"..
-									"  - "..cBold.."Shift + Left Click|r - send Rare info to General chat channel",
-							type = "description",
-							width = "double",
-							order = 9.32,
 						},
 					},
 				},
@@ -1505,6 +1424,43 @@ function KT:SetupOptions()
 	options.args.profiles.args.new.confirmText = warning
 	options.args.profiles.args.choose.confirmText = warning
 	options.args.profiles.args.copyfrom.confirmText = warning
+	if not options.args.profiles.plugins then
+		options.args.profiles.plugins = {}
+	end
+	options.args.profiles.plugins[addonName] = {
+		clearTrackerDataDesc1 = {
+			name = "Clear the data (no settings) of the tracked content (Quests, Achievements etc.) for current character.",
+			type = "description",
+			order = 0.1,
+		},
+		clearTrackerData = {
+			name = "Clear Tracker Data",
+			desc = "Clear the data of the tracked content.",
+			type = "execute",
+			confirmText = "Clear Tracker Data - "..cBold..self.playerName,
+			func = function()
+				dbChar.quests.cache = {}
+				for i = 1, #db.filterAuto do
+					db.filterAuto[i] = nil
+				end
+				self:SetBackground()
+				KT.QuestsCache_Init()
+				ObjectiveTracker_Update()
+			end,
+			order = 0.2,
+		},
+		clearTrackerDataDesc2 = {
+			name = "Current Character: "..cBold..self.playerName,
+			type = "description",
+			width = "double",
+			order = 0.3,
+		},
+		clearTrackerDataDesc4 = {
+			name = "",
+			type = "description",
+			order = 0.4,
+		}
+	}
 
 	ACR:RegisterOptionsTable(addonName, options, nil)
 	
@@ -1561,6 +1517,7 @@ function GetModulesOptionsTable()
 	local numModules = #db.modulesOrder
 	local text
 	local defaultModule, defaultText
+	local numSkipped = 0
 	local args = {
 		descCurOrder = {
 			name = cTitle.."Current Order",
@@ -1584,54 +1541,58 @@ function GetModulesOptionsTable()
 	}
 
 	for i, module in ipairs(db.modulesOrder) do
-		text = _G[module].Header.Text:GetText()
-		if module == "SCENARIO_CONTENT_TRACKER_MODULE" then
-			text = text.." *"
-		elseif module == "UI_WIDGET_TRACKER_MODULE" then
-			text = "[ "..ZONE.." ]"
-		end
+		if _G[module].Header then
+			text = _G[module].Header.Text:GetText()
+			if module == "SCENARIO_CONTENT_TRACKER_MODULE" then
+				text = text.." *"
+			elseif module == "UI_WIDGET_TRACKER_MODULE" then
+				text = "[ "..ZONE.." ]"
+			end
 
-		defaultModule = OTF.MODULES_UI_ORDER[i]
-		defaultText = defaultModule.Header.Text:GetText()
-		if defaultModule == SCENARIO_CONTENT_TRACKER_MODULE then
-			defaultText = defaultText.." *"
-		elseif defaultModule == UI_WIDGET_TRACKER_MODULE then
-			defaultText = "[ "..ZONE.." ]"
-		end
+			defaultModule = numSkipped == 0 and OTF.MODULES_UI_ORDER[i] or OTF.MODULES_UI_ORDER[i - numSkipped]
+			defaultText = defaultModule.Header.Text:GetText()
+			if defaultModule == SCENARIO_CONTENT_TRACKER_MODULE then
+				defaultText = defaultText.." *"
+			elseif defaultModule == UI_WIDGET_TRACKER_MODULE then
+				defaultText = "[ "..ZONE.." ]"
+			end
 
-		args["pos"..i] = {
-			name = " "..text,
-			type = "description",
-			width = "normal",
-			fontSize = "medium",
-			order = i,
-		}
-		args["pos"..i.."up"] = {
-			name = (i > 1) and "Up" or " ",
-			desc = text,
-			type = (i > 1) and "execute" or "description",
-			width = "half",
-			func = function()
-				MoveModule(i, "up")
-			end,
-			order = i + 0.1,
-		}
-		args["pos"..i.."down"] = {
-			name = (i < numModules) and "Down" or " ",
-			desc = text,
-			type = (i < numModules) and "execute" or "description",
-			width = "half",
-			func = function()
-				MoveModule(i)
-			end,
-			order = i + 0.2,
-		}
-		args["pos"..i.."default"] = {
-			name = "|T:1:55|t|cff808080"..defaultText,
-			type = "description",
-			width = "normal",
-			order = i + 0.3,
-		}
+			args["pos"..i] = {
+				name = " "..text,
+				type = "description",
+				width = "normal",
+				fontSize = "medium",
+				order = i,
+			}
+			args["pos"..i.."up"] = {
+				name = (i > 1) and "Up" or " ",
+				desc = text,
+				type = (i > 1) and "execute" or "description",
+				width = "half",
+				func = function()
+					MoveModule(i, "up")
+				end,
+				order = i + 0.1,
+			}
+			args["pos"..i.."down"] = {
+				name = (i < numModules) and "Down" or " ",
+				desc = text,
+				type = (i < numModules) and "execute" or "description",
+				width = "half",
+				func = function()
+					MoveModule(i)
+				end,
+				order = i + 0.2,
+			}
+			args["pos"..i.."default"] = {
+				name = "|T:1:55|t|cff808080"..defaultText,
+				type = "description",
+				width = "normal",
+				order = i + 0.3,
+			}
+		else
+			numSkipped = numSkipped + 1
+		end
 	end
 	return args
 end

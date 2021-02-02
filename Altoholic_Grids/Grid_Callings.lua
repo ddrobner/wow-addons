@@ -35,7 +35,8 @@ local function BuildView()
 	-- parse the calling quests, but only the ones that have NOT been completed
     for realm in pairs(DataStore:GetRealms(account)) do
     	for _, character in pairs(DataStore:GetCharacters(realm, account)) do	-- all alts on this account
-    		for questID, timeLeft in pairs(DataStore:GetCallingQuests(character)) do
+    		for questID, calling in pairs(DataStore:GetCallingQuests(character)) do
+                local timeLeft = calling.timeRemaining
       
       			local isOnQuest, questLogIndex = DataStore:IsCharacterOnQuest(character, questID)
                 local isCompleted = DataStore:IsQuestCompletedBy(character, questID)

@@ -1,0 +1,11 @@
+## Interface: 90002
+## Title: WIM - ElvUI Skin
+## Version: 90002.01-Retail
+## Author: fuba
+## Original Author: Divico / Alleria EU
+## Notes: A simple skin matching the Design of Elvui
+## Dependencies: WIM
+
+# Core files
+skin.xml
+skin.lua

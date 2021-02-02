@@ -560,7 +560,7 @@ if not L then return end
 	L["CONFIG_JUNK_SELL_NOTIFY_LIMIT"] = "Aborting auto sell due to buyback limit (%s) being reached."
 	L["CONFIG_JUNK_LIMIT"] = "Limit to Buyback"
 	L["CONFIG_JUNK_LIMIT_DESC"] = "As a safety precaution stop selling your junk when the buyback limit (%i) is reached"
-	L["CONFIG_JUNK_DELETE_DESC"] = "Delete items that cannot be vendored (have no sell price)"
+	L["CONFIG_JUNK_DELETE_DESC"] = "Delete items that cannot be vendored (have no sell price)\n\nnote - this function currently does not work as blizzard have protected the DeleteCursorItem function"
 	L["CONFIG_JUNK_NOTIFY_DESC"] = "Display a notification about how much gold you sold your items for"
 	L["CONFIG_JUNK_QUALITY_CUTOFF_DESC"] = "Only sell/destroy an item if its quality is at or below: %s%s|r"
 	L["CONFIG_JUNK_CATEGORY_DESC"] = "Auto sells/destroys all items assigned to %s when you talk to a vendor"

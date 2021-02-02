@@ -148,7 +148,7 @@ local function UpdateSpread()
     				end
     			end
                 
-                for j=colMax, 40 do
+                for j=(colMax+1), 40 do
                     itemButton = rowFrame["Item"..j]
                     itemButton:Hide()
                 end

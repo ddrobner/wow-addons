@@ -48,8 +48,8 @@ Armory.Constants.CanTransmogrify = {
 Armory.Constants.EnchantableSlots = {
 	['Finger0Slot'] = true, ['Finger1Slot'] = true, ['MainHandSlot'] = true, ['SecondaryHandSlot'] = true,
 	--Uncomment this when shadowlands actually launches
-	-- ['ChestSlot'] = true, ['BackSlot'] = true,
-	-- ['FeetSlot'] = 2, ['WristSlot'] = 4, ['HandsSlot'] = 1,
+	['ChestSlot'] = true, ['BackSlot'] = true,
+	['FeetSlot'] = 2, ['WristSlot'] = 4, ['HandsSlot'] = 1,
 }
 Armory.Constants.SpecPrimaryStats = {
 	[250] = 1, --DK Blood
@@ -322,9 +322,9 @@ end
 function Armory:ProcessEnchant(which, Slot, enchantTextShort, enchantText)
 	if not E.db.sle.armory.enchantString.enable then return end
 	if E.db.sle.armory.enchantString.replacement then
-		for enchString, enchData in pairs(SLE_ArmoryDB.EnchantString) do
-			if enchData.original and enchData.new then
-				enchantText = gsub(enchantText, enchData.original, enchData.new)
+		for _, enchData in pairs(SLE_ArmoryDB.EnchantString) do
+			if enchData.original == enchantText then
+				enchantText = enchData.new
 			end
 		end
 	end

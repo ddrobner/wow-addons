@@ -1,0 +1,274 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Reservoir.lua"></Script>
+    
+	<Frame name="AltoCovenantSanctumUpgradeTreeTemplate" virtual="true">
+		<Size x="72" y="72"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="SelectedTexture" atlas="CovenantSanctum-Icon-Select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Icon-Hover" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TierBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="UpgradeArrow" atlas="covenantsanctum-upgrade-icon-available" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" y="3"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Tier" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TierBorder"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Glow" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+				</Anchors>
+				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="orderhalltalents-timer-bg" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Cooldown>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="GlowAnim" setToFinalAlpha="true">
+				<Alpha childKey="Glow" startDelay="0.3" fromAlpha="1" toAlpha="0" duration="1.3"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsReservoirUpgradeTree")
+            </OnLoad>
+			<OnMouseDown>
+                self:OnMouseDown()
+            </OnMouseDown>
+			<OnEnter>
+                self:OnEnter()
+            </OnEnter>
+			<OnLeave>
+                self:OnLeave()
+            </OnLeave>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AltoCovenantSanctumUpgradeTalentTemplate" virtual="true">
+		<Size x="257" y="56"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="CovenantSanctum-Upgrade-Background">
+					<Size x="257" y="56"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="SystemFont_Shadow_Med2" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="2" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="58" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InfoText" inherits="GameFontHighlight" maxLines="1" justifyH="LEFT">
+					<Size x="190" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="58" y="14"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="IconBorder">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="TierBorder" atlas="CovenantSanctum-Icon-RankBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<FontString parentKey="Tier" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TierBorder"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" setAllPoints="true" atlas="CovenantSanctum-Upgrade-Hover" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" reverse="true" hideCountdownNumbers="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+				</Anchors>
+				<SwipeTexture file="Interface\Garrison\orderhalltalents-timer-fill"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="orderhalltalents-timer-bg" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsReservoirUpgradeTalent")
+            </OnLoad>
+			<OnEnter>
+                self:OnEnter()
+            </OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+    <Frame parentKey="ReservoirPanel" parent="AltoholicTabShadowlands" hidden="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="180" y="-120"/>
+            <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Color r="1" g="1" b="0" a="0"/>
+				</Texture>
+			</Layer>
+            <Layer level="ARTWORK">
+				<Texture parentKey="CurrencyBackground" atlas="CovenantSanctum-Currency-Shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="200" y="56"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TravelUpgrade" parentArray="Upgrades" inherits="AltoCovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="20" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="DiversionUpgrade" parentArray="Upgrades" inherits="AltoCovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.TravelUpgrade" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AdventureUpgrade" parentArray="Upgrades" inherits="AltoCovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.DiversionUpgrade" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="UniqueUpgrade" parentArray="Upgrades" inherits="AltoCovenantSanctumUpgradeTreeTemplate" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.AdventureUpgrade" x="10" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="CurrencyDisplayGroup" inherits="CurrencyDisplayGroupTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="200" y="56"/>
+				</Anchors>
+			</Frame>
+            <Frame parentKey="TalentsList">
+				<Size x="296" y="585"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.UniqueUpgrade" x="10" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="QuestFont_Super_Huge" justifyH="LEFT" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.TravelUpgrade" x="19" y="-85"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Tier" inherits="SystemFont_Shadow_Large">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+                        Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsReservoirTalentsList")
+                    </OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsReservoirPanel")
+            </OnLoad>
+            <OnShow>
+                self:OnShow()
+            </OnShow>
+			<OnHide>
+                self:OnHide()
+            </OnHide>
+		</Scripts>
+	</Frame>    
+</Ui>

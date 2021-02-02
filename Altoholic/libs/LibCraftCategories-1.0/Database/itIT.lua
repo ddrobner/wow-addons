@@ -1134,4 +1134,5 @@ LibStub("LibCraftCategories-1.0").itIT = {
   [1133]={["Name_lang"]="Accessori di stile: altro",["HordeName_lang"]="",["ID"]=1533,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=9,["Flags"]=0},
   [1134]={["Name_lang"]="Accessori di stile: spalle",["HordeName_lang"]="",["ID"]=1534,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=7,["Flags"]=0},
   [1135]={["Name_lang"]="Accessori di stile: schiena",["HordeName_lang"]="",["ID"]=1535,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=8,["Flags"]=0},
+  [1136]={["Name_lang"]="Sacche",["HordeName_lang"]="",["ID"]=1538,["ParentTradeSkillCategoryID"]=1395,["SkillLineID"]=197,["OrderIndex"]=20,["Flags"]=0},
 }

@@ -1,7 +1,0 @@
-changeset:   193:cb7eb9b9cc24
-tag:         v94
-user:        yellowfive
-date:        Wed Nov 11 23:58:22 2020 -0800
-summary:     Tweak to soulbind exporting.
-
-

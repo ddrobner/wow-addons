@@ -1,4 +1,4 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 local Armory = SLE:GetModule('Armory_Core')
 local IA = SLE:GetModule('Armory_Inspect')
 local M = E:GetModule('Misc')

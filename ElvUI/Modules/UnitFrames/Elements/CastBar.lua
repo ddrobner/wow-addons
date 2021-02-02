@@ -47,6 +47,7 @@ function UF:Construct_Castbar(frame, moverName)
 	castbar.Time:Point('RIGHT', castbar, 'RIGHT', -4, 0)
 	castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 	castbar.Time:SetJustifyH('RIGHT')
+	castbar.Time:FontTemplate()
 
 	castbar.Text = castbar:CreateFontString(nil, 'OVERLAY')
 	castbar.Text:Point('LEFT', castbar, 'LEFT', 4, 0)
@@ -54,6 +55,7 @@ function UF:Construct_Castbar(frame, moverName)
 	castbar.Text:SetTextColor(0.84, 0.75, 0.65)
 	castbar.Text:SetJustifyH('LEFT')
 	castbar.Text:SetWordWrap(false)
+	castbar.Text:FontTemplate()
 
 	castbar.Spark_ = castbar:CreateTexture(nil, 'OVERLAY')
 	castbar.Spark_:SetTexture([[Interface\CastingBar\UI-CastingBar-Spark]])
@@ -151,8 +153,8 @@ function UF:Configure_Castbar(frame)
 	castbar.Text:Point('LEFT', castbar, 'LEFT', db.xOffsetText, db.yOffsetText)
 	castbar.Time:Point('RIGHT', castbar, 'RIGHT', db.xOffsetTime, db.yOffsetTime)
 
-	castbar.Text:Width(castbar.Text:GetStringWidth())
-	castbar.Time:Width(castbar.Time:GetStringWidth())
+	castbar.Text:SetWidth(castbar.Text:GetStringWidth())
+	castbar.Time:SetWidth(castbar.Time:GetStringWidth())
 
 	--Icon
 	if db.icon then
@@ -305,7 +307,7 @@ function UF:CustomCastDelayText(duration)
 		end
 	end
 
-	self.Time:Width(self.Time:GetStringWidth())
+	self.Time:SetWidth(self.Time:GetStringWidth())
 end
 
 function UF:CustomTimeText(duration)
@@ -335,7 +337,7 @@ function UF:CustomTimeText(duration)
 		end
 	end
 
-	self.Time:Width(self.Time:GetStringWidth())
+	self.Time:SetWidth(self.Time:GetStringWidth())
 end
 
 function UF:HideTicks()
@@ -456,7 +458,7 @@ function UF:PostCastStart(unit)
 		elseif ticksSize then
 			local curHaste = UnitSpellHaste('player') * 0.01
 			local baseTickSize = ticksSize
-			local hastedTickSize = baseTickSize / (1 +  curHaste)
+			local hastedTickSize = baseTickSize / (1 + curHaste)
 			local extraTick = self.max - hastedTickSize * (baseTicks)
 			local extraTickRatio = extraTick / hastedTickSize
 

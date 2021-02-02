@@ -24,7 +24,7 @@ local FeignEvent = ns.FeignEvent
 
 local insert, remove, wipe = table.insert, table.remove, table.wipe
 
-local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5" }
+local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5", "arena1", "arena2", "arena3", "arena4", "arena5" }
 
 local npGUIDs = {}
 local npUnits = {}
@@ -150,7 +150,8 @@ local enemyExclusions = {
     ["160966"] = true,      -- Thing from Beyond?
     ["161895"] = true,      -- Thing from Beyond?
     ["157452"] = true,      -- Nightmare Antigen in Carapace
-    ["158041"] = 310126,    -- N'Zoth with Psychic Shell
+    ["158041"] = 310126,    -- N'Zoth with Psychic Shell,
+    ["164698"] = true,      -- Tor'ghast Junk
 }
 
 local f = CreateFrame("Frame")
@@ -272,14 +273,14 @@ do
             local checkPlates = showNPs and spec.nameplates
             
             if checkPets or checkPlates then
-                for unit, guid in pairs(npGUIDs) do
+                for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local npcid = guid:match( "(%d+)-%x-$" )
                         local excluded = enemyExclusions[ npcid ]
 
                         if excluded and type( excluded ) == "number" then
                             -- If our table has a number, unit is ruled out only if the buff is present.
-                            excluded = not FindUnitBuffByID( unit, excluded )
+                            excluded = FindUnitBuffByID( unit, excluded )
                         end
 
                         if not excluded and checkPets then
@@ -308,7 +309,7 @@ do
                     counted[ guid ] = counted[ guid ] or false
                 end                
 
-                for _, unit in ipairs(unitIDs) do
+                for _, unit in ipairs( unitIDs ) do
                     local guid = UnitGUID( unit )
         
                     if guid and counted[ guid ] == nil then
@@ -318,7 +319,7 @@ do
 
                             if excluded and type( excluded ) == "number" then
                                 -- If our table has a number, unit is ruled out only if the buff is present.
-                                excluded = not FindUnitBuffByID( unit, excluded )
+                                excluded = FindUnitBuffByID( unit, excluded )
                             end
 
                             if not excluded and checkPets then
@@ -816,8 +817,8 @@ do
         enemy.lastSeen = time
     end
 
-    local DEFAULT_TTD = 15
-    local FOREVER = 3600
+    local DEFAULT_TTD = 25
+    local FOREVER = 300
     local TRIVIAL = 5
 
 
@@ -878,16 +879,17 @@ do
         local enemy = db[ guid ]
         if not enemy then return default end
 
+        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+        local healthPct = health / healthMax
+
+        if healthPct <= percent then return 0, enemy.n end
+
+        health = health + UnitGetTotalAbsorbs( unit )
+        healthPct = health / healthMax
+
         if enemy.n < 3 or enemy.rate == 0 then
             return default, enemy.n
         end
-
-        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
-        health = health + UnitGetTotalAbsorbs( unit )
-
-        local healthPct = health / healthMax
-
-        if healthPct <= percent then return FOREVER, enemy.n end
 
         return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
     end
@@ -965,7 +967,7 @@ do
         return time
     end
 
-    function Hekili:GetNumTTDsWithin(x)
+    function Hekili:GetNumTTDsWithin( x )
         if x <= 3 then
             return 1
         end
@@ -973,10 +975,8 @@ do
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n > 3 then
-                if ceil(v.lastHealth / v.rate) <= x then
-                    count = count + 1
-                end
+            if v.n > 3 and ceil( v.lastHealth / v.rate ) <= x then
+                count = count + 1
             end
         end
 
@@ -984,14 +984,12 @@ do
     end
     Hekili.GetNumTTDsBefore = Hekili.GetNumTTDsWithin
 
-    function Hekili:GetNumTTDsAfter(x)
+    function Hekili:GetNumTTDsAfter( x )
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n > 3 then
-                if ceil(v.lastHealth / v.rate) > x then
-                    count = count + 1
-                end
+            if v.n > 3 and ceil( v.lastHealth / v.rate ) > x then
+                count = count + 1
             end
         end
 
@@ -1036,7 +1034,7 @@ do
         end
     end
 
-    local trackedUnits = {"target", "boss1", "boss2", "boss3", "boss4", "boss5", "focus"}
+    local trackedUnits = {"target", "boss1", "boss2", "boss3", "boss4", "boss5", "focus", "arena1", "arena2", "arena3", "arena4", "arena5" }
     local seen = {}
 
     local UpdateTTDs
@@ -1073,8 +1071,8 @@ do
             seen[guid] = true
         end
 
-        C_Timer.After( 0.5, UpdateTTDs )
+        C_Timer.After( 0.25, UpdateTTDs )
     end
 
-    C_Timer.After( 0.5, UpdateTTDs )
+    C_Timer.After( 0.25, UpdateTTDs )
 end

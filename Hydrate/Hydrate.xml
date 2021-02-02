@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <Frame name="HydrateReminderFrame"
+           enablemouse="true"
+           hidden="true"
+           movable="true">
+        <Size x="200" y="200"/>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture>
+                    <Color r="0.0" g="0.5" b="1.0" a="0.8"/>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture>
+                    <Color r="1.0" g="0.5" b="0.0" a="0.8"/>
+                    <Anchors><Anchor point="LEFT"/></Anchors>
+                    <Size x="2" y="200"/>
+                </Texture>
+                <Texture>
+                    <Color r="1.0" g="0.5" b="0.0" a="0.8"/>
+                    <Anchors><Anchor point="RIGHT"/></Anchors>
+                    <Size x="2" y="200"/>
+                </Texture>
+                <Texture>
+                    <Color r="1.0" g="0.5" b="0.0" a="0.8"/>
+                    <Anchors><Anchor point="TOP"/></Anchors>
+                    <Size x="200" y="2"/>
+                </Texture>
+                <Texture>
+                    <Color r="1.0" g="0.5" b="0.0" a="0.8"/>
+                    <Anchors><Anchor point="BOTTOM"/></Anchors>
+                    <Size x="200" y="2"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnDragStart>
+                if not self.isLocked then
+                    self:StartMoving()
+                end
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+            <OnLoad>
+                self:RegisterForDrag("LeftButton")
+            </OnLoad>
+            <OnMouseUp>
+                self:Hide()
+            </OnMouseUp>
+        </Scripts>
+    </Frame>
+
+    <PlayerModel name="HydrateReminderModel"
+                 parent="HydrateReminderFrame"
+                 parentKey="model">
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Size x="200" y="200"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString font="ZoneTextFont" text="Hydrate!">
+                    <Color r="1.0" g="0.7" b="0.0"/>
+                    <Anchors>
+                        <Anchor point="BOTTOM" y="20"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </PlayerModel>
+
+</Ui>

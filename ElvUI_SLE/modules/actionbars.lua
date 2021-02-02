@@ -1,4 +1,4 @@
-local SLE, _, E = unpack(select(2, ...))
+﻿local SLE, _, E = unpack(select(2, ...))
 local A = SLE:NewModule('Actionbars', 'AceHook-3.0', 'AceEvent-3.0')
 local AB = E:GetModule('ActionBars');
 

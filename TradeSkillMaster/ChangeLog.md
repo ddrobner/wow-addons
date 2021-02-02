@@ -1,6 +1,5 @@
-## v4.10.15 Changes
+## v4.10.28 Changes
 
-* [Retail] TOC bump for 9.0.2
-* Fixed tabards showing as disenchantable.
+* [Retail] Fixed issue with some identical crafted items being treated as separate items by TSM
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

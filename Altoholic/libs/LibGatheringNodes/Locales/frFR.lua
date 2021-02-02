@@ -87,6 +87,16 @@ LibStub("LibGatheringNodes-1.0").frFR = {
     ["Osmenite Seam"]                   = 168185,
     ["Rich Osmenite Deposit"]           = 168185,
 
+    -- Delaydowlands
+    ["Gisement de læstrite"]               = 171828, -- Laestrite Ore
+    ["Riche gisement de læstrite"]          = 171828, -- Laestrite Ore
+    ["Gisement d’éléthium"]                = 171833, -- Elethium Ore
+    ["Riche gisement d’éléthium"]           = 171833, -- Elethium Ore
+    ["Gisement de solénium"]                = 171829, -- Solenium Ore
+    ["Riche gisement de solénium"]           = 171829, -- Solenium Ore
+    ["Gisement d’oxxéine"]                  = 171830, -- Oxxein Ore
+    ["Gisement de vicevyr"]                  = 171832, -- Sinvyr Ore
+    ["Gisement de phædrum"]                = 171831, -- Phaedrum Ore
 	
 	-- Herbs
 	-- Classic
@@ -184,4 +194,12 @@ LibStub("LibGatheringNodes-1.0").frFR = {
 	["Star Moss"]                       = 152506,	
 	["Winter's Kiss"]                   = 152508,
     ["Zin'anthid"]                      = 168487,
+
+    -- Delaydowlands
+    ["Fatalée"]                   = 169701,
+    ["Belladone"]                      = 171315,
+    ["Belle-de-l’aube"]                    = 168586,
+    ["Plante-torche du veilleur"]                   = 170554,
+    ["Endeuillée"]                      = 168583,
+    ["Courgineuse"]                      = 168589,
 }

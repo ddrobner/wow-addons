@@ -107,7 +107,7 @@ Amr.SpecIcons = {
 }
 
 -- instance IDs ordered in preferred display order
-Amr.InstanceIdsOrdered = { 1861, 2070, 2096, 2164, 2217, 2296 }
+Amr.InstanceIdsOrdered = { 2296 }
 
 Amr.Difficulties = {
 	Lfr = 17,
@@ -129,7 +129,7 @@ end
 -- Item Methods
 ------------------------------------------------------------------------------------------
 
---                 1      2    3      4      5      6    7   8   9   10   11       12         
+--                 1      2    3      4      5      6    7   8   9   10   11       12         13
 --                 itemId:ench:gem1  :gem2  :gem3  :gem4:suf:uid:lvl:spec:flags   :instdiffid:numbonusIDs:bonusIDs1...n     :varies:?:relic bonus ids
 --|cffe6cc80|Hitem:128866:    :152046:147100:152025:    :   :   :110:66  :16777472:9         :4          :736:1494:1490:1495:709   :1:3:3610:1472:3528:3:3562:1483:3528:3:3610:1477:3336|h[Truthguard]|h|r
 --
@@ -162,6 +162,7 @@ function Amr.CreateItemLink(itemObj)
 
     table.insert(parts, 0) -- difficulty id, doesn't matter
     
+    -- 13, num bonus ids
     if itemObj.bonusIds then
         table.insert(parts, #itemObj.bonusIds)
         for i,v in ipairs(itemObj.bonusIds) do
@@ -171,16 +172,42 @@ function Amr.CreateItemLink(itemObj)
 		table.insert(parts, 0) -- no bonus ids
     end
     
-    if itemObj.level and itemObj.level ~= 0 then
-        table.insert(parts, 2) -- not sure if this is always 2 or not...
-        table.insert(parts, 9) -- not sure if this is always 9 or not...
-        table.insert(parts, itemObj.level)
-    elseif itemObj.upgradeId and itemObj.upgradeId ~= 0 then
+    --[[
+    if itemObj.upgradeId and itemObj.upgradeId ~= 0 then
         -- figure this out (if we still care)
-    end
+    end]]
     
-    -- we don't bother with relic bonus ids anymore when generating links
-    table.insert(parts, 0)
+    -- 14 + bonus id count, number of "properties"
+    local propCount = 0
+    if itemObj.level and itemObj.level ~= 0 then
+        propCount = propCount + 1
+    end
+    if itemObj.stat1 and itemObj.stat1 ~= 0 then
+        propCount = propCount + 1
+    end
+    if itemObj.stat2 and itemObj.stat2 ~= 0 then
+        propCount = propCount + 1
+    end
+
+    if propCount > 0 then
+        table.insert(parts, propCount)
+        if itemObj.level and itemObj.level ~= 0 then
+            table.insert(parts, 9)
+            table.insert(parts, itemObj.level)
+        end
+        if itemObj.stat1 and itemObj.stat1 ~= 0 then
+            table.insert(parts, 29)
+            table.insert(parts, itemObj.stat1)
+        end
+        if itemObj.stat2 and itemObj.stat2 ~= 0 then
+            table.insert(parts, 30)
+            table.insert(parts, itemObj.stat2)
+        end
+    else
+        table.insert(parts, 0) -- no props
+    end
+
+    -- these last 3 seem to be blank for most items...
     table.insert(parts, 0)
     table.insert(parts, 0)
     table.insert(parts, 0)

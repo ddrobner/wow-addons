@@ -87,6 +87,16 @@ LibStub("LibGatheringNodes-1.0").esES = {
     ["Osmenite Seam"]                   = 168185,
     ["Rich Osmenite Deposit"]           = 168185,
 
+    -- Delaydowlands
+    ["Depósito de laestrita"]               = 171828, -- Laestrite Ore
+    ["Depósito rico en laestrita"]          = 171828, -- Laestrite Ore
+    ["Depósito de eletio"]                = 171833, -- Elethium Ore
+    ["Depósito rico en eletio"]           = 171833, -- Elethium Ore *
+    ["Depósito de solenio"]                = 171829, -- Solenium Ore
+    ["Depósito rico en solenio"]           = 171829, -- Solenium Ore
+    ["Depósito de oxxeína"]                  = 171830, -- Oxxein Ore
+    ["Depósito de sinvyr"]                  = 171832, -- Sinvyr Ore *
+    ["Depósito de faedro"]                = 171831, -- Phaedrum Ore *
 	
 	-- Herbs
 	-- Classic
@@ -184,4 +194,12 @@ LibStub("LibGatheringNodes-1.0").esES = {
 	["Star Moss"]                       = 152506,	
 	["Winter's Kiss"]                   = 152508,
     ["Zin'anthid"]                      = 168487,
+
+    -- Delaydowlands
+    ["Estrella mortal"]                   = 169701,
+    ["Sombranoche"]                      = 171315,
+    ["Gloria creciente"]                    = 168586,
+    ["Antorcha de vigilia"]                   = 170554,
+    ["Flor de viuda"]                      = 168583,
+    ["Raizmédula"]                      = 168589,
 }

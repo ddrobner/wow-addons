@@ -1,0 +1,206 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Torghast.lua"></Script>
+
+	<Button name="AltoTorghastLevelPickerRewardCircleTemplate" frameStrata="HIGH" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="32" y="33"/>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="2">
+				<Texture parentKey="RewardBorder" atlas="jailerstower-wayfinder-rewardcircle" useAtlasSize="true"/>
+				<Texture parentKey="QuestComplete" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardBorder" x="0" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="Artwork" textureSubLevel="2">
+				<Texture parentKey="LockedIcon" atlas="jailerstower-wayfinder-rewardpadlock" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RewardBorder"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RewardBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+        <Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsTorghastLevelPickerRewardCircle")
+            </OnLoad>
+			<OnEnter>
+                self:OnEnter()
+            </OnEnter>
+			<OnLeave>
+                self:OnLeave()
+            </OnLeave>
+		</Scripts>
+	</Button>
+    
+	<Frame name="AltoTorghastLevelPickerRewardBannerTemplate" frameStrata="HIGH" virtual="true">
+		<Size x="40" y="10"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Banner" atlas="jailerstower-wayfinder-rewardbackground" useAtlasSize="true"/>
+				<Texture parentKey="BannerDisabled" atlas="jailerstower-wayfinder-rewardbackground-disable" hidden="true" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EarnedCheck" hidden="true" atlas="jailerstower-wayfinder-rewardcheckmark" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Reward" hidden="true" inherits="AltoTorghastLevelPickerRewardCircleTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Banner"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+    
+	<Frame name="AltoTorghastLevelPickerTemplate" virtual="true">
+		<Size x="50" y="50"/>
+		<Layers>
+			<Layer level="Background">
+				<Texture parentKey="Background" atlas="jailerstower-wayfinder-tierbackground-skoldushall" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="Border">
+				<Texture parentKey="Icon" atlas="islands-queue-difficultyselector-1">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" justifyH="LEFT" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="SelectedBorder" atlas="jailerstower-wayfinder-tierbackground-selected" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RewardBanner" inherits="AltoTorghastLevelPickerRewardBannerTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<HighlightTexture parentKey="HighlightBorder" atlas="jailerstower-wayfinder-tierbackground-mouseover" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="4"/>
+			</Anchors>
+		</HighlightTexture>
+        <Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsTorghastLevelPicker")
+            </OnLoad>
+        </Scripts>
+	</Frame>
+    
+    <Frame name="AltoTorghastLevelRowTemplate" virtual="true">
+        <Size x="400" y="50"/>
+		<Layers>
+            <Layer level="OVERLAY">
+    			<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontHighlight">
+    				<Anchors>
+    					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="3" y="-20"/>
+    				</Anchors>
+    			</FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame parentKey="Level1" inherits="AltoTorghastLevelPickerTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="140"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level2" inherits="AltoTorghastLevelPickerTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="200"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level3" inherits="AltoTorghastLevelPickerTemplate" id="3">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="260"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level4" inherits="AltoTorghastLevelPickerTemplate" id="4">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="320"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level5" inherits="AltoTorghastLevelPickerTemplate" id="5">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="380"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level6" inherits="AltoTorghastLevelPickerTemplate" id="6">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="440"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level7" inherits="AltoTorghastLevelPickerTemplate" id="7">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="500"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Level8" inherits="AltoTorghastLevelPickerTemplate" id="8">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="560"/>
+                </Anchors>
+            </Frame>
+            
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsTorghastLevelRow")
+            </OnLoad>
+        </Scripts>
+    </Frame>
+    
+	<Frame parentKey="TorghastPanel" parent="AltoholicTabShadowlands" inherits="AltoDataPanelTemplate" hidden="true">
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsTorghastPanel")
+			</OnLoad>
+		</Scripts>
+		<Frames>
+            <Frame parentKey="Row1" inherits="AltoTorghastLevelRowTemplate" id="1">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="Row2" inherits="AltoTorghastLevelRowTemplate" id="2">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="-60"/>
+                </Anchors>
+            </Frame>
+            
+        </Frames>
+	</Frame>
+</Ui>

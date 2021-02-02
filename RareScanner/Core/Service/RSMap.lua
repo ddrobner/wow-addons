@@ -46,25 +46,28 @@ local function CreateGroups(POIs)
 
 	for _, POI in ipairs (POIs) do
 		local POIchecked = false;
-
-		for _, checkedPOI in ipairs (checkedPOIs) do
-			if (POI.entityID ~= checkedPOI.entityID) then
-				local distance = RSUtils.Distance(POI, checkedPOI)
-				if (distance <= RSConstants.MINIMUM_DISTANCE_PINS_WORLD_MAP) then
-					RSLogger:PrintDebugMessageEntityID(POI.entityID, string.format("NPC [%s]: Cerca de [%s], distancia [%s].", POI.entityID, checkedPOI.entityID, distance))
-					RSLogger:PrintDebugMessageEntityID(POI.entityID, string.format("NPC [%s]: Coordenadas [%s,%s].", POI.entityID, POI.x, POI.y))
-					RSLogger:PrintDebugMessageEntityID(POI.entityID, string.format("NPC [%s]: Coordenadas [%s,%s].", checkedPOI.entityID, checkedPOI.x, checkedPOI.y))
-					if (not checkedPOI.POIs) then
-						checkedPOI.POIs = {}
+		
+		-- Skip POIs that are shown in the worldmap
+		if (not POI.worldmap) then
+			for _, checkedPOI in ipairs (checkedPOIs) do
+				if (POI.entityID ~= checkedPOI.entityID and not checkedPOI.worldmap) then
+					local distance = RSUtils.Distance(POI, checkedPOI)
+					if (distance <= RSConstants.MINIMUM_DISTANCE_PINS_WORLD_MAP) then
+						RSLogger:PrintDebugMessageEntityID(POI.entityID, string.format("NPC [%s]: Cerca de [%s], distancia [%s].", POI.entityID, checkedPOI.entityID, distance))
+						RSLogger:PrintDebugMessageEntityID(POI.entityID, string.format("NPC [%s]: Coordenadas [%s,%s].", POI.entityID, POI.x, POI.y))
+						RSLogger:PrintDebugMessageEntityID(POI.entityID, string.format("NPC [%s]: Coordenadas [%s,%s].", checkedPOI.entityID, checkedPOI.x, checkedPOI.y))
+						if (not checkedPOI.POIs) then
+							checkedPOI.POIs = {}
+						end
+	
+						tinsert(checkedPOI.POIs, POI)
+						POIchecked = true;
+						break;
 					end
-
-					tinsert(checkedPOI.POIs, POI)
-					POIchecked = true;
-					break;
 				end
 			end
 		end
-
+	
 		if (not POIchecked) then
 			tinsert(checkedPOIs, POI)
 		end
@@ -177,4 +180,32 @@ function RSMap.GetMapPOIs(mapID, onWorldMap, onMiniMap)
 	end
 
 	return MapPOIs
+end
+
+function RSMap.GetWorldMapPOI(objectGUID, vignetteType, mapID)
+	if (not objectGUID or not mapID) then
+		return nil
+	end
+	
+	if (vignetteType == Enum.VignetteType.Treasure) then
+		local _, _, _, _, _, vignetteObjectID = strsplit("-", objectGUID)
+		local containerID = tonumber(vignetteObjectID)
+		local containerInfo = RSContainerDB.GetInternalContainerInfo(containerID)
+		local alreadyFoundInfo = RSGeneralDB.GetAlreadyFoundEntity(containerID)
+		
+		if (containerInfo or alreadyFoundInfo) then
+			return RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo, alreadyFoundInfo)
+		end
+	elseif (vignetteType == Enum.VignetteType.Normal) then
+		local _, _, _, _, _, vignetteObjectID = strsplit("-", objectGUID)
+		local npcID = tonumber(vignetteObjectID)
+		local npcInfo = RSNpcDB.GetInternalNpcInfo(npcID)
+		local alreadyFoundInfo = RSGeneralDB.GetAlreadyFoundEntity(npcID)
+		
+		if (npcInfo or alreadyFoundInfo) then
+			return RSNpcPOI.GetNpcPOI(npcID, mapID, npcInfo, alreadyFoundInfo)
+		end
+	end
+	
+	return nil
 end

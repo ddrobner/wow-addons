@@ -87,6 +87,16 @@ LibStub("LibGatheringNodes-1.0").ruRU = {
     ["Osmenite Seam"]                   = 168185,
     ["Rich Osmenite Deposit"]           = 168185,
 
+    -- Delaydowlands
+    ["Залежи лестрита"]               = 171828, -- Laestrite Ore
+    ["Богатые залежи лестрита"]          = 171828, -- Laestrite Ore
+    ["Залежи элетия"]                = 171833, -- Elethium Ore
+    ["Богатые залежи элетия"]           = 171833, -- Elethium Ore
+    ["Залежи соленита"]                = 171829, -- Solenium Ore
+    ["Богатые залежи соленита"]           = 171829, -- Solenium Ore
+    ["Залежи оксеина"]                  = 171830, -- Oxxein Ore
+    ["Залежи греховира"]                  = 171832, -- Sinvyr Ore
+    ["Залежи федрита"]                = 171831, -- Phaedrum Ore
 	
 	-- Herbs
 	-- Classic
@@ -184,4 +194,12 @@ LibStub("LibGatheringNodes-1.0").ruRU = {
 	["Star Moss"]                       = 152506,	
 	["Winter's Kiss"]                   = 152508,
     ["Zin'anthid"]                      = 168487,
+
+    -- Delaydowlands
+    ["Смертоцвет"]                   = 169701,
+    ["Беладонна"]                      = 171315,
+    ["Славолист"]                    = 168586,
+    ["Факел дозорного"]                   = 170554,
+    ["Вдовоцвет"]                      = 168583,
+    ["Костяной корень"]                      = 168589,
 }

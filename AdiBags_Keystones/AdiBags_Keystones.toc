@@ -1,0 +1,7 @@
+## Interface: 90100
+## Title: AdiBags - Keystones
+## Notes: Adds a Mythic+ Keystone filter to AdiBags.
+## Author: Tinkspring
+## Version: 0.4
+## Dependencies: AdiBags
+AdiBags_Keystones.lua

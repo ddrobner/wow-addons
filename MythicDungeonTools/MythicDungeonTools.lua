@@ -17,7 +17,6 @@ MDT.BackdropColor = { 0.058823399245739, 0.058823399245739, 0.058823399245739, 0
 local AceGUI = LibStub("AceGUI-3.0")
 local db
 local icon = LibStub("LibDBIcon-1.0")
-local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("MythicDungeonTools", {
 	type = "data source",
 	text = "Mythic Dungeon Tools",
@@ -93,7 +92,7 @@ local defaultSavedVars = {
         scale = 1,
         enemyForcesFormat = 2,
         enemyStyle = 1,
-		currentDungeonIdx = 15,
+		currentDungeonIdx = 29,
 		currentDifficulty = 10,
 		xoffset = 0,
 		yoffset = -150,
@@ -119,6 +118,7 @@ local defaultSavedVars = {
             numberCustomColors = 12,
         },
         language = MDT:GetLocaleIndex(),
+        dungeonImport = {},
 	},
 }
 do
@@ -150,7 +150,7 @@ do
 				icon:Show("MythicDungeonTools")
 			end
 
-            if --[[db.dataCollectionActive ]] true then MDT.DataCollection:Init() end
+            --if db.dataCollectionActive then MDT.DataCollection:Init() end
             --fix db corruption
             do
                 for _,presets in pairs(db.presets) do
@@ -195,7 +195,7 @@ do
                 MDT.main_frame.LiveSessionButton.text:SetTextColor(0.5,0.5,0.5)
             end
             last = now
-            MDT:RequestDataCollectionUpdate()
+            --MDT:RequestDataCollectionUpdate()
         end
     end
     function MDT.PLAYER_ENTERING_WORLD(self, addon)
@@ -219,18 +219,18 @@ MDT.scaleMultiplier = {}
 --https://www.wowhead.com/affixes
 --lvl 4 affix, lvl 7 affix, tyrannical/fortified, seasonal affix
 local affixWeeks = {
-    [1] =  {[1]=0,[2]=0,[3]=0,[4]=0},
-    [2] =  {[1]=0,[2]=0,[3]=0,[4]=0},
-    [3] =  {[1]=0,[2]=0,[3]=0,[4]=0},
-    [4] =  {[1]=0,[2]=0,[3]=0,[4]=0},
-    [5] =  {[1]=0,[2]=0,[3]=0,[4]=0},
-    [6] =  {[1]=0,[2]=0,[3]=0,[4]=0},
-    [7] =  {[1]=0,[2]=0,[3]=0,[4]=0},
+    [1] =  {[1]=11,[2]=3,[3]=10,[4]=121}, -->>Bursting, Volcanic, Fortified
+    [2] =  {[1]=7,[2]=124,[3]=9,[4]=121}, -->>Bolstering, Storming, Tyrannical
+    [3] =  {[1]=123,[2]=12,[3]=10,[4]=121}, -->>Spiteful, Grievous, Fortified
+    [4] =  {[1]=122,[2]=4,[3]=9,[4]=121}, -->>Inspiring, Necrotic, Tyrannical
+    [5] =  {[1]=8,[2]=14,[3]=10,[4]=121}, -->>Sanguine, Quaking, Fortified
+    [6] =  {[1]=6,[2]=13,[3]=9,[4]=121}, -->>Raging, Explosive, Tyrannical
+    [7] =  {[1]=123,[2]=3,[3]=10,[4]=121}, -->>Spiteful, Volcanic, Fortified
     [8] =  {[1]=7,[2]=4,[3]=9,[4]=121},  -->>Bolstering, Necrotic, Tyrannical
     [9] =  {[1]=124,[2]=122,[3]=10,[4]=121},   -->>Storming, Inspiring, Fortified
     [10] = {[1]=11,[2]=13,[3]=9,[4]=121},  -->>Bursting, Explosive, Tyrannical
-    [11] = {[1]=0,[2]=0,[3]=0,[4]=0},
-    [12] = {[1]=0,[2]=0,[3]=0,[4]=0},
+    [11] = {[1]=4,[2]=7,[3]=10,[4]=121},      -->>Sanguine, Grievous, Fortified
+    [12] = {[1]=6,[2]=14,[3]=9,[4]=121},   -->>Raging, Quaking, Tyrannical
 }
 
 local dungeonList = {
@@ -617,7 +617,7 @@ MDT.dungeonMaps = {
         [1] = "MistsOfTirneScithe",
     },
     [32] = {
-        [0] = "Plaguefall_B",
+        [0] = "Plaguefall",
         [1] = "Plaguefall",
         [2] = "Plaguefall_B",
     },
@@ -1476,7 +1476,6 @@ function MDT:MakeSidePanel(frame)
         GameTooltip:Show()
     end)
     frame.MDIButton.frame:SetScript("OnLeave",function()
-        GameTooltip:Hide()
     end)
 
     --AutomaticColorsCheckbox
@@ -2276,12 +2275,12 @@ end
 
 ---IsCurrentPresetFortified
 function MDT:IsCurrentPresetFortified()
-    return self:GetCurrentPreset().week%2 == 0
+    return self:GetCurrentPreset().week%2 == 1
 end
 
 ---IsCurrentPresetTyrannical
 function MDT:IsCurrentPresetTyrannical()
-    return self:GetCurrentPreset().week%2 == 1
+    return not MDT:IsCurrentPresetFortified()
 end
 
 ---MouseDownHook
@@ -2823,25 +2822,25 @@ function MDT:EnsureDBTables()
 	end
 
     --removed clones: remove data from presets
-    for pullIdx,pull in pairs(preset.value.pulls) do
-        for enemyIdx,clones in pairs(pull) do
+        for pullIdx,pull in pairs(preset.value.pulls) do
+            for enemyIdx,clones in pairs(pull) do
 
-            if tonumber(enemyIdx) then
-                --enemy does not exist at all anymore
-                if not MDT.dungeonEnemies[db.currentDungeonIdx][enemyIdx] then
-                    pull[enemyIdx] = nil
-                else
-                    --only clones
-                    for k,v in pairs(clones) do
-                        if not MDT.dungeonEnemies[db.currentDungeonIdx][enemyIdx]["clones"][v] then
-                            clones[k] = nil
+                if tonumber(enemyIdx) then
+                    --enemy does not exist at all anymore
+                    if not MDT.dungeonEnemies[db.currentDungeonIdx][enemyIdx] then
+                        pull[enemyIdx] = nil
+                    else
+                        --only clones
+                        for k,v in pairs(clones) do
+                            if not MDT.dungeonEnemies[db.currentDungeonIdx][enemyIdx]["clones"][v] then
+                                clones[k] = nil
+                            end
                         end
                     end
                 end
             end
+            pull["color"] = pull["color"] or db.defaultColor
         end
-        pull["color"] = pull["color"] or db.defaultColor
-    end
 
     MDT:GetCurrentPreset().week = MDT:GetCurrentPreset().week or MDT:GetCurrentAffixWeek()
 
@@ -3019,6 +3018,30 @@ MDT.zoneIdToDungeonIdx = {
     [1493] = 26,--upper mecha
     [1494] = 26,--upper mecha
     [1497] = 26,--upper mecha
+    [1663] = 30,
+    [1664] = 30,
+    [1665] = 30,
+    [1666] = 35,
+    [1667] = 35,
+    [1668] = 35,
+    [1669] = 31,
+    [1674] = 32,
+    [1675] = 33,
+    [1676] = 33,
+    [1677] = 29,
+    [1678] = 29,
+    [1679] = 29,
+    [1680] = 29,
+    [1683] = 36,
+    [1684] = 36,
+    [1685] = 36,
+    [1686] = 36,
+    [1687] = 36,
+    [1692] = 34,
+    [1693] = 34,
+    [1694] = 34,
+    [1695] = 34,
+    [1697] = 32,
 }
 local lastUpdatedDungeonIdx
 function MDT:CheckCurrentZone(init)
@@ -3693,7 +3716,7 @@ function MDT:MakePullSelectionButtons(frame)
 
     frame.newPullButtons = {}
 	--rightclick context menu
-    frame.optionsDropDown = LibDD:Create_UIDropDownMenu("PullButtonsOptionsDropDown", nil)
+    frame.optionsDropDown = L_Create_UIDropDownMenu("PullButtonsOptionsDropDown", nil)
 end
 
 
@@ -4937,6 +4960,7 @@ function initFrames()
         end
     end
 
+
     db.nonFullscreenScale = db.nonFullscreenScale or 1
     if not db.maximized then db.scale = db.nonFullscreenScale end
 	main_frame:SetFrameStrata(mainFrameStrata)
@@ -4964,7 +4988,7 @@ function initFrames()
 	-- Set frame position
 	main_frame:ClearAllPoints()
 	main_frame:SetPoint(db.anchorTo, UIParent,db.anchorFrom, db.xoffset, db.yoffset)
-    main_frame.contextDropdown = LibDD:Create_UIDropDownMenu("MDTContextDropDown", nil)
+    main_frame.contextDropdown = L_Create_UIDropDownMenu("MDTContextDropDown", nil)
 
     MDT:CheckCurrentZone(true)
     MDT:EnsureDBTables()

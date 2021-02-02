@@ -87,6 +87,16 @@ LibStub("LibGatheringNodes-1.0").zhCN = {
     ["Osmenite Seam"]                   = 168185,
     ["Rich Osmenite Deposit"]           = 168185,
 
+    -- Delaydowlands
+    ["苷铜矿脉"]               = 171828, -- Laestrite Ore
+    ["富苷铜矿脉"]          = 171828, -- Laestrite Ore
+    ["Elethium Deposit"]                = 171833, -- Elethium Ore
+    ["Rich Elethium Deposit"]           = 171833, -- Elethium Ore
+    ["珀银矿脉"]                = 171829, -- Solenium Ore
+    ["富珀银矿脉"]           = 171829, -- Solenium Ore
+    ["髓硫矿脉"]                  = 171830, -- Oxxein Ore
+    ["罪钒矿脉"]                  = 171832, -- Sinvyr Ore
+    ["炽钴矿脉"]                = 171831, -- Phaedrum Ore
 	
 	-- Herbs
 	-- Classic
@@ -184,4 +194,12 @@ LibStub("LibGatheringNodes-1.0").zhCN = {
 	["Star Moss"]                       = 152506,	
 	["Winter's Kiss"]                   = 152508,
     ["Zin'anthid"]                      = 168487,
+
+    -- Delaydowlands
+    ["绽亡花"]                   = 169701,
+    ["夜影花"]                      = 171315,
+    ["晋荣花"]                    = 168586,
+    ["慰魂之光"]                   = 170554,
+    ["孀花"]                      = 168583,
+    ["髓根草"]                      = 168589,
 }

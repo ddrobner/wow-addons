@@ -1,0 +1,482 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+ 	<Script file="Soulbinds.lua"></Script>
+
+	<Frame name="AltoSoulbindTreeNodeLinkTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Size x="6" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Foreground1" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Particles" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground2" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Gold" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground3" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground4" parentArray="foregrounds" atlas="Azerite-CenterBG-ChannelGlowBar-Effect" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground5" parentArray="foregrounds" atlas="Soulbinds_Link_Spirits" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Foreground6" parentArray="foregrounds" atlas="Soulbinds_Link_Spirits" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background" />
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="FillMask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Foreground1" />
+						<MaskedTexture childKey="Foreground2" />
+						<MaskedTexture childKey="Foreground3" />
+						<MaskedTexture childKey="Foreground4" />
+						<MaskedTexture childKey="Foreground5" />
+						<MaskedTexture childKey="Foreground6" />
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="FlowAnim1" looping="REPEAT">
+				<Alpha childkey="Foreground1" duration="1.2" order="1" smoothing="in_out" fromalpha=".7" toalpha="1" />
+				<Alpha childKey="Foreground1" duration="1.0" order="2" smoothing="in_out" fromAlpha="1" toAlpha=".7" />
+				<Alpha childkey="Foreground2" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="Foreground2" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+				<Alpha childkey="Foreground3" duration="1.2" order="1" smoothing="in_out" fromalpha=".6" toalpha=".8" />
+				<Alpha childKey="Foreground3" duration="1.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha=".6" />
+				<Alpha childkey="Foreground4" duration="3.2" order="1" smoothing="in_out" fromalpha=".3" toalpha=".7" />
+				<Alpha childKey="Foreground4" duration="3.0" order="2" smoothing="in_out" fromAlpha=".7" toAlpha=".3" />
+				<Alpha childkey="Foreground5" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="Foreground5" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim2" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground1" duration="16" order="1" offsetU="0" offsetV="1" />
+				<TextureCoordTranslation childKey="Foreground2" duration="16" order="1" offsetU="0" offsetV="1" />
+				<TextureCoordTranslation childKey="Foreground3" duration="16" order="1" offsetU="0" offsetV="-1" />
+				<Rotation childKey="Foreground4" duration="16" order="1" degrees="360" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim3" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground5" duration="4" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim4" looping="REPEAT">
+				<TextureCoordTranslation childKey="Foreground6" duration="2" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim5" looping="REPEAT">
+				<Rotation childKey="Foreground6" duration="16" order="1" degrees="-45" />
+				<Rotation childKey="Foreground6" duration="16" order="2" degrees="45" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="FlowAnim6" looping="REPEAT">
+				<Rotation childKey="Foreground5" duration="32" order="1" degrees="45" />
+				<Rotation childKey="Foreground5" duration="32" order="2" degrees="-45" />
+			</AnimationGroup>	
+		</Animations>
+		<Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsSoulbindTreeNodeLink")
+            </OnLoad>
+			<OnHide>
+                self:OnHide()
+            </OnHide>
+		</Scripts>
+	</Frame>
+
+	<Button name="AltoSoulbindTreeNodeTemplate" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<Texture parentKey="Arrow" atlas="Soulbinds_Tree_ActivateArrow" useAtlasSize="true" alphaMode="ADD" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" y="0"/>
+				</Anchors>
+				</Texture>
+				<Texture parentKey="Arrow2" atlas="Soulbinds_Tree_ActivateArrow" useAtlasSize="true" alphaMode="ADD" alpha="0.5" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Arrow"/>
+				</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="FxModelScene" frameStrata="HIGH" inherits="ScriptAnimatedModelSceneTemplate">
+				<Size x="300" y="300"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ModelScene.Active" relativePoint="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsSoulbindTreeNode")
+			</OnLoad>
+			<OnEnter>
+                self:OnEnter()
+            </OnEnter>
+			<OnLeave>
+                self:OnLeave()
+            </OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="AltoSoulbindTraitNodeTemplate" inherits="AltoSoulbindTreeNodeTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Soulbinds_Tree_Conduit_Background">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Icon">
+					<Size x="21" y="21"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="IconOverlay">
+					<Size x="21" y="21"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR" a=".5"/>
+				</Texture>
+				<MaskTexture atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Ring">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RingOverlay" atlas="Soulbinds_Tree_Ring_Glow" hidden="true">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="MouseOverlay" atlas="Soulbinds_Tree_Ring" hidden="true" alphaMode="ADD">
+					<Size x="28" y="28"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsTraitNode")
+			</OnLoad>
+		</Scripts>
+	</Button>
+
+	<Texture name="AltoConduitInstallTemplate" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true" virtual="true">
+		<Size x="30" y="30"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Texture>
+	
+	<Button name="AltoSoulbindConduitNodeTemplate" inherits="AltoSoulbindTreeNodeTemplate" registerForClicks="LeftButtonUp,RightButtonUp" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="Soulbinds_Tree_Conduit_Background">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon">
+					<Size x="19" y="19"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="IconOverlay">
+					<Size x="19" y="19"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color color="BLACK_FONT_COLOR" a=".5"/>
+				</Texture>
+				<MaskTexture atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="IconOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1" >
+				<Texture parentKey="Ring">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2" >
+				<Texture parentKey="PickupOverlay" parentArray="PickupAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="PickupOverlay2" parentArray="PickupAnimTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="PickupArrowsOverlay" parentArray="PickupAnimTextures" atlas="Soulbinds_Tree_Conduit_Arrows" alphaMode="ADD" hidden="true">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha=".8"/>
+							<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" startDelay=".6" order="1" fromAlpha=".8" toAlpha="0"/>
+							<Scale duration=".3" order="1" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="PickupArrowsStatic" atlas="Soulbinds_Tree_Conduit_Arrows" alphaMode="ADD" hidden="true">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="UnsocketedWarning" parentArray="UnsocketedWarningTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="UnsocketedWarning2" parentArray="UnsocketedWarningTextures" atlas="Soulbinds_Tree_Conduit_Ring" alphaMode="ADD" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" smoothing="OUT" duration=".6" order="1" fromAlpha="0" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" smoothing="IN" duration=".6" order="2" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3" >
+				<Texture parentKey="RingOverlay" atlas="Soulbinds_Tree_Conduit_Ring_Glow" hidden="true">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT">
+							<Alpha parentKey="FadeIn" duration=".8" order="1" fromAlpha=".2" toAlpha="1"/>
+							<Alpha parentKey="FadeOut" duration=".8" order="2" fromAlpha="1" toAlpha=".2"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="MouseOverlay" atlas="Soulbinds_Tree_Conduit_Ring" hidden="true" alphaMode="ADD">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EmblemBg">
+					<Size x="13" y="15"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4" >
+				<Texture parentKey="Ring2" parentArray="SocketAnimTextures" inherits="AltoConduitInstallTemplate">
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha order="1" fromAlpha="1" toAlpha="0" duration="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Ring3" parentArray="SocketAnimTextures" inherits="AltoConduitInstallTemplate">
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha order="1" fromAlpha="1" toAlpha="0" duration="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Ring4" parentArray="SocketAnimTextures" inherits="AltoConduitInstallTemplate">
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha order="1" fromAlpha="1" toAlpha="0" duration="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Ring5" parentArray="SocketAnimTextures" inherits="AltoConduitInstallTemplate">
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="NONE" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>				
+				<Texture parentKey="Ring6" parentArray="SocketAnimTextures" inherits="AltoConduitInstallTemplate">
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="NONE" duration="0.7" order="1" fromAlpha="1" toAlpha="0"/>
+							<Scale smoothing="OUT" duration="0.7" order="1" fromScaleX="1" fromScaleY="1" toScaleX="1.8" toScaleY="1.8"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+				<Texture parentKey="Ring7" parentArray="SocketAnimTextures" atlas="Soulbinds_Tree_Conduit_Arrows_Socketed" alphaMode="ADD" useAtlasSize="false">
+					<Size x="15" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" y="-1"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" inherits="VisibleWhilePlayingAnimGroupTemplate" setToFinalAlpha="true">
+							<Alpha smoothing="IN" duration="1" order="1" fromAlpha="1" toAlpha="0"/>
+							<Scale duration="0.2" order="1" fromScaleX="4" fromScaleY="4" toScaleX="1" toScaleY="1"/>
+						</AnimationGroup>
+					</Animations>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7" >
+				<Texture parentKey="Emblem">
+					<Size x="13" y="15"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+            <OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsSoulbindConduitNode")
+			</OnLoad>
+			<OnEvent>
+                self:OnEvent()
+            </OnEvent>
+			<OnEnter>
+                self:OnEnter()
+            </OnEnter>
+			<OnLeave>
+                self:OnLeave()
+            </OnLeave>
+		</Scripts>
+	</Button>
+     
+    <Frame name="AltoSoulbindTreeTemplate" virtual="true">
+		<Size x="200" y="304"/>
+        <Anchors>
+            <Anchor point="TOPLEFT"/>
+        </Anchors>
+		<Frames>
+			<Frame parentKey="Fx" setAllPoints="true" frameStrata="HIGH"/>
+			<Frame parentKey="LinkContainer" setAllPoints="true" frameLevel="1" frameStrata="MEDIUM"/>
+			<Frame parentKey="NodeContainer" setAllPoints="true" frameLevel="2" frameStrata="MEDIUM"/>
+		</Frames>
+		<Scripts>
+            <OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsSoulbindTree")
+			</OnLoad>
+			<OnShow>
+                self:OnShow()
+            </OnShow>
+			<OnHide>
+                self:OnHide()
+            </OnHide>
+		</Scripts>
+	</Frame>
+	
+	<Frame parentKey="SoulbindsPanel" parent="AltoholicTabShadowlands" inherits="AltoDataPanelTemplate">
+		<Size x="615" y="306"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="0" y="-105"/>
+		</Anchors>
+		<Frames>		
+            <Frame parentKey="Tree1" inherits="AltoSoulbindTreeTemplate" id="1"/>
+            <Frame parentKey="Tree2" inherits="AltoSoulbindTreeTemplate" id="2">
+                <Anchors>
+        			<Anchor point="TOPLEFT" x="200" y="0"/>
+        		</Anchors>
+            </Frame>
+            <Frame parentKey="Tree3" inherits="AltoSoulbindTreeTemplate" id="3">
+                <Anchors>
+        			<Anchor point="TOPLEFT" x="400" y="0"/>
+        		</Anchors>
+            </Frame>
+		</Frames>
+        <Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsSoulbindPanel")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

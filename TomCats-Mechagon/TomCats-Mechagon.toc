@@ -1,8 +1,8 @@
-## Interface: 80300
+## Interface: 90002
 ## Title: TomCat's Tours: Rares of Mechagon
 ## Author: TomCat
 ## X-Website: http://www.tomcatstours.com
-## Version: 01.04.06
+## Version: 1.99.99
 ## DefaultState: enabled
 ## SavedVariablesPerCharacter: TomCats_Mechagon_Character
 ## OptionalDeps: TomCats,HandyNotes,TomTom

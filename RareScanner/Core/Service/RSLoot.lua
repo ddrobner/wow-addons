@@ -18,6 +18,28 @@ local RSTooltipScanners = private.ImportLib("RareScannerTooltipScanners")
 -- Filters to apply to the loot displayed under the main button and the worldmap
 ---============================================================================
 
+local conduits = {}
+local function IsConduitAlreadyCollected(itemID)
+	if (not itemID) then
+		return false;
+	end
+	
+	-- load collected conduits the first time
+	if (next(conduits) == nil) then
+		for conduitType = 0, 3 do
+			for _, collectionData in pairs(C_Soulbinds.GetConduitCollection(conduitType)) do
+		        if (collectionData) then
+					conduits[collectionData.conduitItemID] = true
+				end
+		    end
+	    end
+	elseif (conduits[itemID]) then
+		return true
+	end
+	
+	return false;
+end
+
 local function IsEquipable(itemClassID, itemSubClassID, itemEquipLoc)
 	local _, _, classIndex = UnitClass("player");
 	for categoryID, subcategories in pairs(private.CLASS_PROFICIENCIES[classIndex]) do
@@ -43,6 +65,12 @@ function RSLoot.IsFiltered(itemID, itemLink, itemRarity, itemEquipLoc, itemClass
 	-- Category filter
 	if (RSConfigDB.GetLootFilterByCategory(itemClassID, itemSubClassID) == false) then
 		RSLogger:PrintDebugMessageItemID(itemID, string.format("Item [%s]. Filtrado por su categoria.", itemID))
+		return true
+	end
+	
+	-- Individual filter
+	if (RSConfigDB.IsItemFiltered(itemID)) then
+		RSLogger:PrintDebugMessageItemID(itemID, string.format("Item [%s]. Filtrado individualmente.", itemID))
 		return true
 	end
 
@@ -128,12 +156,38 @@ function RSLoot.IsFiltered(itemID, itemLink, itemRarity, itemEquipLoc, itemClass
 
 	-- Collection toy filter
 	-- Toys have different categories under miscelanious
-	if (RSConfigDB.IsFilteringByCollected()) then --toy
+	if (RSConfigDB.IsFilteringByCollected()) then
 		if (RSTooltipScanners.ScanLoot(itemLink, TOY) and RSTooltipScanners.ScanLoot(itemLink, ITEM_SPELL_KNOWN)) then
 			RSLogger:PrintDebugMessageItemID(itemID, string.format("Item [%s]. Filtrado por haberlo conseguido ya (juguete).", itemID))
 			return true
 		end
 	end
-
+	
+	-- Anima items filter
+	if (RSConfigDB.IsFilteringAnimaItems()) then
+		if (RSTooltipScanners.ScanLoot(itemLink, ANIMA)) then
+			RSLogger:PrintDebugMessageItemID(itemID, string.format("Item [%s]. Filtrado por ser un objeto que da ánima.", itemID))
+			return true
+		end
+	end
+	
+	-- Conduits filter
+	if (RSConfigDB.IsFilteringConduitItems()) then
+		if (C_Soulbinds.IsItemConduitByItemInfo(itemLink)) then
+			-- First check if collected already
+			if (IsConduitAlreadyCollected(itemID)) then
+				RSLogger:PrintDebugMessageItemID(itemID, string.format("Item [%s]. Filtrado por haberlo conseguido ya (conducto).", itemID))
+				return true
+			-- Check if usable
+			else
+				local conduitInfo = RSLootDB.GetConduitInfo(itemID)
+				if (conduitInfo and not C_SpecializationInfo.MatchesCurrentSpecSet(conduitInfo.specSetID)) then
+					RSLogger:PrintDebugMessageItemID(itemID, string.format("Item [%s]. Filtrado por no poder usarlo por ser de otra clase (conducto).", itemID))
+					return true
+				end
+			end
+		end
+	end
+	
 	return false
 end

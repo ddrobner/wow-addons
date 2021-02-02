@@ -1,0 +1,17 @@
+## Interface: 90002
+## Title: M6
+## Notes: Better macros for standard action bars (or key bindings)
+## Author: foxlit
+## Version: 1.23
+## X-Version-Tag: half/ten
+## X-Website: https://www.townlong-yak.com/addons/m6/
+## OptionalDeps: OPie
+## SavedVariables: M6DB
+Libs\Evie.lua
+Libs\Skip.lua
+Libs\ActionBook\ActionBook.xml
+Core.lua
+Repaint.lua
+EditorUI.lua
+ext/qsequence.lua
+ext/flag.lua

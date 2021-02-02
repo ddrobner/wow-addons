@@ -48,7 +48,7 @@ end
 ---- Manage adding Container icons to the world map and minimap
 ---============================================================================
 
-local function GetContainerPOI(containerID, mapID, containerInfo, alreadyFoundInfo)
+function RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo, alreadyFoundInfo)
 	local POI = {}
 	POI.entityID = containerID
 	POI.isContainer = true
@@ -64,6 +64,9 @@ local function GetContainerPOI(containerID, mapID, containerInfo, alreadyFoundIn
 	POI.isOpened = RSContainerDB.IsContainerOpened(containerID)
 	POI.isDiscovered = POI.isOpened or alreadyFoundInfo
 	POI.achievementLink = RSAchievementDB.GetNotCompletedAchievementLink(containerID, mapID)
+	if (containerInfo) then
+		POI.worldmap = containerInfo.worldmap
+	end
 
 	-- Textures
 	if (POI.isOpened) then
@@ -99,6 +102,12 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, vignetteG
 		end
 	end
 
+	-- Skip if the entity is filtered
+	if (RSConfigDB.IsContainerFiltered(containerID) and not RSContainerDB.IsWorldMap(containerID)) then
+		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Filtrado en opciones.", containerID))
+		return true
+	end
+
 	-- Skip if the entity appears only while a quest event is going on and it isnt active
 	if (zoneQuestID) then
 		local active = false
@@ -127,20 +136,20 @@ local function IsContainerPOIFiltered(containerID, mapID, zoneQuestID, vignetteG
 	end
 
 	-- Skip if an ingame vignette is already showing this entity (on Vignette)
-	--	for _, vignetteGUID in ipairs(vignetteGUIDs) do
-	--		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
-	--		if (vignetteInfo and vignetteInfo.objectGUID) then
-	--			local _, _, _, _, _, vignetteNPCID, _ = strsplit("-", vignetteInfo.objectGUID);
-	--			if (tonumber(vignetteNPCID) == containerID and onWorldMap and vignetteInfo.onWorldMap) then
-	--				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado Contenedor [%s]: Hay un vignette del juego mostrándolo (Vignette onWorldmap).", containerID))
-	--				return true
-	--			end
-	--			if (tonumber(vignetteNPCID) == containerID and onMinimap and vignetteInfo.onMinimap) then
-	--				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado Contenedor [%s]: Hay un vignette del juego mostrándolo (Vignette onMinimap).", containerID))
-	--				return true
-	--			end
-	--		end
-	--	end
+--	for _, vignetteGUID in ipairs(vignetteGUIDs) do
+--		local vignetteInfo = C_VignetteInfo.GetVignetteInfo(vignetteGUID);
+--		if (vignetteInfo and vignetteInfo.objectGUID) then
+--			local _, _, _, _, _, vignetteNPCID, _ = strsplit("-", vignetteInfo.objectGUID);
+--			if (tonumber(vignetteNPCID) == containerID and onWorldMap and vignetteInfo.onWorldMap) then
+--				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado Contenedor [%s]: Hay un vignette del juego mostrándolo (Vignette onWorldmap).", containerID))
+--				return true
+--			end
+--			if (tonumber(vignetteNPCID) == containerID and onMinimap and vignetteInfo.onMinimap) then
+--				RSLogger:PrintDebugMessageEntityID(npcID, string.format("Saltado Contenedor [%s]: Hay un vignette del juego mostrándolo (Vignette onMinimap).", containerID))
+--				return true
+--			end
+--		end
+--	end
 
 	return false
 end
@@ -171,7 +180,7 @@ function RSContainerPOI.GetMapNotDiscoveredContainerPOIs(mapID, vignetteGUIDs, o
 
 		-- Skip if common filters
 		if (not filtered and not IsContainerPOIFiltered(containerID, mapID, containerInfo.zoneQuestId, vignetteGUIDs, onWorldMap, onMinimap)) then
-			tinsert(POIs, GetContainerPOI(containerID, mapID, containerInfo))
+			tinsert(POIs, RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo))
 		end
 	end
 
@@ -189,13 +198,10 @@ function RSContainerPOI.GetMapAlreadyFoundContainerPOI(containerID, alreadyFound
 	local containerOpened = RSContainerDB.IsContainerOpened(containerID)
 
 	-- Skip if the entity has been seen before the max amount of time that the player want to see the icon on the map
-	-- This filter doesnt apply to opened entities
-	if (not containerOpened and RSConfigDB.IsMaxSeenTimeContainerFilterEnabled() and time() - alreadyFoundInfo.foundTime > RSTimeUtils.MinutesToSeconds(RSConfigDB.GetMaxSeenContainerTimeFilter())) then
-		-- If the container is part of an achievement it doesnt make sence to hide it because time (it will always be there)
-		if (not RSAchievementDB.HasAchievement(containerID, mapID)) then
-			RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Visto hace demasiado tiempo.", containerID))
-			return
-		end
+	-- This filter doesnt apply to opened entities or worldmap containers
+	if (not containerOpened and (containerInfo and not containerInfo.worldmap) and RSConfigDB.IsMaxSeenTimeContainerFilterEnabled() and time() - alreadyFoundInfo.foundTime > RSTimeUtils.MinutesToSeconds(RSConfigDB.GetMaxSeenContainerTimeFilter())) then
+		RSLogger:PrintDebugMessageEntityID(containerID, string.format("Saltado Contenedor [%s]: Visto hace demasiado tiempo.", containerID))
+		return
 	end
 
 	-- Skip if the entity belongs to a different map that the one displaying
@@ -219,6 +225,6 @@ function RSContainerPOI.GetMapAlreadyFoundContainerPOI(containerID, alreadyFound
 	end
 
 	if (not IsContainerPOIFiltered(containerID, mapID, zoneQuestID, vignetteGUIDs, onWorldMap, onMinimap)) then
-		return GetContainerPOI(containerID, mapID, containerInfo, alreadyFoundInfo)
+		return RSContainerPOI.GetContainerPOI(containerID, mapID, containerInfo, alreadyFoundInfo)
 	end
 end

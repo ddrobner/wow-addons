@@ -140,9 +140,14 @@ do
 
             item = 184017,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "huntsmans_bond" )
+            end,
+
+            usable = function ()
+                return incoming_damage_3s > 0 and health.pct < 70, "requires incoming damage and health below 70 percent"
             end,
 
             auras = {
@@ -203,7 +208,10 @@ do
 
             item = 178742,
 
-            readyTime = function () return buff.flayedwing_toxin.remains end,            
+            readyTime = function ()
+                if combat > 0 then return buff.flayedwing_toxin.remains end
+                return buff.flayedwing_toxin.remains - 600
+            end,
             handler = function ()
                 applyBuff( "flayedwing_toxin" )
             end,
@@ -234,6 +242,7 @@ do
 
             item = 173096,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "indomitable_deck" )
@@ -266,7 +275,9 @@ do
                     duration = 10,
                     max_stack = 1
                 }
-            }
+            },
+
+            copy = "darkmoon_deck__putrescence" -- simc
         },
 
         darkmoon_deck_repose = {
@@ -274,7 +285,7 @@ do
             cooldown = 90,
             gcd = "off",
 
-            item = 173096,
+            item = 173078,
         },
 
         darkmoon_deck_voracity = {
@@ -444,6 +455,7 @@ do
 
             item = 178850,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "suns_embrace" )
@@ -465,6 +477,7 @@ do
 
             item = 184841,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "lyre_of_sacred_purpose" )
@@ -474,6 +487,27 @@ do
                 lyre_of_sacred_purpose = {
                     id = 348136,
                     duration = 15,
+                    max_stack = 1
+                }
+            }
+        },
+
+        instructors_divine_bell = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 184842,
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff( "instructors_divine_bell" )
+            end,
+
+            auras = {
+                instructors_divine_bell = {
+                    id = 348139,
+                    duration = 9,
                     max_stack = 1
                 }
             }
@@ -552,6 +586,28 @@ do
             }
         },
 
+        mistcaller_ocarina = {
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            item = 178715,
+            
+            nobuff = "mistcaller_ocarina",
+
+            handler = function ()
+                applyBuff( "mistcaller_ocarina" )
+            end,
+
+            auras = {
+                mistcaller_ocarina = {
+                    id = 330067,
+                    duration = 900,
+                    max_stack = 1
+                }
+            }
+        },
+
         overcharged_anima_battery = {
             cast = 0,
             cooldown = 90,
@@ -603,6 +659,7 @@ do
                 if equipped[ 177657 ] then return 177657 end
                 return 181359
             end,
+            items = { 177657, 181359 },
             toggle = "cooldowns",
 
             handler = function ()
@@ -646,6 +703,7 @@ do
 
             item = 178825,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "heart_of_a_gargoyle" )
@@ -727,6 +785,11 @@ do
 
             item = 178770,
             toggle = "defensives",
+            defensive = true,
+
+            buff = "gluttonous",
+
+            usable = function () return buff.gluttonous.stack > 8 and health.percent < 80, "requires gluttonous stacks and a health deficit" end,
 
             handler = function ()
                 removeBuff( "gluttonous" )
@@ -743,19 +806,17 @@ do
 
         soul_igniter = {
             cast = 0,
-            cooldown = function () return debuff.soul_ignition.down and 0.5 or 60 end,
+            cooldown = 0.5,
             gcd = "off",
 
             item = 184019,
             toggle = "cooldowns",
 
+            nobuff = "soul_ignition",
+            no_icd = true,
+
             handler = function ()
-                if debuff.soul_ignition.down then
-                    applyDebuff( "player", "soul_ignition" )
-                else
-                    -- Blazing Surge.
-                    removeDebuff( "soul_ignition" )
-                end
+                applyBuff( "soul_ignition" )
             end,
 
             auras = {
@@ -766,6 +827,23 @@ do
                 }
             }
         },
+
+
+        soul_ignition = {
+            cast = 0,
+            cooldown = 60,
+
+            toggle = "cooldowns",
+
+            buff = "soul_ignition",
+
+            indicator = "cancel",
+
+            handler = function ()
+                removeBuff( "soul_ignition" )
+            end,
+        },
+
 
         soulletting_ruby = {
             cast = 0,
@@ -791,7 +869,9 @@ do
                     duration = 20,
                     max_stack = 1,
                 }
-            }
+            },
+
+            copy = "soul_infusion"
         },
 
         spare_meat_hook = {
@@ -904,10 +984,7 @@ do
             cooldown = 120,
             gcd = "off",
 
-            item = function ()
-                if equipped[ 181457 ] then return 181457 end
-                return 183850
-            end,
+            item = 181457,
             toggle = "cooldowns",
 
             handler = function ()
@@ -920,7 +997,7 @@ do
                     duration = 12,
                     max_stack = 1
                 }
-            }
+            },
         },
     } )
 end

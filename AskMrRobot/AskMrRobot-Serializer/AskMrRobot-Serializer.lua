@@ -1,6 +1,6 @@
 -- AskMrRobot-Serializer will serialize and communicate character data between users.
 
-local MAJOR, MINOR = "AskMrRobot-Serializer", 94
+local MAJOR, MINOR = "AskMrRobot-Serializer", 97
 local Amr, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not Amr then return end -- already loaded by something else
@@ -156,21 +156,11 @@ Amr.FactionIds = {
 }
 
 Amr.InstanceIds = {
-	Uldir = 1861,
-	Dazar = 2070,
-	Storms = 2096,
-	Palace = 2164,
-	Nyalotha = 2217,
 	Nathria = 2296
 }
 
 -- instances that AskMrRobot currently supports logging for
 Amr.SupportedInstanceIds = {
-	[1861] = true,
-	[2070] = true,
-	[2096] = true,
-	[2164] = true,
-	[2217] = true,
 	[2296] = true
 }
 
@@ -188,10 +178,10 @@ local function readBonusIdList(parts, first, last)
 	return ret
 end
 
---                 1      2    3      4      5      6    7   8   9   10   11       12         
---                 itemId:ench:gem1  :gem2  :gem3  :gem4:suf:uid:lvl:spec:flags   :instdiffid:numbonusIDs:bonusIDs1...n     :varies:?:relic bonus ids
---|cffe6cc80|Hitem:128866:    :152046:147100:152025:    :   :   :110:66  :16777472:9         :4          :736:1494:1490:1495:709   :1:3:3610:1472:3528:3:3562:1483:3528:3:3610:1477:3336|h[Truthguard]|h|r
---
+--                 1      2    3      4      5      6    7   8   9   10   11       12         13                             14     15 16   17 18
+--                 itemId:ench:gem1  :gem2  :gem3  :gem4:suf:uid:lvl:spec:flags   :instdiffid:numbonusIDs:bonusIDs1...n     :varies:? :relic bonus ids
+--|cffe6cc80|Hitem:128866:    :152046:147100:152025:    :   :   :110:66  :16777472:9         :4          :736:1494:1490:1495:709   :1 :3:3610:1472:3528:3:3562:1483:3528:3:3610:1477:3336|h[Truthguard]|h|r
+--|cff1eff00|Hitem:175722:    :      :      :      :    :   :   :57 :102 :        :11        :1          :6707              :2     :28:1340:9 :54:::|h[name]|h|r
 -- get an object with all of the parts of the item link format that we care about
 function Amr.ParseItemLink(itemLink)
     if not itemLink then return nil end
@@ -222,19 +212,23 @@ function Amr.ParseItemLink(itemLink)
 	
 	item.upgradeId = 0
 	item.level = 0
+	item.stat1 = 0
+	item.stat2 = 0
 
-	-- part 14 + numBonuses, unsure what this is... sometimes it is "2"
-	-- part 15 + numBonuses, unsure what this is... may indicate what part 16 will mean?
-	-- part 16 + numBonuses, is player level at drop when applicable
-	-- part 17 + numBonuses, unsure what this is...
-	-- part 18 + numBonuses, unsure what this is...
-	-- part 19 + numBonuses, relic info would be here for legion artifacts
-
-	local someNumber = tonumber(parts[15 + offset]) or 0
-	if someNumber ~= 0 then
-		local lvl = tonumber(parts[16 + offset]) or 0
-		if lvl <= 60 then
-			item.level = lvl
+	-- part 14 + numBonuses, seems to be the number of prop-value "pairs" that will follow,
+	-- for now we just parse the properties that we care about
+	local numProps = tonumber(parts[14 + offset]) or 0
+	if numProps > 0 then
+		for i = 15 + offset, 14 + offset + numProps * 2, 2 do
+			local prop = tonumber(parts[i]) or 0
+			local propVal = tonumber(parts[i + 1]) or 0
+			if prop == 9 then
+				item.level = propVal
+			elseif prop == 29 then
+				item.stat1 = propVal
+			elseif prop == 30 then
+				item.stat2 = propVal
+			end
 		end
 	end
 
@@ -291,8 +285,14 @@ function Amr.GetItemUniqueId(item, noUpgrade, noAzeriteEmpoweredBonusId)
     if not noUpgrade and item.upgradeId ~= 0 then
         ret = ret .. "u" .. item.upgradeId
     end
-	if item.level ~= 0 then
+	if item.level and item.level ~= 0 then
 		ret = ret .. "v" .. item.level
+	end
+	if item.stat1 and item.stat1 ~= 0 then
+		ret = ret .. "j" .. item.stat1
+	end
+	if item.stat2 and item.stat2 ~= 0 then
+		ret = ret .. "k" .. item.stat2
 	end
     return ret
 end
@@ -595,7 +595,7 @@ local function appendItemsToExport(fields, itemObjects)
             table.insert(itemParts, "u" .. (itemData.upgradeId - prevUpgradeId))
             prevUpgradeId = itemData.upgradeId
         end
-		if itemData.level ~= 0 then
+		if itemData.level and itemData.level ~= 0 then
 			table.insert(itemParts, "v" .. (itemData.level - prevLevel))
 			prevLevel = itemData.level
 		end
@@ -606,6 +606,13 @@ local function appendItemsToExport(fields, itemObjects)
             end
 		end
 		
+		if itemData.stat1 and itemData.stat1 ~= 0 then
+			table.insert(itemParts, "j" .. itemData.stat1)
+		end
+		if itemData.stat2 and itemData.stat2 ~= 0 then
+			table.insert(itemParts, "k" .. itemData.stat2)
+		end
+
 		--[[
 		if itemData.azerite then
 			for aIndex, aValue in ipairs(itemData.azerite) do
@@ -652,7 +659,7 @@ local function appendItemsToExport(fields, itemObjects)
                 table.insert(itemParts, "r" .. (bValue - prevRelicBonusId))
                 prevRelicBonusId = bValue
             end
-		end
+		end		
 
 		if itemData.guid then
 			table.insert(itemParts, "!" .. itemData.guid)
@@ -813,7 +820,18 @@ function Amr:SerializePlayerData(data, complete)
 		end
 		
         table.insert(fields, ".inv")
-        appendItemsToExport(fields, itemObjects)
+		appendItemsToExport(fields, itemObjects)
+		
+		if data.GreatVaultItems then
+			itemObjects = {}
+			for i, itemData in ipairs(data.GreatVaultItems) do
+				if itemData then
+					table.insert(itemObjects, itemData)
+				end
+			end
+			table.insert(fields, ".gv")
+			appendItemsToExport(fields, itemObjects)
+		end
     end
 
     return "$" .. table.concat(fields, ";") .. "$"

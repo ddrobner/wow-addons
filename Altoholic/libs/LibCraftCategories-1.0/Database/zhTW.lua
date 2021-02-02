@@ -1134,4 +1134,5 @@ LibStub("LibCraftCategories-1.0").zhTW = {
   [1133]={["Name_lang"]="外觀配件：其他",["HordeName_lang"]="",["ID"]=1533,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=9,["Flags"]=0},
   [1134]={["Name_lang"]="外觀配件：肩膀",["HordeName_lang"]="",["ID"]=1534,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=7,["Flags"]=0},
   [1135]={["Name_lang"]="外觀配件：背部",["HordeName_lang"]="",["ID"]=1535,["ParentTradeSkillCategoryID"]=1478,["SkillLineID"]=2787,["OrderIndex"]=8,["Flags"]=0},
+  [1136]={["Name_lang"]="背包",["HordeName_lang"]="",["ID"]=1538,["ParentTradeSkillCategoryID"]=1395,["SkillLineID"]=197,["OrderIndex"]=20,["Flags"]=0},
 }

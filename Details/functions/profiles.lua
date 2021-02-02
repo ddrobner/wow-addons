@@ -225,6 +225,8 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 			_detalhes:Msg ("Profile Not Found.")
 			return false
 		end
+
+		profile.ocd_tracker = nil --moved to local character saved
 		
 	--> always save the previous profile, except if nosave flag is up
 		if (not nosave) then
@@ -1096,12 +1098,25 @@ local default_profile = {
 
 _detalhes.default_profile = default_profile
 
-
-
 -- aqui fica as propriedades do jogador que n�o ser�o armazenadas no profile
 local default_player_data = {
 		coach = {
 			enabled = false,
+			welcome_panel_pos = {},
+			last_coach_name = false,
+		},
+
+	--> ocd tracker test
+		ocd_tracker = {
+			enabled = false,
+			cooldowns = {},
+			pos = {},
+			show_conditions = {
+				only_in_group = true,
+				only_inside_instance = true,
+			},
+			show_options = false,
+			current_cooldowns = {},
 		},
 
 	--> force all fonts to have this outline
@@ -1223,6 +1238,14 @@ local default_global_data = {
 		immersion_pets_on_solo_play = false, --pets showing when solo play
 		damage_scroll_auto_open = true,
 		damage_scroll_position = {},
+		data_wipes_exp = {
+			["9"] = false,
+			["10"] = false,
+			["11"] = false,
+			["12"] = false,
+			["13"] = false,
+			["14"] = false,
+		},
 		
 	--> death log
 		show_totalhitdamage_on_overkill = false,
@@ -1291,7 +1314,7 @@ local default_global_data = {
 	--> mythic plus config
 		mythic_plus = {
 			always_in_combat = false, --
-			merge_boss_trash = false, --
+			merge_boss_trash = true, --
 			delete_trash_after_merge = true, --
 			--merge_boss_with_trash = false, --this won't be used
 			boss_dedicated_segment = true, --

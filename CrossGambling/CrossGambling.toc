@@ -1,0 +1,12 @@
+## Interface: 90002
+## Title:|cffff7d0aCrossGambling
+## Author: Loyal
+## 9.0.2 Maintainer: Loyal @ Stormrage
+## Version: v3.0.3
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## Notes: A fun way to lose gold. Or win it.
+## SavedVariables: CrossGambling
+libs.xml
+CrossGambling.lua
+

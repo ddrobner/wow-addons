@@ -277,8 +277,7 @@ function S:Blizzard_GarrisonUI()
 	S:HandleScrollBar(MissionList.listScroll.scrollBar)
 	S:HandleCloseButton(MissionPage.CloseButton)
 	MissionPage.CloseButton:SetFrameLevel(MissionPage:GetFrameLevel() + 2)
-	S:HandleButton(MissionList.CompleteDialog.BorderFrame.ViewButton)
-	MissionList.CompleteDialog.BorderFrame.ViewButton.backdrop:SetFrameLevel(MissionList.CompleteDialog.BorderFrame.ViewButton:GetFrameLevel())
+	S:HandleButton(MissionList.CompleteDialog.BorderFrame.ViewButton, nil, nil, nil, nil, nil, nil, nil, true)
 	S:HandleButton(MissionPage.StartMissionButton)
 	S:HandleButton(GarrisonMissionFrame.MissionComplete.NextMissionButton)
 
@@ -427,8 +426,7 @@ function S:Blizzard_GarrisonUI()
 	MissionPage = MissionTab.MissionPage
 	S:HandleCloseButton(MissionPage.CloseButton)
 	MissionPage.CloseButton:SetFrameLevel(MissionPage.CloseButton:GetFrameLevel() + 2)
-	S:HandleButton(MissionList.CompleteDialog.BorderFrame.ViewButton)
-	MissionList.CompleteDialog.BorderFrame.ViewButton.backdrop:SetFrameLevel(MissionList.CompleteDialog.BorderFrame.ViewButton:GetFrameLevel())
+	S:HandleButton(MissionList.CompleteDialog.BorderFrame.ViewButton, nil, nil, nil, nil, nil, nil, nil, true)
 	S:HandleButton(GarrisonShipyardFrame.MissionComplete.NextMissionButton)
 	MissionList.CompleteDialog:SetAllPoints(MissionList.MapTexture)
 	GarrisonShipyardFrame.MissionCompleteBackground:SetAllPoints(MissionList.MapTexture)
@@ -519,8 +517,7 @@ function S:Blizzard_GarrisonUI()
 	S:HandleScrollBar(MissionList.listScroll.scrollBar)
 	MissionList.CompleteDialog:StripTextures()
 	MissionList.CompleteDialog:CreateBackdrop('Transparent')
-	S:HandleButton(MissionList.CompleteDialog.BorderFrame.ViewButton)
-	MissionList.CompleteDialog.BorderFrame.ViewButton.backdrop:SetFrameLevel(MissionList.CompleteDialog.BorderFrame.ViewButton:GetFrameLevel())
+	S:HandleButton(MissionList.CompleteDialog.BorderFrame.ViewButton, nil, nil, nil, nil, nil, nil, nil, true)
 	MissionList:StripTextures()
 	MissionList.listScroll:StripTextures()
 	S:HandleButton(_G.OrderHallMissionFrameMissions.CombatAllyUI.InProgress.Unassign)
@@ -587,7 +584,17 @@ function S:Blizzard_GarrisonUI()
 
 	-- Shadowlands Mission
 	local CovenantMissionFrame = _G.CovenantMissionFrame
-	SkinMissionFrame(CovenantMissionFrame) -- currently dont use StripTextures here, cause it seems blizzard fucks this up /shurg
+
+	if E.private.skins.parchmentRemoverEnable then
+		SkinMissionFrame(CovenantMissionFrame, true)
+
+		hooksecurefunc(CovenantMissionFrame, "SetupTabs", function(self)
+			self.MapTab:SetShown(not self.Tab2:IsShown())
+		end)
+	else
+		SkinMissionFrame(CovenantMissionFrame)
+	end
+
 	S:HandleIcon(_G.CovenantMissionFrameMissions.MaterialFrame.Icon)
 	_G.CovenantMissionFrameMissions.RaisedFrameEdges:SetAlpha(0)
 

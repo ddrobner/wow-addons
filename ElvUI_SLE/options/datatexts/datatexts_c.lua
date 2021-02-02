@@ -1,4 +1,4 @@
-local SLE, T, E, L = unpack(select(2, ...))
+﻿local SLE, T, E, L = unpack(select(2, ...))
 
 local function configTable()
 	if not SLE.initialized then return end

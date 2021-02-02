@@ -145,6 +145,7 @@ local AddonDB_Defaults = {
 			["UI.Tooltip.ShowItemCount"] = true,
 			["UI.Tooltip.ShowSimpleCount"] = false,				-- display just the counter, without details (like AH, equipped, etc..)
 			["UI.Tooltip.ShowTotalItemCount"] = true,
+            ["UI.Tooltip.ShowOnlyFirstGatheringItem"] = false,  -- show only the primary item gathered from gathering node, as the first item listed for that gathering node in LGN
 			["UI.Tooltip.ShowKnownRecipes"] = true,
 			["UI.Tooltip.ShowItemID"] = false,						-- display item id & item level in the tooltip (default: off)
 			["UI.Tooltip.ShowGatheringNodesCount"] = true,		-- display counters when mousing over a gathering node (default:  on)

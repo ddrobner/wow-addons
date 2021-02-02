@@ -87,6 +87,17 @@ LibStub("LibGatheringNodes-1.0").deDE = {
     ["Osmenitflöz"]                   = 168185,
     ["Reiches Osmenitvorkommen"]           = 168185,
 
+    -- Delaydowlands
+    ["Laestritvorkommen"]               = 171828, -- Laestrite Ore
+    ["Reiches Laestritvorkommen"]          = 171828, -- Laestrite Ore
+    ["Elethiumvorkommen"]                = 171833, -- Elethium Ore
+    ["Reiches Elethiumvorkommen"]           = 171833, -- Elethium Ore
+    ["Soleniumvorkommen"]                = 171829, -- Solenium Ore
+    ["Reiches Soleniumvorkommen"]           = 171829, -- Solenium Ore
+    ["Oxxeinvorkommen"]                  = 171830, -- Oxxein Ore
+    ["Sinvyrvorkommen"]                  = 171832, -- Sinvyr Ore
+    ["Phaedrumvorkommen"]                = 171831, -- Phaedrum Ore
+
 	
 	-- Herbs
 	-- Classic
@@ -184,4 +195,12 @@ LibStub("LibGatheringNodes-1.0").deDE = {
 	["Sternmoos"]                       = 152506,	
 	["Winterkuss"]                   = 152508,
     ["Zin'anthide"]                      = 168487,
+    
+    -- Delaydowlands
+    ["Todesblüte"]                   = 169701,
+    ["Nachtschatten"]                      = 171315,
+    ["Ruhmesstieg"]                    = 168586,
+    ["Wachtfackel"]                   = 170554,
+    ["Witwenblüte"]                      = 168583,
+    ["Markwurzel"]                      = 168589,
 }

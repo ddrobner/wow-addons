@@ -1,0 +1,69 @@
+From 239ac142fa13f4b66393004e3a22943c8ae74638 Mon Sep 17 00:00:00 2001
+From: Adirelle <adirelle@gmail.com>
+Date: Sat, 25 Oct 2014 09:13:04 +0200
+Subject: [PATCH] Experimental Masque support.
+
+Some skins do not support quality highlight.
+---
+ AdiBags.toc            |  2 +-
+ widgets/ItemButton.lua | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/AdiBags.toc b/AdiBags.toc
+index 3e2c9c6..f461239 100644
+--- a/AdiBags.toc
++++ b/AdiBags.toc
+@@ -6,7 +6,7 @@
+ ## Version: @project-version@
+ ## SavedVariables: AdiBagsDB
+ ## X-Date: @project-date-iso@
+-## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Inventory-3.0, LibSharedMedia-3.0, LibItemUpgradeInfo-1.0, Scrap, BrainDead, !BugGrabber, SyLevel
++## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Inventory-3.0, LibSharedMedia-3.0, LibItemUpgradeInfo-1.0, Scrap, BrainDead, !BugGrabber, SyLevel, Masque
+ #@alpha@
+ ## OptionalDeps: AdiDebug, BugSack, Swatter
+ #@end-alpha@
+diff --git a/widgets/ItemButton.lua b/widgets/ItemButton.lua
+index 362ec14..6e537d6 100644
+--- a/widgets/ItemButton.lua
++++ b/widgets/ItemButton.lua
+@@ -380,6 +380,40 @@ function buttonProto:UpdateBorder(isolatedEvent)
+ 	end
+ end
+ 
++--------------------------------------------------------------------------------
++-- Masque Support
++--------------------------------------------------------------------------------
++
++local Masque = LibStub('Masque', true)
++if Masque then
++	hooksecurefunc(buttonProto, "OnCreate", function(self)
++		self.masqueData = {
++			FloatingBG = false,
++			Icon = self.IconTexture,
++			Cooldown = self.Cooldown,
++			Flash = false,
++			Pushed = false,
++			Normal = self.NormalTexture,
++			Disabled = false,
++			Checked = false,
++			Border = self.IconQuestTexture,
++			AutoCastable = false,
++			--Highlight = false,
++			HotKey = self.Stock,
++			Count = self.Count,
++			Name = false,
++			Duration = false,
++			AutoCast = false,
++		}
++	end)
++	hooksecurefunc(buttonProto, "UpdateBorder", function(self)
++		self.masqueGroup:RemoveButton(self)
++		self.masqueGroup:AddButton(self, self.masqueData)
++	end)
++	buttonProto.masqueGroup = Masque:Group(addonName, addon.L["Backpack button"])
++	bankButtonProto.masqueGroup = Masque:Group(addonName, addon.L["Bank button"])
++end
++
+ --------------------------------------------------------------------------------
+ -- Item stack button
+ --------------------------------------------------------------------------------

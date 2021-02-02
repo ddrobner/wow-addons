@@ -1,0 +1,11 @@
+## Interface: 80100
+## Title: Fake Item Links 
+## Author: Jadya EU - Well of Eternity
+## Notes: Custom Item Links generator
+## eMail: n_rhygar@yahoo.it
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: 
+libs\NyxGUI-1.0\NyxGUI.xml
+localization.lua
+FakeItemLinks.lua

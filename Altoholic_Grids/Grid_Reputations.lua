@@ -276,19 +276,15 @@ local Factions = {
     { -- [9]
         name = EXPANSION_NAME8, -- "Shadowlands"
 		{	-- [1]
-			name = FACTION_ALLIANCE,
-			--{ name = DataStore:GetFactionName(2159), icon = "Inv_tabard_alliancewareffort" },
-		},
-		{	-- [2]
-			name = FACTION_HORDE,
-			--{ name = DataStore:GetFactionName(2157), icon = "Inv_tabard_hordewareffort" },
-		},
-		{	-- [3]
 			name = OTHER,
-            { name = DataStore:GetFactionName(2410), icon = "inv_tabard_maldraxxus_d_01" },
-            { name = DataStore:GetFactionName(2422), icon = "inv_tabard_ardenweald_d_01" },
-			{ name = DataStore:GetFactionName(2413), icon = "inv_tabard_revendreth_d_01" },
-			{ name = DataStore:GetFactionName(2407), icon = "PLACEHOLDER" }, -- check https://shadowlands.wowhead.com/achievement=14335/the-ascended#criteria-of:0+1+2
+			{ name = DataStore:GetFactionName(2413), icon = "inv_tabard_revendreth_d_01" },         -- Court of Harvesters
+            { name = DataStore:GetFactionName(2464), icon = "inv_ardenwealdstagmount_white" },      -- Court of Night
+            --{ name = DataStore:GetFactionName(2463), icon = "inv_mothardenwealdmount_mint"},        -- Marasimus                   [uncomment if this is ever fixed]
+			{ name = DataStore:GetFactionName(2407), icon = "inv_tabard_bastion_d_01" },            -- The Ascended
+            { name = DataStore:GetFactionName(2439), icon = "inv_deathwargmountpurple" },           -- The Avowed
+            { name = DataStore:GetFactionName(2410), icon = "inv_tabard_maldraxxus_d_01" },         -- The Undying Army
+            { name = DataStore:GetFactionName(2465), icon = "inv_tabard_ardenweald_d_01" },         -- The Wild Hunt
+            { name = DataStore:GetFactionName(2432), icon = "inv_helm_cloth_oribosdungeon_c_01" },  -- Ve'nari
 		},
     },
 	{

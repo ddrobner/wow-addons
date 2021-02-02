@@ -685,6 +685,7 @@ L["Sending reputations (%d of %d)"] = true
 L["Sending table of content (%d items)"] = true
 L["Sever"] = true
 L["Shadoweave"] = true
+L["Shadowlands"] = EXPANSION_NAME8
 L["Shadowforge Cache"] = true
 L["Shadow's Embrace"] = true
 L["Shaman Set"] = true

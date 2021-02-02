@@ -15,6 +15,8 @@ local C_LFGList_GetApplicationInfo = C_LFGList.GetApplicationInfo
 local C_LFGList_GetAvailableActivities = C_LFGList.GetAvailableActivities
 local C_LFGList_GetAvailableRoles = C_LFGList.GetAvailableRoles
 local C_MythicPlus_GetCurrentAffixes = C_MythicPlus.GetCurrentAffixes
+local C_ChallengeMode_GetSlottedKeystoneInfo = C_ChallengeMode.GetSlottedKeystoneInfo
+local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 
 local function LFDQueueFrameRoleButtonIconOnShow(self)
 	LBG.ShowOverlayGlow(self:GetParent().checkButton)
@@ -83,6 +85,18 @@ local function SetRoleIcon(self, resultID)
 end
 
 local function HandleAffixIcons(self)
+	local MapID, _, PowerLevel = C_ChallengeMode_GetSlottedKeystoneInfo()
+
+	if MapID then
+		local Name = C_ChallengeMode_GetMapUIInfo(MapID)
+
+		if Name and PowerLevel then
+			self.DungeonName:SetText(Name.. '|cffffffff - |r' .. '(' .. PowerLevel .. ')')
+		end
+
+		self.PowerLevel:SetText('')
+	end
+
 	for _, frame in ipairs(self.Affixes) do
 		frame.Border:SetTexture()
 		frame.Portrait:SetTexture()
@@ -93,7 +107,10 @@ local function HandleAffixIcons(self)
 			local _, _, filedataid = C_ChallengeMode_GetAffixInfo(frame.affixID)
 			frame.Portrait:SetTexture(filedataid)
 		end
-		frame.Portrait:SetTexCoord(unpack(E.TexCoords))
+
+		S:HandleIcon(frame.Portrait, true)
+
+		frame.Percent:FontTemplate(E.media.normFont, 16, 'OUTLINE')
 	end
 end
 
@@ -410,8 +427,7 @@ function S:LookingForGroupFrames()
 				tab:GetNormalTexture():SetInside()
 
 				tab.pushed = true
-				tab:CreateBackdrop()
-				tab.backdrop:SetAllPoints()
+				tab:CreateBackdrop(nil, nil, nil, nil, nil, nil, true)
 				tab:StyleButton(true)
 				hooksecurefunc(tab:GetHighlightTexture(), 'SetTexture', function(highlight, texPath)
 					if texPath ~= nil then
@@ -634,8 +650,7 @@ function S:LookingForGroupFrames()
 		local button = self.CategoryButtons[btnIndex]
 		if button then
 			if not button.isSkinned then
-				button:CreateBackdrop()
-				button.backdrop:SetAllPoints()
+				button:CreateBackdrop(nil, nil, nil, nil, nil, nil, true)
 				button.Icon:SetDrawLayer('BACKGROUND', 2)
 				button.Icon:SetTexCoord(unpack(E.TexCoords))
 				button.Icon:SetInside()
@@ -670,13 +685,16 @@ function S:Blizzard_ChallengesUI()
 	KeyStoneFrame:CreateBackdrop('Transparent')
 	S:HandleCloseButton(KeyStoneFrame.CloseButton)
 	S:HandleButton(KeyStoneFrame.StartButton)
+	S:HandleIcon(KeyStoneFrame.KeystoneSlot.Texture, true)
+
+	KeyStoneFrame.DungeonName:FontTemplate(E.media.normFont, 26, 'OUTLINE')
+	KeyStoneFrame.TimeLimit:FontTemplate(E.media.normFont, 20, 'OUTLINE')
 
 	hooksecurefunc('ChallengesFrame_Update', function(self)
 		for _, frame in ipairs(self.DungeonIcons) do
 			if not frame.backdrop then
 				frame:GetRegions():SetAlpha(0)
-				frame:CreateBackdrop('Transparent')
-				frame.backdrop:SetAllPoints()
+				frame:CreateBackdrop('Transparent', nil, nil, nil, nil, nil, true)
 				S:HandleIcon(frame.Icon, true)
 				frame.Icon:SetInside()
 			end
@@ -693,6 +711,10 @@ function S:Blizzard_ChallengesUI()
 	hooksecurefunc(KeyStoneFrame, 'Reset', function(self)
 		self:GetRegions():SetAlpha(0)
 		self.InstructionBackground:SetAlpha(0)
+		self.KeystoneSlotGlow:Hide()
+		self.SlotBG:Hide()
+		self.KeystoneFrame:Hide()
+		self.Divider:Hide()
 	end)
 
 	hooksecurefunc(KeyStoneFrame, 'OnKeystoneSlotted', HandleAffixIcons)

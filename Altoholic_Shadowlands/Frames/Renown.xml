@@ -1,0 +1,176 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Renown.lua"></Script>
+
+	<Button name="AltoCovenantRenownTrackButtonTemplate" virtual="true">
+		<Size x="22" y="39"/>
+		<NormalTexture atlas="CovenantSanctum-Renown-Arrow" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="CovenantSanctum-Renown-Arrow-Depressed" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</PushedTexture>	
+		<DisabledTexture atlas="CovenantSanctum-Renown-Arrow-Disabled" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</DisabledTexture>
+		<HighlightTexture atlas="CovenantSanctum-Renown-Arrow-Hover" useAtlasSize="true" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="CENTER" y="1"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsRenownTrackButton")
+			</OnLoad>
+			<OnMouseDown>
+                self:OnMouseDown()
+            </OnMouseDown>
+			<OnMouseUp>
+                self:OnMouseUp()
+            </OnMouseUp>
+			<OnDisable>
+                self:OnDisable()
+            </OnDisable>
+		</Scripts>
+	</Button>
+    
+    <Frame name="AltoCovenantRenownLevelTemplate" virtual="true">
+		<Size x="55" y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" parentArray="Textures">
+					<Size x="40" y="39"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="IconBorder" parentArray="Textures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Check" atlas="CovenantSanctum-Renown-Checkmark" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOM" y="-1"/>
+					</Anchors>
+				</FontString>
+				<MaskTexture parentKey="HexMask" atlas="CovenantSanctum-Renown-Hexagon-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</MaskTexture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightTexture" parentArray="Textures" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsRenownLevel")
+			</OnLoad>
+			<OnMouseUp>
+                self:OnMouseUp()
+            </OnMouseUp>
+			<OnEnter>
+                self:OnEnter()
+            </OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame parentKey="RenownPanel" parent="AltoholicTabShadowlands" inherits="AltoDataPanelTemplate" hidden="true">
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsRenown")
+			</OnLoad>
+            <OnShow>
+                self:OnShow()
+            </OnShow>
+            <OnHide>
+                self:OnHide()
+            </OnHide>
+			<OnEvent>
+                self:OnEvent()
+            </OnEvent>
+			<OnMouseWheel>
+                self:OnMouseWheel()
+            </OnMouseWheel>
+		</Scripts>
+        <Layers>
+      	    <Layer level="BORDER">
+			    <Texture parentKey="SelectedLevelGlow">
+				    <Anchors>
+					   <Anchor point="CENTER"/>
+				    </Anchors>
+			    </Texture>
+		    </Layer>
+        </Layers>
+		<Frames>
+        	<Frame parentKey="TrackFrame">
+				<Size x="570" y="72"/>
+				<Anchors>
+					<Anchor point="TOP" y="-135"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true">
+						<Layers>
+							<Layer level="OVERLAY">
+								<MaskTexture parentKey="Mask" atlas="CovenantSanctum-Renown-Scroll-Mask" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</MaskTexture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Button parentKey="LeftButton" inherits="AltoCovenantRenownTrackButtonTemplate">
+						<KeyValues>
+							<KeyValue key="direction" value="-1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-4"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="RightButton" inherits="AltoCovenantRenownTrackButtonTemplate">
+						<KeyValues>
+							<KeyValue key="direction" value="1" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT" x="4"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Scripts>
+			        <OnLoad>
+				        Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsRenownTrackFrame")
+			        </OnLoad>
+					<OnHide>
+                        self:OnHide()
+                    </OnHide>
+					<OnUpdate>
+                        self:OnUpdate(elapsed)
+                    </OnUpdate>
+				</Scripts>
+			</Frame>
+        </Frames>
+        
+	</Frame>
+</Ui>

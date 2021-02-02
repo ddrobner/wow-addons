@@ -87,6 +87,16 @@ LibStub("LibGatheringNodes-1.0").koKR = {
     ["Osmenite Seam"]                   = 168185,
     ["Rich Osmenite Deposit"]           = 168185,
 
+    -- Delaydowlands
+    ["레이스트라이트 광맥"]               = 171828, -- Laestrite Ore
+    ["풍부한 레이스트라이트 광맥"]          = 171828, -- Laestrite Ore
+    ["Elethium Deposit"]                = 171833, -- Elethium Ore
+    ["Rich Elethium Deposit"]           = 171833, -- Elethium Ore
+    ["솔레늄 광맥"]                = 171829, -- Solenium Ore
+    ["Rich Solenium Deposit"]           = 171829, -- Solenium Ore
+    ["옥세인 광맥"]                  = 171830, -- Oxxein Ore
+    ["Sinvyr Deposit"]                  = 171832, -- Sinvyr Ore
+    ["Phaedrum Deposit"]                = 171831, -- Phaedrum Ore
 	
 	-- Herbs
 	-- Classic
@@ -184,4 +194,12 @@ LibStub("LibGatheringNodes-1.0").koKR = {
 	["Star Moss"]                       = 152506,	
 	["Winter's Kiss"]                   = 152508,
     ["Zin'anthid"]                      = 168487,
+
+    -- Delaydowlands
+    ["죽음의 꽃"]                   = 169701,
+    ["밤그늘"]                      = 171315,
+    ["피어나는 영광"]                    = 168586,
+    ["경계의 횃불"]                   = 170554,
+    ["과부꽃"]                      = 168583,
+    ["골수뿌리"]                      = 168589,
 }

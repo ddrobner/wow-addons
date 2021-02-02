@@ -2,7 +2,7 @@
 ## Title: Altoholic_Characters
 ## Notes: Altoholic's Characters UI
 ## Author: Thaoky (EU-Marécages de Zangar)
-## Version: 9.0.2-001
+## Version: 9.0.2-015
 ## Dependencies: Altoholic, DataStore, DataStore_Characters, DataStore_Containers
 ## LoadOnDemand: 1
 ## X-Category: Interface Enhancements

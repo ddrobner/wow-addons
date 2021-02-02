@@ -1,4 +1,4 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 local EM = SLE:GetModule('EquipManager')
 
 local format = format
@@ -105,15 +105,6 @@ local function configTable()
 				name = L["Enable"],
 				get = function(info) return EM.db.enable end,
 				set = function(info, value) EM.db.enable = value; E:StaticPopup_Show("PRIVATE_RL") end
-			},
-			setoverlay = {
-				type = "toggle",
-				order = 5,
-				name = L["Equipment Set Overlay"],
-				desc = L["Show the associated equipment sets for the items in your bags (or bank)."],
-				disabled = function() return not E.private.bags.enable end,
-				get = function(info) return EM.db.setoverlay end,
-				set = function(info, value) EM.db.setoverlay = value; SLE:GetModule('BagInfo'):ToggleSettings(); end,
 			},
 			lockbutton = {
 				order = 6,

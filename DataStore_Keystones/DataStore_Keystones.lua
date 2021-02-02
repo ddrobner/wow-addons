@@ -16,23 +16,32 @@ local addon = _G[addonName]
 local AddonDB_Defaults = {
 	global = {
 		Options = {
-			WeeklyResetDay = nil,		-- weekday (0 = Sunday, 6 = Saturday)
-			WeeklyResetHour = nil,		-- 0 to 23
-			NextWeeklyReset = nil,
+			NextResetTimestamp = 0,
 		},
 		Characters = {
 			['*'] = {				-- ["Account.Realm.Name"] 
 				lastUpdate = nil,
 				currentKeystone = {},
 				highestKeystoneThisWeek = {},
+                
+                WeeklyActivities = {
+                    ['*'] = { -- id from C_WeeklyRewards.GetActivities
+                        progress = 0,
+                        level = 0,
+                        exampleRewards = {}, -- from C_WeeklyRewards.GetExampleRewardItemHyperlinks
+                    }
+                },
+                
+                RunHistory = { -- from C_MythicPlus.GetRunHistory(true, false), so includes previous weeks but not incomplete runs
+                    ['*'] = { -- array index, arbitrary
+                        mapChallengeModeID = 0,
+                        level = 0,
+                        thisWeek = false,
+                        completed = false, -- should always be false! Will not store incomplete runs.
+                    }
+                },
 			}
 		},
-        Guilds = {
-            ['*'] = {
-                lastUpdate = nil,
-                
-            }
-        },
 	}
 }
 
@@ -92,15 +101,40 @@ local function ScanHighestKeystone()
             end
         end
     end
+    
+    char.lastUpdate = time()
+end
+
+local function ScanRunHistory()
+    addon.ThisCharacter.RunHistory = C_MythicPlus.GetRunHistory(true)
+end
+
+local function ScanWeeklyRewards()
+    local activities = C_WeeklyRewards.GetActivities()
+    
+    -- Only save some of the data, and indexed on the id
+    local data = {}
+    for _, activity in pairs(activities) do
+        data[activity.id] = {
+            progress = activity.progress,
+            level = activity.level,
+            exampleRewards = {C_WeeklyRewards.GetExampleRewardItemHyperlinks(activity.id)},
+        }
+    end
+    
+    addon.ThisCharacter.WeeklyActivities = data 
 end
 
 -- *** Event Handlers ***
 local function OnPlayerAlive()
 	ScanCurrentKeystoneInfo()
+    ScanRunHistory()
+    ScanWeeklyRewards()
 end
 
 local function OnAffixUpdate()
     ScanHighestKeystone()
+    ScanRunHistory()
 end
 
 local function OnItemReceived(event, bag)
@@ -109,6 +143,15 @@ local function OnItemReceived(event, bag)
 	end
     ScanCurrentKeystoneInfo()
 end
+
+local function OnWeeklyRewardsUpdate()
+	ScanCurrentKeystoneInfo()
+    ScanHighestKeystone()
+    ScanRunHistory()
+    ScanWeeklyRewards()
+end
+
+-- ** MIXINS **
 
 -- *** Keystone Info ***
 local function _GetCurrentKeystone(character)
@@ -123,109 +166,68 @@ local function _GetHighestKeystone(character)
     return keystone.name, keystone.completionMilliseconds, keystone.level, keystone.texture, keystone.backgroundTexture
 end
 
--- from DataStore_Agenda
-local function GetWeeklyResetDayByRegion(region)
-	local day = 2		-- default to US, 2 = Tuesday
-	
-	if region then
-		if region == "EU" then 
-			day = 3 
-		elseif region == "CN" or region == "KR" or region == "TW" then
-			day = 4
-		end
-	end
-	
-	return day
+local function _GetKeystoneRunHistory(character, includePreviousWeeks)
+    local history = character.RunHistory
+    local result = {}
+    
+    if includePreviousWeeks then return history end
+    
+    -- make new array filtering out previous weeks
+    local j = 1
+    for i, info in pairs(history) do
+        if info.thisWeek then
+            result[j] = info
+            j = j + 1
+        end
+    end
+    
+    return result
 end
 
--- from DataStore_Agenda
-local function GetNextWeeklyReset(weeklyResetDay)
-	local year = tonumber(date("%Y"))
-	local month = tonumber(date("%m"))
-	local day = tonumber(date("%d"))
-	local todaysWeekDay = tonumber(date("%w"))
-	local numDays = 0		-- number of days to add
-	
-	-- how many days should we add to today's date ?
-	if todaysWeekDay < weeklyResetDay then					-- if it is Monday (1), and reset is on Wednesday (3)
-		numDays = weeklyResetDay - todaysWeekDay		-- .. then we add 2 days
-	elseif todaysWeekDay > weeklyResetDay then			-- if it is Friday (5), and reset is on Wednesday (3)
-		numDays = weeklyResetDay - todaysWeekDay + 7	-- .. then we add 5 days (3 - 5 + 7)
-	else
-		-- Same day : if the weekly reset period has passed, add 7 days, if not yet, than 0 days
-		numDays = (tonumber(date("%H")) > GetOption("WeeklyResetHour")) and 7 or 0
-	end
-	
-	-- if numDays == 0 then return end
-	if numDays == 0 then return date("%Y-%m-%d") end
-	
-	local newDay = day + numDays	-- 25th + 2 days = 27, or 28th + 10 days = 38 days (used to check days overflow in a month)
-
-	local daysPerMonth = { 31,28,31,30,31,30,31,31,30,31,30,31 }
-	if (year % 4 == 0) and (year % 100 ~= 0 or year % 400 == 0) then	-- is leap year ?
-		daysPerMonth[2] = 29
-	end	
-	
-	-- no overflow ? (25th + 2 days = 27, we stay in the same month)
-	if newDay <= daysPerMonth[month] then
-		return format("%04d-%02d-%02d", year, month, newDay)
-	end
-	
-	-- we have a "day" overflow, but still in the same year
-	if month <= 11 then
-		-- 27/03 + 10 days = 37 - 31 days in March, so 6/04
-		return format("%04d-%02d-%02d", year, month+1, newDay - daysPerMonth[month])
-	end
-	
-	-- at this point, we had a day overflow in December, so jump to next year
-	return format("%04d-%02d-%02d", year+1, 1, newDay - daysPerMonth[month])
+-- Weekly rewards
+local function _WeeklyRewards_GetActivities(character)
+    local activities = C_WeeklyRewards.GetActivities() -- start with the data provided by the API then replace the character-specific data
+    local storedActivities = character.WeeklyActivities
+    for i, activityInfo in ipairs(activities) do
+        activities[i].progress = storedActivities[activityInfo.id].progress
+        activities[i].level = storedActivities[activityInfo.id].level
+    end
+    return activities
 end
 
--- from DataStore_Agenda
-local function InitializeWeeklyParameters()
-	local weeklyResetDay = GetWeeklyResetDayByRegion(GetCVar("portal"))
-	SetOption("WeeklyResetDay", weeklyResetDay)
-	SetOption("WeeklyResetHour", 6)			-- 6 am should be ok in most zones
-	SetOption("NextWeeklyReset", GetNextWeeklyReset(weeklyResetDay))
+local function _WeeklyRewards_GetExampleRewardItemHyperlinks(character, id)
+    return unpack(character.WeeklyActivities[id].exampleRewards)
 end
 
--- from DataStore_Agenda, adjusted
+
+-- ** HELPERS **
+
 local function ClearExpiredKeystones()
-	-- WeeklyResetDay = nil,		-- weekday (0 = Sunday, 6 = Saturday)
-	-- WeeklyResetHour = nil,		-- 0 to 23
-	-- NextWeeklyReset = nil,
-	
-	local weeklyResetDay = GetOption("WeeklyResetDay")
-	
-	if not weeklyResetDay then			-- if the weekly reset day has not been set yet ..
-		InitializeWeeklyParameters()
-		return	-- initial pass, nothing to clear
+	if time() > GetOption("NextResetTimestamp") then
+    	for key, character in pairs(addon.db.global.Characters) do
+            -- wipe current keystone data
+    		wipe(character.currentKeystone)
+            wipe(character.highestKeystoneThisWeek)
+            
+            -- set all runs in the M+ run history to not be "this week" anymore
+            for i in ipairs(character.RunHistory) do
+                character.RunHistory[i].completed = false
+            end
+            
+            -- wipe weekly rewards data
+            wipe(character.WeeklyActivities)
+    	end
 	end
-	
-	local nextReset = GetOption("NextWeeklyReset")
-	if not nextReset then		-- heal broken data
-		InitializeWeeklyParameters()
-		nextReset = GetOption("NextWeeklyReset") -- retry
-	end
-	
-	local today = date("%Y-%m-%d")
-
-	if (today < nextReset) then return end		-- not yet ? exit
-	if (today == nextReset) and (tonumber(date("%H")) < GetOption("WeeklyResetHour")) then return end
-	
-	-- at this point, we may reset
-	for key, character in pairs(addon.db.global.Characters) do
-		wipe(character.currentKeystone)
-        wipe(character.highestKeystoneThisWeek)
-	end
-	
-	-- finally, set the next reset day
-	SetOption("NextWeeklyReset", GetNextWeeklyReset(weeklyResetDay))
+    
+    SetOption("NextResetTimestamp", time() + C_DateAndTime.GetSecondsUntilWeeklyReset())
 end
 
 local PublicMethods = {
     GetCurrentKeystone = _GetCurrentKeystone,
     GetHighestKeystone = _GetHighestKeystone,
+    GetKeystoneRunHistory = _GetKeystoneRunHistory,
+    WeeklyRewards_GetActivities = _WeeklyRewards_GetActivities,
+    WeeklyRewards_GetExampleRewardItemHyperlinks = _WeeklyRewards_GetExampleRewardItemHyperlinks,
 }
 
 function addon:OnInitialize()
@@ -235,12 +237,18 @@ function addon:OnInitialize()
 
 	DataStore:SetCharacterBasedMethod("GetCurrentKeystone")
 	DataStore:SetCharacterBasedMethod("GetHighestKeystone")
+    DataStore:SetCharacterBasedMethod("GetKeystoneRunHistory")
+    DataStore:SetCharacterBasedMethod("WeeklyRewards_GetActivities")
+    DataStore:SetCharacterBasedMethod("WeeklyRewards_GetExampleRewardItemHyperlinks")
 end
 
 function addon:OnEnable()
 	addon:RegisterEvent("PLAYER_ALIVE", OnPlayerAlive)
 	addon:RegisterEvent("BAG_UPDATE", OnItemReceived)
     addon:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE", OnAffixUpdate)
+    
+	addon:RegisterEvent("WEEKLY_REWARDS_UPDATE", OnWeeklyRewardsUpdate) -- fires when the week ticks over
+
     ClearExpiredKeystones()
 end
 
@@ -248,4 +256,5 @@ function addon:OnDisable()
 	addon:UnregisterEvent("PLAYER_ALIVE")
 	addon:UnregisterEvent("CHALLENGE_MODE_MAPS_UPDATE")
 	addon:UnregisterEvent("BAG_UPDATE")
+    addon:UnregisterEvent("WEEKLY_REWARDS_UPDATE")
 end

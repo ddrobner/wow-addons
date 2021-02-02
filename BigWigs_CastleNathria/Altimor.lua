@@ -1,9 +1,3 @@
-
---------------------------------------------------------------------------------
--- TODO:
--- -- Mark Ripped Soul for visibility
--- -- Mark Petrifying Howl targets?
-
 --------------------------------------------------------------------------------
 -- Module Declaration
 --
@@ -17,17 +11,18 @@ mod:RegisterEnableMob(
 	169458) -- Hecutis
 mod.engageId = 2418
 mod.respawnTime = 30
+mod:SetStage(1)
 
 --------------------------------------------------------------------------------
 -- Locals
 --
 
-local stage = 1
 local sinseekerCount = 1
 local bloodyThrashCount = 1
 local ripSoulCount = 1
 local shadesOfBargastCount = 1
 local petrifyingHowlCount = 1
+local mobCollector = {}
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -43,11 +38,12 @@ end
 --
 
 local sinseekerMarker = mod:AddMarkerOption(false, "player", 1, 335114, 1, 2, 3) -- Sinseeker
+local shadesofBargastMarker = mod:AddMarkerOption(false, "npc", 4, 334757, 4, 5) -- Shades of Bargast
 function mod:GetOptions()
 	return {
 		"stages",
 		--[[ Huntsman Altimor ]]--
-		{335114, "SAY", "FLASH"}, -- Sinseeker
+		{335114, "SAY", "SAY_COUNTDOWN", "FLASH", "ME_ONLY_EMPHASIZE"}, -- Sinseeker
 		sinseekerMarker,
 		334404, -- Spreadshot
 
@@ -59,6 +55,7 @@ function mod:GetOptions()
 		{334797, "TANK_HEALER"}, -- Rip Soul
 		334884, -- Devour Soul
 		334757, -- Shades of Bargast
+		shadesofBargastMarker,
 		-- 334708, -- Deathly Roar
 
 		--[[ Hecutis ]]--
@@ -101,7 +98,6 @@ function mod:OnBossEnable()
 	self:Death("BargastDeath", 169457)
 
 	--[[ Hecutis ]]--
-	self:Log("SPELL_AURA_APPLIED", "CrushingStone", 334860)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "CrushingStone", 334860)
 	self:Log("SPELL_CAST_SUCCESS", "PetrifyingHowl", 334852)
 	self:Log("SPELL_AURA_APPLIED", "PetrifyingHowlApplied", 334852)
@@ -114,17 +110,18 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	stage = 1
 	sinseekerCount = 1
 	bloodyThrashCount = 1
 	ripSoulCount = 1
 	shadesOfBargastCount = 1
 	petrifyingHowlCount = 1
+	mobCollector = {}
+	self:SetStage(1)
 
-	self:Bar(334404, 6.2) -- Spreadshot
-	self:Bar(334971, 11.2) -- Jagged Claws
-	self:Bar(334945, 18, CL.count:format(self:SpellName(334945), bloodyThrashCount)) -- Bloody Thrash
-	self:Bar(335114, 51, CL.count:format(self:SpellName(335114), sinseekerCount)) -- Sinseeker
+	self:Bar(334404, 6.5) -- Spreadshot
+	self:Bar(334971, 10) -- Jagged Claws
+	self:Bar(334945, 23.5, CL.count:format(self:SpellName(334945), bloodyThrashCount)) -- Vicious Lunge
+	self:Bar(335114, 28.5, CL.count:format(self:SpellName(335114), sinseekerCount)) -- Sinseeker
 end
 
 --------------------------------------------------------------------------------
@@ -133,9 +130,10 @@ end
 
 function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, _, spellId)
 	if spellId == 334504 then -- Huntsman's Bond
-		local sourceGUID = UnitGUID(unit)
+		local sourceGUID = self:UnitGUID(unit)
 		if self:MobId(sourceGUID) == 165066 then -- Huntsman Altimor
-			stage = stage + 1
+			local stage = self:GetStage() + 1
+			self:SetStage(stage)
 			if stage == 2 then -- Bargast up
 				ripSoulCount = 1
 				shadesOfBargastCount = 1
@@ -153,47 +151,53 @@ end
 
 --[[ Huntsman Altimor ]]--
 
-function mod:Sinseeker(args)
-	self:StopBar(CL.count:format(args.spellName, sinseekerCount))
-	self:Message(args.spellId, "orange", CL.casting:format(CL.count:format(args.spellName, sinseekerCount)))
-	sinseekerCount = sinseekerCount + 1
-	self:CDBar(args.spellId, 51, CL.count:format(args.spellName, sinseekerCount))
-end
-
 do
-	local playerList, playerIcons = mod:NewTargetList(), {}
+	local playerList = {}
+	local timers = {51, 60, 64, 24}
+	function mod:Sinseeker(args)
+		playerList = {}
+		self:StopBar(CL.count:format(args.spellName, sinseekerCount))
+		self:Message(args.spellId, "orange", CL.casting:format(CL.count:format(args.spellName, sinseekerCount)))
+		sinseekerCount = sinseekerCount + 1
+		local cd = timers[self:GetStage()]
+		self:Bar(args.spellId, cd, CL.count:format(args.spellName, sinseekerCount))
+	end
+
 	function mod:HuntsmansMarkApplied(args)
 		local count = #playerList+1
 		playerList[count] = args.destName
-		playerIcons[count] = count
+		playerList[args.destName] = count -- Set raid marker
 		if self:Me(args.destGUID) then
 			self:Say(335114, CL.count_rticon:format(self:SpellName(335114), count, count))
+			self:SayCountdown(335114, 5.7, count) -- _applied to damage, varys with distance
 			self:PlaySound(335114, "warning")
 			self:Flash(335114)
 		end
-		if self:GetOption(sinseekerMarker) then
-			SetRaidTarget(args.destName, count)
-		end
-		self:TargetsMessage(335114, "orange", playerList, 3, CL.count:format(self:SpellName(335114), sinseekerCount-1), nil, 2, playerIcons) -- Debuffs are very delayed
+		self:CustomIcon(sinseekerMarker, args.destName, count)
+		self:NewTargetsMessage(335114, "orange", playerList, 3, CL.count:format(self:SpellName(335114), sinseekerCount-1), nil, 2) -- Debuffs are very delayed
 	end
 end
 
 function mod:HuntsmansMarkRemoved(args)
-	if self:GetOption(sinseekerMarker) then
-		SetRaidTarget(args.destName, 0)
+	if self:Me(args.destGUID) then
+		self:CancelSayCountdown(335114)
 	end
+
+	self:CustomIcon(sinseekerMarker, args.destName)
 end
 
 function mod:Spreadshot(args)
 	self:Message(args.spellId, "yellow")
 	self:PlaySound(args.spellId, "alert")
-	self:Bar(args.spellId, 12.2)
+	if self:GetStage() < 4 then -- spams in p4 every few seconds
+		self:Bar(args.spellId, 12.2)
+	end
 end
 
 --[[ Margore ]]--
 
 function mod:JaggedClaws(args)
-	self:Bar(args.spellId, 20) -- _SUCCESS to _START
+	self:CDBar(args.spellId, 20) -- _SUCCESS to _START
 end
 
 function mod:JaggedClawsApplied(args)
@@ -209,8 +213,8 @@ function mod:ViciousLungeApplied(args)
 	self:PrimaryIcon(args.spellId, args.destName)
 	if self:Me(args.destGUID) then
 		self:PlaySound(args.spellId, "warning")
-		self:Say(args.spellId)
-		self:SayCountdown(args.spellId, 6)
+		self:Yell(args.spellId)
+		self:YellCountdown(args.spellId, 6)
 	end
 	bloodyThrashCount = bloodyThrashCount + 1
 	self:Bar(args.spellId, 25, CL.count:format(args.spellName, bloodyThrashCount))
@@ -219,7 +223,7 @@ end
 function mod:ViciousLungeRemoved(args)
 	self:PrimaryIcon(args.spellId)
 	if self:Me(args.destGUID) then
-		self:CancelSayCountdown(args.spellId)
+		self:CancelYellCountdown(args.spellId)
 	end
 end
 
@@ -230,6 +234,7 @@ function mod:MargoreDeath()
 	self:StopBar(CL.count:format(self:SpellName(334945), bloodyThrashCount)) -- Bloody Thrash
 
 	self:Bar("stages", 6, -22311, 334797) -- Bargast, Rip Soul icon
+	self:Bar(335114, 38.5, CL.count:format(self:SpellName(335114), sinseekerCount)) -- Sinseeker
 end
 
 --[[ Bargast ]]--
@@ -239,7 +244,7 @@ function mod:RipSoulStart(args)
 	self:PlaySound(args.spellId, "alert")
 	self:CastBar(args.spellId, 2.5, CL.count:format(args.spellName, ripSoulCount))
 	ripSoulCount = ripSoulCount + 1
-	self:Bar(args.spellId, 30.5, CL.count:format(args.spellName, ripSoulCount))
+	self:Bar(args.spellId, 31, CL.count:format(args.spellName, ripSoulCount))
 end
 
 function mod:RipSoul(args)
@@ -254,12 +259,30 @@ function mod:DevourSoul(args)
 	self:PlaySound(args.spellId, "alarm")
 end
 
+do
+	local shadesofBargastMarked = 0
+	function mod:shadesofBargastMarking(event, unit, guid)
+		if self:MobId(guid) == 171557 and not mobCollector[guid] then
+			shadesofBargastMarked = shadesofBargastMarked + 1
+			self:CustomIcon(shadesofBargastMarker, unit, shadesofBargastMarked+3)
+			mobCollector[guid] = true
+			if shadesofBargastMarked == 2 then
+				self:UnregisterTargetEvents()
+			end
+		end
+	end
 
-function mod:ShadesOfBargast(args)
-	self:Message(args.spellId, "green", CL.incoming:format(CL.count:format(args.spellName, shadesOfBargastCount)))
-	self:PlaySound(args.spellId, "long")
-	shadesOfBargastCount = shadesOfBargastCount + 1
-	self:Bar(args.spellId, 60, CL.count:format(args.spellName, shadesOfBargastCount))
+	function mod:ShadesOfBargast(args)
+		self:Message(args.spellId, "green", CL.incoming:format(CL.count:format(args.spellName, shadesOfBargastCount)))
+		self:PlaySound(args.spellId, "long")
+		shadesOfBargastCount = shadesOfBargastCount + 1
+		self:Bar(args.spellId, 61, CL.count:format(args.spellName, shadesOfBargastCount))
+		if self:GetOption(shadesofBargastMarker) then
+			shadesofBargastMarked = 0
+			self:RegisterTargetEvents("shadesofBargastMarking")
+			self:ScheduleTimer("UnregisterTargetEvents", 10)
+		end
+	end
 end
 
 -- do
@@ -287,25 +310,26 @@ function mod:BargastDeath()
 	self:StopBar(CL.count:format(self:SpellName(334757), shadesOfBargastCount)) -- Shades Of Bargast
 
 	self:Bar("stages", 6, -22310, 334852) -- Hecutis, Petrifying Howl icon
+	self:Bar(335114, 34, CL.count:format(self:SpellName(335114), sinseekerCount)) -- Sinseeker
 end
 
 --[[ Hecutis ]]--
 
 function mod:CrushingStone(args)
-	local amount = args.amount or 1
-	if amount % 3 == 1 then -- lets see how fast it stacks
-		self:StackMessage(args.spellId, args.destName, amount, "purple")
+	self:StackMessage(args.spellId, args.destName, args.amount, "purple")
+	if args.amount > 2 then
 		self:PlaySound(args.spellId, "info")
 	end
 end
 
-function mod:PetrifyingHowl(args)
-	petrifyingHowlCount = petrifyingHowlCount + 1
-	self:Bar(args.spellId, 20.5, CL.count:format(args.spellName, petrifyingHowlCount))
-end
-
 do
-	local playerList = mod:NewTargetList()
+	local playerList = {}
+	function mod:PetrifyingHowl(args)
+		playerList = {}
+		petrifyingHowlCount = petrifyingHowlCount + 1
+		self:Bar(args.spellId, self:Mythic() and 30 or 20.5, CL.count:format(args.spellName, petrifyingHowlCount))
+	end
+
 	function mod:PetrifyingHowlApplied(args)
 		playerList[#playerList+1] = args.destName
 		if self:Me(args.destGUID) then
@@ -315,7 +339,7 @@ do
 			self:Flash(args.spellId)
 			self:TargetBar(args.spellId, 8, args.destName)
 		end
-		self:TargetsMessage(args.spellId, "orange", playerList, 3, CL.count:format(args.spellName, petrifyingHowlCount-1), nil, 1) -- Travel time on debuffs?
+		self:NewTargetsMessage(args.spellId, "orange", playerList, 3, CL.count:format(args.spellName, petrifyingHowlCount-1), nil, 1) -- Travel time on debuffs?
 	end
 
 	function mod:PetrifyingHowlRemoved(args)
@@ -330,6 +354,9 @@ function mod:HecutisDeath()
 	self:Message("stages", "cyan", L.killed:format(self:SpellName(-22310)), false) -- Hecutis
 
 	self:StopBar(CL.count:format(self:SpellName(334852), petrifyingHowlCount)) -- Petrifying Howl
+
+	self:SetStage(4)
+	self:Bar(335114, 6.5, CL.count:format(self:SpellName(335114), sinseekerCount)) -- Sinseeker
 end
 
 do
@@ -339,7 +366,7 @@ do
 			local t = args.time
 			if t-prev > 2 then
 				prev = t
-				self:PlaySound(args.spellId, "alarm")
+				self:PlaySound(args.spellId, "underyou")
 				self:PersonalMessage(args.spellId, "underyou")
 			end
 		end

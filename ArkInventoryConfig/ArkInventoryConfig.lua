@@ -2,8 +2,8 @@
 
 License: All Rights Reserved, (c) 2006-2018
 
-$Revision: 2760 $
-$Date: 2020-11-08 11:26:39 +1100 (Sun, 08 Nov 2020) $
+$Revision: 2769 $
+$Date: 2020-11-30 18:24:52 +1100 (Mon, 30 Nov 2020) $
 
 ]]--
 
@@ -1515,7 +1515,8 @@ function ArkInventory.ConfigInternal( )
 							type = "toggle",
 							width = "half",
 							disabled = function( info )
-								return not ArkInventory.Global.Junk.process or not ArkInventory.db.option.junk.sell
+								--return not ArkInventory.Global.Junk.process or not ArkInventory.db.option.junk.sell
+								return true
 							end,
 							get = function( info )
 								return ArkInventory.db.option.junk.delete

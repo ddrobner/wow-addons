@@ -3,7 +3,7 @@
 ## Title: AAP - Core
 ## Notes: Leveling Addon
 ## Author: Zyrrael
-## Version: 9.059
+## Version: 9.062
 ## SavedVariables: AAP1, AAP2, AAP3, AAPQuestNames, AAP_HoldZoneVar, AAP_Transport, AAP_Custom, AAP_ZoneComplete, AAP_TaxiTimers
 lib\HereBeDragons\LibStub\LibStub.lua
 lib\HereBeDragons\CallbackHandler-1.0\CallbackHandler-1.0.xml

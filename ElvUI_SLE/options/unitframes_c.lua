@@ -1,4 +1,4 @@
-local SLE, _, E, L = unpack(select(2, ...))
+﻿local SLE, _, E, L = unpack(select(2, ...))
 local UF = E:GetModule('UnitFrames');
 local SUF = SLE:GetModule('UnitFrames')
 

@@ -1,4 +1,4 @@
-local SLE, _, E, L = unpack(select(2, ...))
+﻿local SLE, _, E, L = unpack(select(2, ...))
 local DT = E:GetModule('DataTexts')
 
 --GLOBALS: unpack, select, tinsert, DURABILITY, MANA_REGEN

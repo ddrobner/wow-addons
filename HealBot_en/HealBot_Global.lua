@@ -1,4 +1,4 @@
-﻿HEALBOT_VERSION    = "9.0.2.0";
+﻿HEALBOT_VERSION    = "9.0.2.8";
 HEALBOT_VERSION_SC = HEALBOT_VERSION
 HEALBOT_ABOUT_URL = "healbot.dpm15.net"
 
@@ -6,7 +6,7 @@ local version = GetBuildInfo()
 local vMajor = string.split(".", version)
 HEALBOT_GAME_VERSION = tonumber(vMajor)
 
-if HEALBOT_GAME_VERSION==1 then HEALBOT_VERSION = "1.13.6.0" end
+if HEALBOT_GAME_VERSION==1 then HEALBOT_VERSION = "1.13.6.6" end
 
 function HealBot_globalVars()
     --Consumables
@@ -34,6 +34,8 @@ function HealBot_globalVars()
     HEALBOT_SILKWEAVE_BANDAGE               = 133940 --GetItemInfo(133940) or "--Silkweave Bandage";
     HEALBOT_DEEP_SEA_BANDAGE                = 158382 --GetItemInfo(158382) or "--Deep Sea Bandage";
     HEALBOT_TIDESPRAY_LINEN_BANDAGE         = 158381 --GetItemInfo(158381) or "--Tidespray Linen Bandage";
+    HEALBOT_SHROUDED_CLOTH_BANDAGE          = 173192 --GetItemInfo(173192) or "--Shrouded Cloth Bandage";
+    HEALBOT_HEAVY_SHROUDED_CLOTH_BANDAGE    = 173191 --GetItemInfo(173191) or "--Heavy Shrouded Cloth Bandage";
     --Potions
     HEALBOT_MAJOR_HEALING_POTION            = 13446 --GetItemInfo(13446) or "--Major Healing Potion";
     HEALBOT_SUPER_HEALING_POTION            = 22829 --GetItemInfo(22829) or "--Super Healing Potion";
@@ -49,6 +51,12 @@ function HealBot_globalVars()
     HEALBOT_ANTI_VENOM                      = 6452 --GetItemInfo(6452) or "--Anti-Venom";
     HEALBOT_POWERFUL_ANTI_VENOM             = 19440 --GetItemInfo(19440) or "--Powerful Anti-Venom";
     HEALBOT_ELIXIR_OF_POISON_RES            = 3386 --GetItemInfo(3386) or "--Potion of Curing";
+    HEALBOT_SOULFUL_HEALING_POTION          = 180317 --GetItemInfo(180317) or "--Soulful Healing Potion";
+    HEALBOT_SPIRITUAL_HEALING_POTION        = 171267 --GetItemInfo(171267) or "--Spiritual Healing Potion";
+    HEALBOT_SOULFUL_MANA_POTION             = 180318 --GetItemInfo(180318) or "--Soulful Mana Potion";
+    HEALBOT_SPIRITUAL_MANA_POTION           = 171268 --GetItemInfo(171268) or "--Spiritual Mana Potion";
+    HEALBOT_POTION_OF_SOUL_PURITY           = 171263 --GetItemInfo(171263) or "--Potion of Soul Purity";
+    HEALBOT_PHIAL_OF_SERENITY               = 177278 --GetItemInfo(177278) or "--Phial of Serenity";
 
     --Items
     HEALBOT_BLOOM                           = 176160 --GetSpellInfo(176160) or "--Bloom";
@@ -237,6 +245,7 @@ function HealBot_globalVars()
     HEALBOT_HEALING_WAVE                    = 77472 --GetSpellInfo(77472) or "--Healing Wave";
     HBC_LESSER_HEALING_WAVE                 = 8004
     HBC_HEALING_WAVE                        = 331
+    HEALBOT_PRIMORDIAL_WAVE                 = 326059
     HEALBOT_RIPTIDE                         = 61295 --GetSpellInfo(61295) or "--Riptide";
     HEALBOT_WELLSPRING                      = 197995 --GetSpellInfo(197995) or "--Wellspring";
     HEALBOT_DOWNPOUR                        = 207778 --GetSpellInfo(207778) or "--Downpour";
@@ -695,6 +704,7 @@ function HealBot_globalVars()
     HEALBOT_DEBUFF_FORBEARANCE              = 25771 --GetSpellInfo(25771) or "--Forbearance";
     HEALBOT_DEBUFF_WEAKENED_SOUL            = 6788 --GetSpellInfo(6788) or "--Weakened Soul";
 end
+HealBot_globalVars()
 
 HEALBOT_DISEASE_en                      = "Disease";  -- Do NOT localize this value.
 HEALBOT_MAGIC_en                        = "Magic";  -- Do NOT localize this value.

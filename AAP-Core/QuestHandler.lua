@@ -4144,7 +4144,7 @@ AAP_QH_EventFrame:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 		local CurStep = AAP1[AAP.Realm][AAP.Name][AAP.ActiveMap]
-		if (CurStep and AAP.QuestStepList[AAP.ActiveMap] and AAP.QuestStepList[AAP.ActiveMap][CurStep]) then
+		if (CurStep and AAP.QuestStepList[AAP.ActiveMap] and AAP.QuestStepList[AAP.ActiveMap][CurStep] and AAP1[AAP.Realm][AAP.Name]["Settings"]["AutoGossip"] == 1 and not IsControlKeyDown()) then
 			local steps = AAP.QuestStepList[AAP.ActiveMap][CurStep]
 			if (UnitGUID("target") and string.find(UnitGUID("target"), "(.*)-(.*)")) then
 				local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-",UnitGUID("target"))
@@ -4191,7 +4191,7 @@ AAP_QH_EventFrame:SetScript("OnEvent", function(self, event, ...)
 			if (AAPDenied == 1) then
 				C_GossipInfo.CloseGossip()
 				print("AAP: Not Yet!")
-			elseif (steps and steps["Gossip"] and steps["Gossip"] == 28202 and not IsControlKeyDown()) then
+			elseif (steps and steps["Gossip"] and steps["Gossip"] == 28202 and AAP1[AAP.Realm][AAP.Name]["Settings"]["AutoGossip"] == 1 and not IsControlKeyDown()) then
 				AAPGOSSIPCOUNT = AAPGOSSIPCOUNT + 1
 				print(AAPGOSSIPCOUNT)
 				if (AAPGOSSIPCOUNT == 1) then

@@ -2,7 +2,7 @@
 ## Title: DataStore by |cFF69CCF0Thaoky|r
 ## Notes: Main DataStore Module - Teelos Fork
 ## Author: Thaoky (EU-Marécages de Zangar)
-## Version: 9.0.1-033
+## Version: 9.0.2-002
 ## OptionalDeps: Ace3, LibAboutPanel 
 ## SavedVariables: DataStoreDB
 ## X-Embeds: Ace3

@@ -15,6 +15,8 @@ local RSConfigDB = private.ImportLib("RareScannerConfigDB")
 -- RareScanner services
 local RSMap = private.ImportLib("RareScannerMap")
 
+-- RareScanner general libraries
+local RSLogger = private.ImportLib("RareScannerLogger")
 
 ---============================================================================
 -- Update minimap icons
@@ -84,10 +86,14 @@ function RSMinimap.RefreshAllData(forzed)
 	for _, POI in ipairs (POIs) do
 		local pin = pinFramesPool:Acquire()
 		pin.POI = POI
-		pin.Texture:SetTexture(POI.Texture)
-		pin.Texture:SetScale(RSConfigDB.GetIconsMinimapScale())
-		HBD_Pins:AddMinimapIconMap(RSMinimap, pin, POI.mapID, tonumber(POI.x), tonumber(POI.y), false, false)
-
+			
+		-- Ignore POIs from worldmap
+		if (not POI.worldmap) then
+			pin.Texture:SetTexture(POI.Texture)
+			pin.Texture:SetScale(RSConfigDB.GetIconsMinimapScale())
+			HBD_Pins:AddMinimapIconMap(RSMinimap, pin, POI.mapID, tonumber(POI.x), tonumber(POI.y), false, false)
+		end
+	
 		-- Adds overlay if active
 		if (RSGeneralDB.HasOverlayActive(POI.entityID)) then
 			pin:ShowOverlay()

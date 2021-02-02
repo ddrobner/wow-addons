@@ -267,6 +267,32 @@ local function scanVoid()
 end
 ]]
 
+local function scanGreatVault()
+
+	Amr.db.char.GreatVaultItems = {}
+
+	if not C_WeeklyRewards then return end
+
+	local vaultItems = {}
+	local activities = C_WeeklyRewards.GetActivities()
+	for i, activityInfo in ipairs(activities) do
+		if activityInfo and activityInfo.rewards then
+			for i, rewardInfo in ipairs(activityInfo.rewards) do
+				if rewardInfo.type == Enum.CachedRewardType.Item and not C_Item.IsItemKeystoneByID(rewardInfo.id) then
+					local itemLink = C_WeeklyRewards.GetItemHyperlink(rewardInfo.itemDBID)
+					if itemLink then
+						local itemData = Amr.Serializer.ParseItemLink(itemLink)
+						if itemData ~= nil then
+							table.insert(vaultItems, itemData)
+						end
+					end
+				end
+			end
+		end
+	end
+	Amr.db.char.GreatVaultItems = vaultItems
+end
+
 local function scanSoulbinds()
 	if not C_Soulbinds then return end
 
@@ -416,6 +442,9 @@ function Amr:ExportCharacter()
 	-- scan current spec's essences just before exporting
 	--scanEssences()
 	
+	-- scan the great vault for potential rewards this week
+	scanGreatVault()
+
 	data.Talents = Amr.db.char.Talents	
 	data.UnlockedConduits = Amr.db.char.UnlockedConduits
 	data.ActiveSoulbinds = Amr.db.char.ActiveSoulbinds
@@ -424,6 +453,7 @@ function Amr:ExportCharacter()
 	--data.Essences = Amr.db.char.Essences
 	data.Equipped = Amr.db.char.Equipped	
 	data.BagItems = Amr.db.char.BagItems
+	data.GreatVaultItems = Amr.db.char.GreatVaultItems
 
 	-- flatten bank data (which is stored by bag for more efficient updating)
 	data.BankItems = {}

@@ -104,6 +104,9 @@ B.AddonsList = {
 	Blizzard_Communities = {
 		CommunitiesFrame = true,
 	},
+	Blizzard_CovenantSanctum = {
+		CovenantSanctumFrame = true,
+	},
 	Blizzard_EncounterJournal = {
 		EncounterJournal = true,
 	},
@@ -157,6 +160,9 @@ B.AddonsList = {
 	},
 	Blizzard_QuestChoice = {
 		QuestChoiceFrame = true,
+	},
+	Blizzard_Soulbinds = {
+		SoulbindViewer = true,
 	},
 	Blizzard_ScrappingMachineUI = {
 		ScrappingMachineFrame = true,

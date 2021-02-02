@@ -231,7 +231,9 @@ local function parseItemList(parts, startPos, endToken, hasSlot)
             obj.id = tokens["i"]
             obj.suffixId = tokens["f"] or 0
             obj.upgradeId = tokens["u"] or 0
-			obj.level = tokens["v"] or 0
+            obj.level = tokens["v"] or 0
+            obj.stat1 = tokens["j"] or 0
+            obj.stat2 = tokens["k"] or 0
             obj.enchantId = tokens["e"] or 0
 			obj.inventoryId = tokens["t"] or 0
             

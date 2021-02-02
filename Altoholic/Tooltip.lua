@@ -496,8 +496,13 @@ local function ShowGatheringNodeCounters()
 	-- exit if player does not want counters for known gathering nodes
 	if addon:GetOption("UI.Tooltip.ShowGatheringNodesCount") == false then return end
 
-	local itemID = LGN.getItemID( _G["GameTooltipTextLeft1"]:GetText() )
-	if not itemID or (itemID == cachedItemID) then return end					-- is the item in the tooltip a known type of gathering node ?
+	-- filter out the damn arrow icon that sometimes appears for some reason, and any gray text colouring
+    local nodeName = _G["GameTooltipTextLeft1"]:GetText()
+    if not nodeName then return end
+    nodeName = nodeName:gsub("|T.*|t", ""):gsub("|c........", ""):gsub("|r", "")
+    
+    local itemIDs = {LGN.getItemID(nodeName)}
+	if not itemIDs or (#itemIDs == 0) or (itemIDs[1] == cachedItemID) then return end					-- is the item in the tooltip a known type of gathering node ?
 	
 	if Informant then
 		isNodeDone = true
@@ -505,12 +510,27 @@ local function ShowGatheringNodeCounters()
 
 	-- check player bags to see how many times he owns this item, and where
 	if addon:GetOption("UI.Tooltip.ShowItemCount") or addon:GetOption("UI.Tooltip.ShowTotalItemCount") then
-		cachedCount = GetItemCount(itemID) -- if one of the 2 options is active, do the count
-		cachedTotal = (cachedCount > 0) and format("%s: %s", colors.gold..L["Total owned"], colors.teal..cachedCount) or nil
+        local firstShown = false
+        for _, itemID in pairs(itemIDs) do
+            if addon:GetOption("UI.Tooltip.ShowOnlyFirstGatheringItem") and firstShown then return true end
+		    cachedCount = GetItemCount(itemID) -- if one of the 2 options is active, do the count
+		    cachedTotal = (cachedCount > 0) and format("%s: %s", colors.gold..L["Total owned"], colors.teal..cachedCount) or nil
+            local _, itemLink = GetItemInfo(itemID)
+            if itemLink then
+            	GameTooltip:AddLine(" ",1,1,1);
+            	GameTooltip:AddLine(itemLink,1,1,1);
+              	if #counterLines > 0 then
+                	if addon:GetOption("UI.Tooltip.ShowItemCount") then			-- add count per character/guild
+                		for _, line in ipairs (counterLines) do
+                			GameTooltip:AddDoubleLine(line.owner,  colors.teal .. line.info);
+                		end
+                	end
+                end
+                WriteTotal(GameTooltip)
+                firstShown = true
+            end
+        end
 	end
-	
-	WriteCounterLines(GameTooltip)
-	WriteTotal(GameTooltip)
     return true
 end
 

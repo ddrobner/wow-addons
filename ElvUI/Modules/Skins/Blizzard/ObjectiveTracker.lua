@@ -57,8 +57,7 @@ local function HotkeyColor(self, r, g, b)
 end
 
 local function SkinItemButton(item)
-	item:CreateBackdrop('Transparent')
-	item.backdrop:SetAllPoints()
+	item:CreateBackdrop('Transparent', nil, nil, nil, nil, nil, true)
 	item:StyleButton()
 	item:SetNormalTexture(nil)
 
@@ -188,12 +187,8 @@ end
 
 local function SkinFindGroupButton(block)
 	if block.hasGroupFinderButton and block.groupFinderButton then
-		if block.groupFinderButton and not block.groupFinderButton.skinned then
-			S:HandleButton(block.groupFinderButton)
-			block.groupFinderButton:Size(20)
-			block.groupFinderButton.backdrop:SetFrameLevel(3)
-			block.groupFinderButton.skinned = true
-		end
+		S:HandleButton(block.groupFinderButton, nil, nil, nil, nil, nil, nil, nil, 3)
+		block.groupFinderButton:Size(20)
 	end
 end
 
@@ -228,6 +223,7 @@ function S:ObjectiveTrackerFrame()
 	hooksecurefunc('ObjectiveTracker_Expand',TrackerStateChanged)
 	hooksecurefunc('ObjectiveTracker_Collapse',TrackerStateChanged)
 	hooksecurefunc('QuestObjectiveSetupBlockButton_Item', HandleItemButton)
+	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", HandleItemButton)
 	hooksecurefunc('BonusObjectiveTrackerProgressBar_SetValue',ColorProgressBars)			--[Color]: Bonus Objective Progress Bar
 	hooksecurefunc('ObjectiveTrackerProgressBar_SetValue',ColorProgressBars)				--[Color]: Quest Progress Bar
 	hooksecurefunc('ScenarioTrackerProgressBar_SetValue',ColorProgressBars)					--[Color]: Scenario Progress Bar

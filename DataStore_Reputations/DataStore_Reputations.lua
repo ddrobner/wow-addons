@@ -44,7 +44,7 @@ local BottomLevelNames = {
 
 local BottomLevels = { -42000, -6000, -3000, 0, 3000, 9000, 21000, 42000, 43000 }
 
-local BF = LibStub("LibBabble-Faction-ForAltoholic-3.0"):GetUnstrictLookupTable()
+local BF = LibStub("LibBabble-Faction-3.0"):GetUnstrictLookupTable()
 
 --[[	*** Faction UIDs ***
 These UIDs have 2 purposes: 
@@ -243,10 +243,14 @@ local factions = {
     { id = 2395, name = GetFactionInfoByID(2395) },     -- Honeyback Hive
     
     -- Shadowlands
-	{ id = 2410, name = GetFactionInfoByID(2410) },		                  -- Maldraxxus / 
-	{ id = 2422, name = GetFactionInfoByID(2422) },		                  -- Ardenweald /
-	{ id = 2413, name = GetFactionInfoByID(2413) },		                  -- Revendreth /
-    { id = 2407, name = GetFactionInfoByID(2407) or "The Ascended" },	  -- The Ascended
+	{ id = 2410, name = GetFactionInfoByID(2410) or BF["The Undying Army"]}, 
+	{ id = 2465, name = GetFactionInfoByID(2465) or BF["The Wild Hunt"]},
+	{ id = 2413, name = GetFactionInfoByID(2413) or BF["Court of Harvesters"] },
+    { id = 2407, name = GetFactionInfoByID(2407) or BF["The Ascended"] },
+    { id = 2432, name = GetFactionInfoByID(2432) },     -- Ve'nari
+    { id = 2464, name = GetFactionInfoByID(2464) },     -- Court of Night
+    { id = 2439, name = GetFactionInfoByID(2439) },     -- The Avowed
+    { id = 2463, name = GetFactionInfoByID(2463) },     -- Marasimus
 }
 
 local FactionUIDsRev = {}

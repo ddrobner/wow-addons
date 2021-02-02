@@ -7,7 +7,49 @@ local _
 function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
+		
+			{1612172218,  "Bug Fix", "January 12th, 2021", "Fixing an issue with the Blink Time Left script glow feature."},
+			{1612172218,  "Revamp", "January 12th, 2021", "Update for the M+ Spiteful script."},
+			{1612172218,  "Options Changes", "January 12th, 2021", "Quest Tracking and Quest Coloring are now separated."},
+			{1612172218,  "Bug Fix", "January 12th, 2021", "Fixing CCs not showing for auto-tracking."},
+			{1612172218,  "Backend Changes", "January 12th, 2021", "Updated / fixed Plater Profiling"},
+			{1612172218,  "Options Changes", "January 12th, 2021", "Adding Level & Strata options for Buff Special"},
+			{1612172218,  "Options Changes", "January 12th, 2021", "Adding class/spec/faction indicators for friendly units."},
+			{1612172218,  "Bug Fix", "January 12th, 2021", "Global healthbar size settings won't be reset when importing or switching profiles."},
+			{1612172218,  "Backend Changes", "January 10th, 2021", "Fetching Class/Spec Icon indicators from BG/Arena info if available."},
+			
+			{1610229480,  "Options Changes", "January 8th, 2021", "Adding option for horizontal nameplate overlap and renaming options."},
+			{1610229480,  "Bug Fix", "January 8th, 2021", "Fixing an issue with mod/script load conditions not tracking spec properly."},
+			{1610229480,  "Bug Fix", "January 8th, 2021", "Fixing an issue with Buff Special stacks not showing under some conditions."},
+			{1610229480,  "Bug Fix", "January 7th, 2021", "Adding glyphed Hex spells to CC (@Freddy090909)."},
+			{1610229480,  "Bug Fix", "January 6th, 2021", "Updating clickable area sizes when closing game menus."},
+			{1610229480,  "Bug Fix", "January 4th, 2021", "Fixing aura show animation breaking timer and stack text size."},
+			{1610229480,  "Bug Fix", "January 2nd, 2021", "Fixing an issue with mod/script options when duplicating mods/scripts."},
+			{1610229480,  "Bug Fix", "January 1st, 2021", "Fixing some typos."},
+			{1610229480,  "Bug Fix", "December 31th, 2020", "Another round of fixes for nameplate widgets."},
+			{1610229480,  "Bug Fix", "December 31th, 2020", "CCs should now be probably tracked again with auto-tracking."},
+			{1610229480,  "New Feature", "December 30th, 2020", "Update to 'Spiteful' script."},
+			{1610229480,  "Bug Fix", "December 30th, 2020", "Fixing leftover execute indicators on friendly units."},
+		
+			{1608853110,  "New Feature", "December 24th, 2020", "Added a time to die to Spiteful affix units."},
+			{1608853110,  "Revamp", "December 24th, 2020", "Aura reorder mod has been refreshed."},
 
+			{1608659820,  "Bug Fix", "December 17th, 2020", "Updating texts after nameplate size updates to ensure proper length."},
+			{1608659820,  "Bug Fix", "December 12th, 2020", "Ensure proper size of the execute indicator."},
+			{1608659820,  "Backend Changes", "December 9th, 2020", "Not showing execute indicator on not attackable units."},
+			{1608659820,  "Bug Fix", "December 8th, 2020", "Fixing issue with double Buff Special."},
+			{1608659820,  "Options Changes", "December 4th, 2020", "Adding 'Auras per Row' option for Buff Frame 2."},
+			{1608659820,  "Backend Changes", "December 4th, 2020", "Reworked CVar re-/storing."},
+			{1608659820,  "Bug Fix", "December 4th, 2020", "Global width/height settings are stored and adjusted separately."},
+			{1608659820,  "Bug Fix", "December 1st, 2020", "Honoring Personal Bar buff tracking settings."},
+
+			{1606569932,  "Bug Fix", "November 28th, 2020", "Fixing Condemn (Venthyr) execute for warriors."},
+			{1606569932,  "Bug Fix", "November 27th, 2020", "Fixing 'Unit - Health Markers' script."},
+			{1606569932,  "Bug Fix", "November 26th, 2020", "Enabling Focus Alpha now behaves properly with no targets."},
+			{1606569932,  "Bug Fix", "November 25th, 2020", "Fixing nameplate widgets."},
+			{1606569932,  "Bug Fix", "November 25th, 2020", "Fixing error around UnitMaxHealth."},
+			
+			
 			{1605897389,  "New Feature", "November 20th, 2020", "Adding '/plater profstart|profstop|profprint' commands for mod/script profiling."},
 			{1605897389,  "Backend Changes", "November 18th, 2020", "Changes to mod/script execution environment."},
 			{1605897389,  "New Feature", "November 17th, 2020", "Adding '/plater rare' command to blink taskbar icon on rare spawn."},

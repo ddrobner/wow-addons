@@ -224,6 +224,8 @@ do
                 C_Timer.After( 0.5, CheckForEquipmentUpdates )
             end
 
+            if not success then Hekili:Error( "GET_ITEM_INFO_RECEIVED failed for item '%d'.", itemID or 0 ) end
+
             itemCallbacks[ itemID ] = nil
         end
     end )
@@ -357,44 +359,14 @@ end
 RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
 
 
-do
-    local pendingChange = false
-
-    local updateSpells
-    
-    updateSpells = function()
-        if InCombatLockdown() then
-            C_Timer.After( 10, updateSpells )
-            return
-        end
-
-        if pendingChange then
-            for k, v in pairs( class.abilities ) do
-                if v.autoTexture then
-                    v.texture = GetSpellTexture( v.id )
-                end
-            end
-            pendingChange = false
-        end
-    end
-
-    RegisterEvent( "SPELLS_CHANGED", function ()
-        pendingChange = true
-        updateSpells()
-    end )
-end
-
-
-
 -- ACTIVE_TALENT_GROUP_CHANGED fires 2x on talent swap.  Uggh, why?
 do
     local lastChange = 0
 
-    RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ( event, from, to )
+    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, function()
         local now = GetTime()
-        if now - lastChange > 4 then
+        if now - lastChange > 1 then
             Hekili:SpecializationChanged()
-            Hekili:ForceUpdate( event )
             lastChange = now
         end
     end )
@@ -650,13 +622,19 @@ end
 do
     local gearInitialized = false
 
-    function Hekili:UpdateUseItems()
+    local function itemSorter( a, b )
+        local action1, action2 = class.abilities[ a.action ].cooldown, class.abilities[ b.action ].cooldown
+
+        return action1 > action2
+    end
+
+    local function buildUseItemsList()
         local itemList = class.itemPack.lists.items
         wipe( itemList )
 
         if #state.items > 0 then
             for i, item in ipairs( state.items ) do
-                if not self:IsItemScripted( item ) then
+                if not Hekili:IsItemScripted( item ) then
                     insert( itemList, {
                         action = item,
                         enabled = true,
@@ -667,11 +645,23 @@ do
                 end
             end
         end
+        
+        table.sort( itemList, itemSorter )
                 
-        class.essence_unscripted = ( class.active_essence and not self:IsEssenceScripted( class.active_essence ) ) or false
+        class.essence_unscripted = ( class.active_essence and not Hekili:IsEssenceScripted( class.active_essence ) ) or false
 
-        self:LoadItemScripts()
+        Hekili:LoadItemScripts()
     end
+
+    function Hekili:UpdateUseItems()
+        if not Hekili.PLAYER_ENTERING_WORLD then
+            C_Timer.After( 1, buildUseItemsList )
+            return
+        end
+
+        buildUseItemsList()
+    end
+
 
     local shadowlegendaries = {
         -- Mage/Arcane
@@ -1166,9 +1156,9 @@ do
         end
     end
 
-    for i, event in pairs( azeriteEvents ) do
+    --[[ for i, event in pairs( azeriteEvents ) do
         RegisterEvent( event, UpdateEssences )
-    end
+    end ]]
 end
 
 
@@ -1351,12 +1341,13 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
     if ability then
         local action = ability.key
         local _, _, _, start, finish = UnitCastingInfo( "player" )
-        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) ) or Hekili:GetMacroCastTarget( action, start / 1000, "DELAYED" )
-
+        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) ) 
+        
         state:RemoveSpellEvent( action, true, "CAST_FINISH" )
         state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
 
         if start and finish then
+            if not target then target = Hekili:GetMacroCastTarget( action, start / 1000, "DELAYED" ) end
             state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
 
             if ability.isProjectile then
@@ -1745,27 +1736,27 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                     if start then
                         state:QueueEvent( ability.key, start / 1000, finish / 1000, "CAST_FINISH", destGUID, true )
-                    end
-
-                    if ability.isProjectile then
-                        local travel
-
-                        if ability.flightTime then
-                            travel = ability.flightTime
                         
-                        elseif destGUID then
-                            local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
+                        if ability.isProjectile then
+                            local travel
 
-                            if unit then
-                                local _, maxR = RC:GetRange( unit )
-                                maxR = maxR or state.target.distance
-                                travel = maxR / ability.velocity
+                            if ability.flightTime then
+                                travel = ability.flightTime
+                            
+                            elseif destGUID then
+                                local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
+
+                                if unit then
+                                    local _, maxR = RC:GetRange( unit )
+                                    maxR = maxR or state.target.distance
+                                    travel = maxR / ability.velocity
+                                end
                             end
+
+                            if not travel then travel = state.target.distance / ability.velocity end
+
+                            state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
                         end
-
-                        if not travel then travel = state.target.distance / ability.velocity end
-
-                        state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
                     end
 
                 elseif subtype == "SPELL_CAST_FAILED" then
@@ -1978,6 +1969,7 @@ local bindingSubs = {
     { "MOUSEWHEEL", "Mw" },
     { "DOWN", "Dn" },
     { "UP", "Up" },
+    { "PAGE", "Pg" },
     { "BACKSPACE", "BkSp" },
     { "DECIMAL", "." },
     { "CAPSLOCK", "CAPS" },
@@ -2004,26 +1996,29 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
     if not key or not aType or not id then return end
 
-    local ability
+    local action, ability
 
     if aType == "spell" then
-        ability = class.abilities[ id ] and class.abilities[ id ].key
+        ability = class.abilities[ id ]
+        action = ability and ability.key
 
     elseif aType == "macro" then
         local sID = GetMacroSpell( id ) or GetMacroItem( id )
-        ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
+        ability = sID and class.abilities[ sID ]
+        action = ability and ability.key
 
     elseif aType == "item" then
-        ability = GetItemInfo( id )
-        ability = class.abilities[ ability ] and class.abilities[ ability ].key
+        local item = GetItemInfo( id )
+        ability = item and class.abilities[ item ]
+        action = ability and ability.key
 
-        if not ability then
+        if not action then
             if itemToAbility[ id ] then
-                ability = itemToAbility[ id ]
+                action = itemToAbility[ id ]
             else
                 for k, v in pairs( class.potions ) do
                     if v.item == id then
-                        ability = "potion"
+                        action = "potion"
                         break
                     end
                 end
@@ -2032,8 +2027,8 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
     end
 
-    if ability then
-        keys[ ability ] = keys[ ability ] or {
+    if action then
+        keys[ action ] = keys[ action ] or {
             lower = {},
             upper = {},
             console = {}
@@ -2041,16 +2036,16 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
         if console == "cPort" then
             local newKey = key:gsub( ":%d+:%d+:0:0", ":0:0:0:0" )
-            keys[ ability ].console[ page ] = newKey
+            keys[ action ].console[ page ] = newKey
         else
-            keys[ ability ].upper[ page ] = improvedGetBindingText( key )
-            keys[ ability ].lower[ page ] = lower( keys[ ability ].upper[ page ] )
+            keys[ action ].upper[ page ] = improvedGetBindingText( key )
+            keys[ action ].lower[ page ] = lower( keys[ action ].upper[ page ] )
         end
-        updatedKeys[ ability ] = true
+        updatedKeys[ action ] = true
 
-        if ability.bind then
-            local bind = ability.bind
+        local bind = ability and ability.bind
 
+        if bind then
             if type( bind ) == 'table' then
                 for _, b in ipairs( bind ) do
                     keys[ b ] = keys[ b ] or {
@@ -2059,9 +2054,9 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                         console = {}
                     }
 
-                    keys[ b ].lower[ page ] = keys[ ability ].lower[ page ]
-                    keys[ b ].upper[ page ] = keys[ ability ].upper[ page ]
-                    keys[ b ].console[ page ] = keys[ ability ].console[ page ]
+                    keys[ b ].lower[ page ] = keys[ action ].lower[ page ]
+                    keys[ b ].upper[ page ] = keys[ action ].upper[ page ]
+                    keys[ b ].console[ page ] = keys[ action ].console[ page ]
         
                     updatedKeys[ b ] = true
                 end
@@ -2072,9 +2067,9 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                     console = {}
                 }
 
-                keys[ bind ].lower[ page ] = keys[ ability ].lower[ page ]
-                keys[ bind ].upper[ page ] = keys[ ability ].upper[ page ]
-                keys[ bind ].console[ page ] = keys[ ability ].console[ page ]
+                keys[ bind ].lower[ page ] = keys[ action ].lower[ page ]
+                keys[ bind ].upper[ page ] = keys[ action ].upper[ page ]
+                keys[ bind ].console[ page ] = keys[ action ].console[ page ]
 
                 updatedKeys[ bind ] = true
             end
@@ -2112,159 +2107,336 @@ local defaultBarMap = {
 }
 
 
+local ReadKeybindings
 
-local function ReadKeybindings()
+do
+    local lastRefresh = 0
+    local queuedRefresh = false
 
-    for k, v in pairs( keys ) do
-        wipe( v.upper )
-        wipe( v.lower )
-    end
+    local slotsUsed = {}
 
-    -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
-    if _G["Bartender4"] then
-        for actionBarNumber = 1, 10 do
-            local bar = _G["BT4Bar" .. actionBarNumber]
-            for keyNumber = 1, 12 do
-                local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
-                local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+    ReadKeybindings = function( event )
+        if not Hekili:IsValidSpec() then return end
 
-                -- If bar is disabled assume paging / stance switching on bar 1
-                if actionBarNumber > 1 and bar and not bar.disabled then
-                    bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
-                end
+        local now = GetTime()
 
-                StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
-            end
+        if now - lastRefresh < 0.25 then
+            if queuedRefresh then return end
+
+            queuedRefresh = true
+            C_Timer.After( 0.25 - ( now - lastRefresh ), ReadKeybindings )
+            
+            return
         end
-    -- Use ElvUI's actionbars only if they are actually enabled.
-    elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
-        for i = 1, 10 do
-            for b = 1, 12 do
-                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
 
-                local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
+        lastRefresh = now
+        queuedRefresh = false
 
-                if i > 6 then
-                    -- Checking whether bar is active.
-                    local bar = _G["ElvUI_Bar" .. i]
+        local done = false
 
-                    if not bar or not bar.db.enabled then
-                        binding = "ACTIONBUTTON" .. b
+        for k, v in pairs( keys ) do
+            wipe( v.console )
+            wipe( v.upper )
+            wipe( v.lower )
+        end
+
+        -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+        if _G["Bartender4"] then
+            for actionBarNumber = 1, 10 do
+                local bar = _G["BT4Bar" .. actionBarNumber]
+                for keyNumber = 1, 12 do
+                    local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
+                    local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+
+                    -- If bar is disabled assume paging / stance switching on bar 1
+                    if actionBarNumber > 1 and bar and not bar.disabled then
+                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
+                    end
+
+                    StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
+                end
+            end
+
+            done = true
+
+        -- Use ElvUI's actionbars only if they are actually enabled.
+        elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+            table.wipe( slotsUsed )
+            
+            for i = 1, 10 do
+                for b = 1, 12 do
+                    local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
+
+                    local binding = btn.keyBoundTarget or ( "CLICK " .. btn:GetName() .. ":LeftButton" )
+
+                    if i > 6 then
+                        -- Checking whether bar is active.
+                        local bar = _G["ElvUI_Bar" .. i]
+
+                        if not bar or not bar.db.enabled then
+                            binding = "ACTIONBUTTON" .. b
+                        end
+                    end
+
+                    local action, aType = btn._state_action, "spell"
+
+                    if action and type( action ) == "number" then
+                        slotsUsed[ action ] = true
+                        
+                        binding = GetBindingKey( binding )
+                        action, aType = GetActionInfo( action )
+                        StoreKeybindInfo( i, binding, action, aType )
                     end
                 end
+            end
+        end
 
-                local action, aType = btn._state_action, "spell"
+        if not done then
+            for i = 1, 12 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+                end
+            end
 
-                if action and type( action ) == "number" then
-                    binding = GetBindingKey( binding )
-                    action, aType = GetActionInfo( action )
-                    StoreKeybindInfo( i, binding, action, aType )
+            for i = 13, 24 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 25, 36 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 37, 48 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 49, 60 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 61, 72 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
+                end
+            end
+
+            for i = 72, 119 do
+                if not slotsUsed[ i ] then
+                    StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 72 ) % 12 ), GetActionInfo( i + 1 ) )
                 end
             end
         end
-    else
-        for i = 1, 12 do
-            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
-        end
 
-        for i = 13, 24 do
-            StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
-        end
-
-        for i = 25, 36 do
-            StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
-        end
-
-        for i = 37, 48 do
-            StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
-        end
-
-        for i = 49, 60 do
-            StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
-        end
-
-        for i = 61, 72 do
-            StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
-        end
-
-        for i = 72, 119 do
-            StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 72 ) % 12 ), GetActionInfo( i + 1 ) )
-        end
-    end
-
-    if _G.ConsolePort then
-        for i = 1, 120 do
-            local bind = ConsolePort:GetActionBinding(i)
-
-            if bind then
+        if _G.ConsolePort then
+            for i = 1, 120 do
                 local action, id = GetActionInfo( i )
-                local key, mod = ConsolePort:GetCurrentBindingOwner(bind)
-                StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
-            end
-        end
-    end 
 
-    for k, v in pairs( keys ) do
-        local ability = class.abilities[ k ]
+                if action and id then
+                    local bind = ConsolePort:GetActionBinding( i )
+                    local key, mod = ConsolePort:GetCurrentBindingOwner( bind )
 
-        if ability and ability.bind then
-            if type( ability.bind ) == 'table' then
-                for _, b in ipairs( ability.bind ) do
+                    if key then
+                        StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
+                    end
+                end
+            end                
+        end 
+
+        for k, v in pairs( keys ) do
+            local ability = class.abilities[ k ]
+
+            if ability and ability.bind then
+                if type( ability.bind ) == 'table' then
+                    for _, b in ipairs( ability.bind ) do
+                        for page, value in pairs( v.lower ) do
+                            keys[ b ] = keys[ b ] or {
+                                lower = {},
+                                upper = {},
+                                console = {}
+                            }
+                            keys[ b ].lower[ page ] = value
+                            keys[ b ].upper[ page ] = v.upper[ page ]
+                            keys[ b ].console[ page ] = v.console[ page ]
+                        end
+                    end
+                else
                     for page, value in pairs( v.lower ) do
-                        keys[ b ] = keys[ b ] or {
+                        keys[ ability.bind ] = keys[ ability.bind ] or {
                             lower = {},
                             upper = {},
                             console = {}
                         }
-                        keys[ b ].lower[ page ] = value
-                        keys[ b ].upper[ page ] = v.upper[ page ]
-                        keys[ b ].console[ page ] = v.console[ page ]
+                        keys[ ability.bind ].lower[ page ] = value
+                        keys[ ability.bind ].upper[ page ] = v.upper[ page ]
+                        keys[ ability.bind ].console[ page ] = v.console[ page ]
                     end
                 end
-            else
+            end
+        end
+
+        -- This is also the right time to update pet-based target detection.
+        Hekili:SetupPetBasedTargetDetection()
+    end
+end
+ns.ReadKeybindings = ReadKeybindings
+
+local function ReadOneKeybinding( event, slot )
+    if not Hekili:IsValidSpec() then return end
+    if slot == 0 then return end
+
+    local actionBarNumber = ceil( slot / 12 )
+    local keyNumber = slot - ( 12 * ( actionBarNumber - 1 ) )
+
+    local ability
+    local completed = false
+
+    -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+    if _G["Bartender4"] then
+        local bar = _G["BT4Bar" .. actionBarNumber]
+        local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+
+        -- If bar is disabled assume paging / stance switching on bar 1
+        if actionBarNumber > 1 and bar and not bar.disabled then
+            bindingKeyName = "CLICK BT4Button" .. slot .. ":LeftButton"
+        end
+
+        ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( slot ) )
+        
+        if ability then completed = true end
+
+        -- Use ElvUI's actionbars only if they are actually enabled.
+    elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+        local btn = _G[ "ElvUI_Bar" .. actionBarNumber .. "Button" .. keyNumber ]
+
+        if btn then
+            local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
+
+            if actionBarNumber > 6 then
+                -- Checking whether bar is active.
+                local bar = _G[ "ElvUI_Bar" .. slot ]
+
+                if not bar or not bar.db.enabled then
+                    binding = "ACTIONBUTTON" .. keyNumber
+                end
+            end
+
+            local action, aType = btn._state_action, "spell"
+
+            if action and type( action ) == "number" then
+                binding = GetBindingKey( binding )
+                action, aType = GetActionInfo( action )
+                ability = StoreKeybindInfo( actionBarNumber, binding, action, aType )
+                completed = true
+            end
+        end
+
+    end
+
+    if not completed then
+        if actionBarNumber == 1 or actionBarNumber == 2 or actionBarNumber > 6 then
+            ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
+        
+        elseif actionBarNumber > 2 and actionBarNumber < 5 then
+            ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR" .. actionBarNumber .. "BUTTON" .. keyNumber ), GetActionInfo( slot ) )
+        
+        elseif actionBarNumber == 5 then
+            ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. keyNumber ), GetActionInfo( slot ) )
+
+        elseif actionBarNumber == 6 then
+            ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. keyNumber ), GetActionInfo( slot ) )
+
+        end
+    end
+
+    if _G.ConsolePort then
+        local action, id = GetActionInfo( slot )
+
+        if action and id then
+            local bind = ConsolePort:GetActionBinding( slot )
+            local key, mod = ConsolePort:GetCurrentBindingOwner( bind )
+
+            if key then
+                ability = StoreKeybindInfo( actionBarNumber, ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
+            end
+        end
+    end
+
+    ability = ability and class.abilities[ ability ]
+
+    if ability and ability.bind then
+        if type( ability.bind ) == 'table' then
+            for _, b in ipairs( ability.bind ) do
                 for page, value in pairs( v.lower ) do
-                    keys[ ability.bind ] = keys[ ability.bind ] or {
+                    keys[ b ] = keys[ b ] or {
                         lower = {},
                         upper = {},
                         console = {}
                     }
-                    keys[ ability.bind ].lower[ page ] = value
-                    keys[ ability.bind ].upper[ page ] = v.upper[ page ]
-                    keys[ ability.bind ].console[ page ] = v.console[ page ]
+                    keys[ b ].lower[ page ] = value
+                    keys[ b ].upper[ page ] = v.upper[ page ]
+                    keys[ b ].console[ page ] = v.console[ page ]
                 end
+            end
+        else
+            for page, value in pairs( v.lower ) do
+                keys[ ability.bind ] = keys[ ability.bind ] or {
+                    lower = {},
+                    upper = {},
+                    console = {}
+                }
+                keys[ ability.bind ].lower[ page ] = value
+                keys[ ability.bind ].upper[ page ] = v.upper[ page ]
+                keys[ ability.bind ].console[ page ] = v.console[ page ]
             end
         end
     end
 
     -- This is also the right time to update pet-based target detection.
     Hekili:SetupPetBasedTargetDetection()
-end    
-ns.ReadKeybindings = ReadKeybindings
+end
 
 
 RegisterEvent( "UPDATE_BINDINGS", ReadKeybindings )
 RegisterEvent( "PLAYER_ENTERING_WORLD", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_SHOWGRID", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_PAGE_CHANGED", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
-RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
-RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
+-- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
+-- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
+-- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
+RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadOneKeybinding )
+
+RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function( event, unit )
+    if UnitIsUnit( "player", unit ) then
+        ReadKeybindings( event )
+    end
+end )
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     ReadKeybindings()
     Hekili:ForceUpdate( event )
 end )
--- RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, ReadKeybindings )
--- RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", "player", nil, ReadKeybindings )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
+    local prowlOrder = { 8, 7, 2, 3, 4, 5, 6, 9, 10, 1 }
+    local catOrder = { 7, 8, 2, 3, 4, 5, 6, 9, 10, 1 }
+    local bearOrder = { 9, 3, 4, 5, 6, 2, 7, 8, 10, 1 }
+    local owlOrder = { 10, 2, 3, 4, 5, 6, 7, 8, 9, 1 }
+
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
+        key = ability and ability.key or key
 
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
@@ -2290,23 +2462,34 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
 
         local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
 
-        local output
+        local output, source
 
-        if state.prowling then
-            output = db[ 8 ] or db[ 7 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or db[ 1 ] or ""
+        local order = ( state.prowling and prowlOrder ) or ( state.buff.cat_form.up and catOrder ) or ( state.buff.bear_form.up and bearOrder ) or ( state.buff.moonkin_form.up and owlOrder ) or nil
 
-        elseif state.buff.cat_form.up then
-            output = db[ 7 ] or db[ 8 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or db[ 1 ] or ""
+        if order then
+            for _, i in ipairs( order ) do
+                output = db[ i ]
 
-        elseif state.buff.bear_form.up then
-            output = db[ 9 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 2 ] or db [ 7 ] or db[ 8 ] or db[ 10 ] or db[ 1 ] or ""
-
-        elseif state.buff.moonkin_form.up then
-            output = db[ 10 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 1 ] or ""
-
+                if output then
+                    source = i
+                    break
+                end
+            end
+        
         else
-            output = db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+            for i = 1, 10 do
+                output = db[ i ]
+
+                if output then
+                    source = i
+                    break
+                end
+            end
+
         end
+
+        output = output or ""
+        source = source or -1
 
         if output ~= "" and console then
             local size = output:match( "Icons(%d%d)" )
@@ -2321,10 +2504,13 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
         return output
     end
 elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
+    local stealthedOrder = { 7, 8, 1, 2, 3, 4, 5, 6, 9, 10 }
+
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
+        key = ability and ability.key or key
 
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
@@ -2337,7 +2523,9 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
             return override
         end
 
-        if not keys[ key ] then return "" end
+        if not keys[ key ] then
+            return ""
+        end
 
         local queued = ( i or 1 ) > 1 and display.keybindings.separateQueueStyle
 
@@ -2349,15 +2537,31 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
 
         local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
 
-        local output
+        local output, source
 
         if state.stealthed.all then
-            output = db[ 7 ] or db[ 8 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
+            for _, i in ipairs( stealthedOrder ) do
+                output = db[ i ]
+
+                if output then
+                    source = i
+                    break
+                end
+            end
 
         else
-            output = db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
-        
+            for i = 1, 10 do
+                output = db[ i ]
+
+                if output then
+                    source = i
+                    break
+                end
+            end
         end
+
+        output = output or ""
+        source = source or -1
 
         if output ~= "" and console then
             local size = output:match( "Icons(%d%d)" )
@@ -2369,14 +2573,13 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
             end
         end
 
-        return output
+        return output, source
     end
 
 else
     function Hekili:GetBindingForAction( key, display, i )
-        if not key then return "" end
-
         local ability = class.abilities[ key ]
+        key = ability and ability.key or key
 
         local override = state.spec.id
         local overrideType = ability and ability.item and "items" or "abilities"
@@ -2400,8 +2603,20 @@ else
         end
         
         local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
+        
+        local output, source
 
-        local output = db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+        for i = 1, 10 do
+            output = db[ i ]
+            
+            if output then
+                source = i
+                break
+            end
+        end
+
+        output = output or ""
+        source = source or -1
 
         if output ~= "" and console then
             local size = output:match( "Icons(%d%d)" )
@@ -2413,7 +2628,6 @@ else
             end
         end
 
-        return output        
+        return output, source
     end
-
 end

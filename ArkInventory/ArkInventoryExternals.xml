@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	
 	<Include file="Libs\LibStub\lib.xml" />
-	<Include file="Libs\CallBackHandler\lib.xml" />
+	<Include file="Libs\CallBackHandler\CallbackHandler-1.0.xml" />
 	<Include file="Libs\LibDataBroker\lib.xml" />
 	<Include file="Libs\LibDialog\lib.xml" />
 	

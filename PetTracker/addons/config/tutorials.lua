@@ -1,5 +1,5 @@
 --[[
-Copyright 2012-2020 João Cardoso
+Copyright 2012-2021 João Cardoso
 PetTracker is distributed under the terms of the GNU General Public License (Version 3).
 As a special exception, the copyright holders of this addon do not give permission to
 redistribute and/or modify it.
@@ -37,8 +37,7 @@ function Tutorials:Start()
 end
 
 function Tutorials:Load()
-	local mapSearchBox = Addon.MapSearch.Frames[WorldMapFrame]
-	local mapTrackingType = mapSearchBox and mapSearchBox:GetParent()
+	local mapTrackingButton = Addon.MapSearch.Frames[WorldMapFrame]
 
 	self:RegisterTutorials {
 		title = ADDON,
@@ -78,18 +77,18 @@ function Tutorials:Load()
 		},
 		{
 			text = L.Tutorial[5],
-			point = 'TOPLEFT', relPoint = 'BOTTOMRIGHT',
-			anchor = mapTrackingType, shine = mapTrackingType,
+			point = 'TOPRIGHT', relPoint = 'BOTTOMLEFT',
+			anchor = mapTrackingButton, shine = mapTrackingButton,
 			shineLeft = -2, shineTop = 2,
-			y = 5
+			x = -5, y = -5
 		},
 		{
 			text = L.Tutorial[6],
 			point = 'TOPLEFT', relPoint = 'BOTTOMRIGHT',
-			anchor = mapSearchBox, shine = mapSearchBox,
+			anchor = mapTrackingButton, shine = Addon.MapSearch.Editbox,
 			shineTop = 6, shineBottom = -6,
 			shineRight = 6, shineLeft = -12,
-			x = 15
+			y = -150, x = 100
 		},
 		{
 			text = L.Tutorial[7],
@@ -142,7 +141,8 @@ function Tutorials:Load()
 		},
 	}
 
-	self:TriggerOn(mapSearchBox, 7)
+	self:TriggerOn(mapTrackingButton, 5)
+	self:TriggerOn(Addon.MapSearch.Editbox, 7)
 	self:TriggerOn(Addon.TrackToggle, 9)
 	self:TriggerOn(Addon.RivalsJournal, 12)
 end

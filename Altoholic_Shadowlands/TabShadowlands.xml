@@ -1,0 +1,128 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="TabShadowlands.lua"></Script>
+
+	<Button name="AltoTabShadowlandsCharacterIconTemplate" inherits="AltoClassIconTemplate" virtual="true">
+		<Scripts>
+            <OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.TabShadowlandsCharacterIcon", "AltoholicUI.Button,AltoholicUI.ClassIcon" )
+                Altoholic:BindViewToController(self, "AltoholicUI.TabShadowlandsCharacterIcon")
+			</OnLoad>
+			<OnEnter>
+				self:Icon_OnEnter(self)
+			</OnEnter>
+            <OnShow>
+                self:OnShow()
+            </OnShow>
+		</Scripts>
+	</Button>
+    
+	<Button name="AltoShadowlandsMenuItemTemplate" inherits="AltoMenuItemTemplate" hidden="false" virtual="true">
+		<Size x="156" y="20" />
+		<Scripts>
+			<OnClick>
+				self:GetParent():MenuItem_OnClick(self:GetID(), self.panel)
+			</OnClick>
+		</Scripts>
+	</Button>
+    
+	<Frame name="AltoholicTabShadowlands" parent="AltoholicFrame">
+		<Size x="758" y="447" />
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+            <Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" alpha="0.8">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="190" y="20" />
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="10" y="-70" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+		<Frames>
+			<Button parentKey="ClassIcons" inherits="AltoClassIconsContainerTemplate" id="1">
+                <KeyValues>
+					<KeyValue key="numIcons" value="12" type="number" />
+					<KeyValue key="iconTemplate" value="AltoTabShadowlandsCharacterIconTemplate" />
+					<KeyValue key="tabName" value="Shadowlands" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-50" />
+				</Anchors>
+			</Button>
+            
+			<Button parentKey="MenuItem1" inherits="AltoShadowlandsMenuItemTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="23" y="-105" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="OverviewPanel" />
+				</KeyValues>
+			</Button>
+			<Button parentKey="MenuItem2" inherits="AltoShadowlandsMenuItemTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem1" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="ReservoirPanel" />
+				</KeyValues>
+			</Button>
+            <Button parentKey="MenuItem3" inherits="AltoShadowlandsMenuItemTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem2" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="RenownPanel" />
+				</KeyValues>
+			</Button>
+            <Button parentKey="MenuItem4" inherits="AltoShadowlandsMenuItemTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem3" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="SoulbindsPanel" />
+				</KeyValues>
+            </Button>
+            <Button parentKey="MenuItem5" inherits="AltoShadowlandsMenuItemTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem4" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="SanctumFeaturesPanel" />
+				</KeyValues>
+            </Button>
+            <Button parentKey="MenuItem6" inherits="AltoShadowlandsMenuItemTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem5" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="AnimaDiversionPanel" />
+				</KeyValues>
+            </Button>
+            <Button parentKey="MenuItem7" inherits="AltoShadowlandsMenuItemTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem6" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="TorghastPanel" />
+				</KeyValues>
+            </Button>
+            <Button parentKey="MenuItem8" inherits="AltoShadowlandsMenuItemTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenuItem7" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="panel" value="WeeklyRewardsPanel" />
+				</KeyValues>
+            </Button>
+            <Frame parentKey="ContextualMenu" inherits="AltoContextualMenuTemplate" />
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.TabShadowlands")
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -75,7 +75,7 @@ function mod:OnEngage()
 	end
 
 	-- check on IEEU for changes since IEEU fires before tentacle death events, so they don't have a boss token anymore :\
-	wipe(seen)
+	seen = {}
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckTentacles")
 end
 
@@ -87,7 +87,7 @@ do
 	function mod:CheckTentacles()
 		local bosses = {}
 		for i = 1, 5 do
-			local guid = UnitGUID(("boss%d"):format(i))
+			local guid = self:UnitGUID(("boss%d"):format(i))
 			if guid then
 				bosses[guid] = true
 			end

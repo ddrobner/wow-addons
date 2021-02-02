@@ -1,4 +1,4 @@
-local E, _, V, P, G = unpack(ElvUI);
+﻿local E, _, V, P, G = unpack(ElvUI);
 -- local locale = (E.global.general.locale and E.global.general.locale ~= "auto") and E.global.general.locale or GetLocale()
 
 -- local L = E.Libs.ACL:GetLocale('ElvUI', locale)
@@ -74,6 +74,14 @@ function SLE:UpdateMedia()
 		E.db.sle.shadows.shadowcolor.r = shadowColor.r
 		E.db.sle.shadows.shadowcolor.g = shadowColor.g
 		E.db.sle.shadows.shadowcolor.b = shadowColor.b
+	end
+
+	local iconColor = E.db.sle.bags.equipmentmanager.color
+	if E:CheckClassColor(iconColor.r, iconColor.g, iconColor.b) then
+		iconColor = E:ClassColor(E.myclass, true)
+		E.db.sle.bags.equipmentmanager.color.r = iconColor.r
+		E.db.sle.bags.equipmentmanager.color.g = iconColor.g
+		E.db.sle.bags.equipmentmanager.color.b = iconColor.b
 	end
 end
 

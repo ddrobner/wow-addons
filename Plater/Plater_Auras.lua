@@ -210,15 +210,21 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		
 			local growDirection
 			local anchorSide
+			local auras_per_row
 
 			--> get the grow direction for the buff frame
 			if (self.Name == "Main") then
 				growDirection = DB_AURA_GROW_DIRECTION
 				anchorSide = profile.aura_frame1_anchor.side
+				auras_per_row = profile.auras_per_row_amount
 				
 			elseif (self.Name == "Secondary") then
 				growDirection = DB_AURA_GROW_DIRECTION2
 				anchorSide = profile.aura_frame2_anchor.side
+				auras_per_row = profile.auras_per_row_amount2
+			
+			else
+				return
 			end
 			
 			--get the amount of auras shown in the frame, this variable should be always reliable
@@ -231,7 +237,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				--self:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
 				--self:SetBackdropBorderColor (1, 0, 0, 1)
 			
-				local aurasPerRow = (not profile.auras_per_row_auto and floor(profile.auras_per_row_amount) or Plater.MaxAurasPerRow)
+				local aurasPerRow = (not profile.auras_per_row_auto and floor(auras_per_row) or Plater.MaxAurasPerRow)
 				local curAurasRowCount = aurasPerRow + 1
 				local rowGrowthDirectionUp = (anchorSide < 3 or anchorSide > 5)
 				
@@ -411,10 +417,29 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		local showAnimationOnStop = function()
 			iconFrame:SetScale(1)
 		end
+		
+		local iconShowInAnimation = {}
 	
-		local iconShowInAnimation = DF:CreateAnimationHub (iconFrame, showAnimationOnPlay, showAnimationOnStop)
-		DF:CreateAnimation (iconShowInAnimation, "Scale", 1, .05, .7, .7, 1.1, 1.1)
-		DF:CreateAnimation (iconShowInAnimation, "Scale", 2, .05, 1.1, 1.1, 1, 1)
+		local iconShowInAnimationIcon = DF:CreateAnimationHub (iconFrame.Icon, showAnimationOnPlay, showAnimationOnStop)
+		DF:CreateAnimation (iconShowInAnimationIcon, "Scale", 1, .05, .7, .7, 1.1, 1.1)
+		DF:CreateAnimation (iconShowInAnimationIcon, "Scale", 2, .05, 1.1, 1.1, 1, 1)
+		
+		local iconShowInAnimationBorder = DF:CreateAnimationHub (iconFrame.Border, showAnimationOnPlay, showAnimationOnStop)
+		DF:CreateAnimation (iconShowInAnimationBorder, "Scale", 1, .05, .7, .7, 1.1, 1.1)
+		DF:CreateAnimation (iconShowInAnimationBorder, "Scale", 2, .05, 1.1, 1.1, 1, 1)
+		
+		iconShowInAnimation.iconShowInAnimationIcon = iconShowInAnimationIcon
+		iconShowInAnimation.iconShowInAnimationBorder = iconShowInAnimationBorder
+		
+		function iconShowInAnimation.Play(iconShowInAnimation)
+			iconShowInAnimation.iconShowInAnimationIcon:Play()
+			iconShowInAnimation.iconShowInAnimationBorder:Play()
+		end
+		function iconShowInAnimation.Stop(iconShowInAnimation)
+			iconShowInAnimation.iconShowInAnimationIcon:Stop()
+			iconShowInAnimation.iconShowInAnimationBorder:Stop()
+		end
+		
 		iconFrame.ShowAnimation = iconShowInAnimation
 	end
 	
@@ -1030,8 +1055,17 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 	function Plater.UpdateAuras_Manual (self, unit, isPersonal)
 		Plater.ResetAuraContainer (self)
 		
-		Plater.TrackSpecificAuras (self, unit, false, MANUAL_TRACKING_DEBUFFS, isPersonal)
-		Plater.TrackSpecificAuras (self, unit, true, MANUAL_TRACKING_BUFFS, isPersonal)
+		if isPersonal then
+			if (Plater.db.profile.aura_show_debuffs_personal) then
+				Plater.TrackSpecificAuras (self, unit, false, MANUAL_TRACKING_DEBUFFS, isPersonal)
+			end
+			if (Plater.db.profile.aura_show_buffs_personal) then
+				Plater.TrackSpecificAuras (self, unit, true, MANUAL_TRACKING_BUFFS, isPersonal)
+			end
+		else
+			Plater.TrackSpecificAuras (self, unit, false, MANUAL_TRACKING_DEBUFFS, isPersonal)
+			Plater.TrackSpecificAuras (self, unit, true, MANUAL_TRACKING_BUFFS, isPersonal)
+		end
 
 		--> hide not used aura frames
 		Plater.HideNonUsedAuraIcons (self)
@@ -1082,7 +1116,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 							can_show_this_debuff = true
 							
 						--> user added this buff to track in the buff tracking tab
-						elseif (AUTO_TRACKING_EXTRA_DEBUFFS [name]) then
+						elseif (AUTO_TRACKING_EXTRA_DEBUFFS [name] or AUTO_TRACKING_EXTRA_DEBUFFS [spellId]) then
 							can_show_this_debuff = true
 						end
 						
@@ -1096,7 +1130,7 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 					end
 					
 					--> check for special auras added by the user it self
-					if (((SPECIAL_AURAS_USER_LIST [name] or SPECIAL_AURAS_USER_LIST [spellId]) and not (SPECIAL_AURAS_USER_LIST_MINE [name] or SPECIAL_AURAS_USER_LIST_MINE [spellId])) or ((SPECIAL_AURAS_USER_LIST_MINE [name] or SPECIAL_AURAS_USER_LIST_MINE [spellId]) and caster and (UnitIsUnit (caster, "player") or UnitIsUnit (caster, "pet")))) then
+					if (can_show_this_debuff ~= false and (((SPECIAL_AURAS_USER_LIST [name] or SPECIAL_AURAS_USER_LIST [spellId]) and not (SPECIAL_AURAS_USER_LIST_MINE [name] or SPECIAL_AURAS_USER_LIST_MINE [spellId])) or ((SPECIAL_AURAS_USER_LIST_MINE [name] or SPECIAL_AURAS_USER_LIST_MINE [spellId]) and caster and (UnitIsUnit (caster, "player") or UnitIsUnit (caster, "pet"))))) then
 						Plater.AddExtraIcon (self, name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, "HARMFUL", debuffIndex)
 						can_show_this_debuff = false
 					end
@@ -1187,6 +1221,53 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 		
 		--hide non used icons
 			Plater.HideNonUsedAuraIcons (self)
+	end
+
+	--used in scripts to get a specific buff from the unit, return full information
+	--can be used with spellId or spellName
+	function Plater.GetAura(unitId, spellName) --alias
+		return Plater.GetBuff(unitId, spellName)
+	end
+	function Plater.GetBuff(unitId, spellName)
+		if (type(spellName) == "number") then
+			spellName = GetSpellInfo(spellName)
+		end
+
+		if (not spellName) then
+			return
+		end
+
+		spellName =  spellName:lower()
+
+		local continuationToken
+		repeat
+			local slots = { UnitAuraSlots(unitId, "HELPFUL", BUFF_MAX_DISPLAY, continuationToken) }
+			continuationToken = slots[1]
+			for i=2, #slots do
+				local slot = slots[i];
+				local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unitId, slot)
+				if (name) then
+					if (name:lower()  == spellName) then
+						return name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					end
+				end
+			end
+		until not continuationToken
+
+		local continuationToken
+		repeat
+			local slots = { UnitAuraSlots(unitId, "HARMFUL", BUFF_MAX_DISPLAY, continuationToken) }
+			continuationToken = slots[1]
+			for i=2, #slots do
+				local slot = slots[i];
+				local name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll = UnitAuraBySlot(unitId, slot)
+				if (name) then
+					if (name:lower()  == spellName) then
+						return name, texture, count, actualAuraType, duration, expirationTime, caster, canStealOrPurge, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, isCastByPlayer, nameplateShowAll
+					end
+				end
+			end
+		until not continuationToken
 	end
 
 	function Plater.UpdateAuras_Self_Automatic (self)
@@ -1445,7 +1526,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 			for spellId, _ in pairs (DF.CrowdControlSpells) do
 				local spellName = GetSpellInfo (spellId)
 				if (spellName) then
-					SPECIAL_AURAS_AUTO_ADDED [spellName] = true
+					--SPECIAL_AURAS_AUTO_ADDED [spellName] = true
+					SPECIAL_AURAS_AUTO_ADDED [spellId] = true
 					CROWDCONTROL_AURA_NAMES [spellName] = true
 				end
 			end
@@ -1601,8 +1683,8 @@ local AUTO_TRACKING_EXTRA_DEBUFFS = {}
 				for spellId, _ in pairs (DF.CrowdControlSpells) do
 					local spellName = GetSpellInfo (spellId)
 					if (spellName) then
-						AUTO_TRACKING_EXTRA_BUFFS [spellName] = true
-						--AUTO_TRACKING_EXTRA_BUFFS [spellId] = true
+						--AUTO_TRACKING_EXTRA_DEBUFFS [spellName] = true
+						AUTO_TRACKING_EXTRA_DEBUFFS [spellId] = true
 						CAN_TRACK_EXTRA_BUFFS = true
 					end
 				end

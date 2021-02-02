@@ -10,6 +10,10 @@
  ** note - a recipe item will show the profession name for the characters that have already learned it
  ** note - a recipe item will show "Learn" next to the characters that have not currently learned that recipe (skill level requirements are not checked)
  
+*3.09.46 (30-NOV-2020)*
+ * changed - CallBackHandler library updated to 1.0.7
+ * disabled - the delete option for junk selling has been disabled due to blizzard protecting the DeleteCursorItem function
+ 
 *3.09.45 (22-NOV-2020)*
  * changed - toc updated to 90002
  * added - system category > equipment (party loot) - only works in the bag, and when its online

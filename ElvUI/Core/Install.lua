@@ -190,6 +190,7 @@ function E:SetupTheme(theme, noDisplayMsg)
 		E.db.unitframe.colors.auraBarBuff = E:GetColor(.31, .31, .31)
 		E.db.unitframe.colors.castColor = E:GetColor(.31, .31, .31)
 		E.db.unitframe.colors.castClassColor = false
+		E.db.chat.tabSelectorColor = {r = 0.09, g = 0.51, b = 0.82}
 	elseif theme == 'class' then
 		classColor = E:ClassColor(E.myclass, true)
 
@@ -200,6 +201,7 @@ function E:SetupTheme(theme, noDisplayMsg)
 		E.db.unitframe.colors.auraBarBuff = E:GetColor(classColor.r, classColor.g, classColor.b)
 		E.db.unitframe.colors.healthclass = true
 		E.db.unitframe.colors.castClassColor = true
+		E.db.chat.tabSelectorColor = E:GetColor(classColor.r, classColor.g, classColor.b)
 	else
 		E.db.general.bordercolor = (E.PixelMode and E:GetColor(0, 0, 0) or E:GetColor(.1, .1, .1))
 		E.db.general.backdropcolor = E:GetColor(.1, .1, .1)
@@ -210,6 +212,7 @@ function E:SetupTheme(theme, noDisplayMsg)
 		E.db.unitframe.colors.health = E:GetColor(.1, .1, .1)
 		E.db.unitframe.colors.castColor = E:GetColor(.1, .1, .1)
 		E.db.unitframe.colors.castClassColor = false
+		E.db.chat.tabSelectorColor = {r = 0.09, g = 0.51, b = 0.82}
 	end
 
 	--Value Color
@@ -231,6 +234,7 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 	if not noDataReset then
 		E.db.layoutSet = layout
 		E.db.layoutSetting = layout
+		E.db.convertPages = true
 
 		--Unitframes
 		E:CopyTable(E.db.unitframe.units, P.unitframe.units)
@@ -243,16 +247,16 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 
 		--ActionBars
 			E.db.actionbar.bar1.buttons = 8
-			E.db.actionbar.bar1.buttonsize = 50
-			E.db.actionbar.bar1.buttonspacing = 1
+			E.db.actionbar.bar1.buttonSize = 50
+			E.db.actionbar.bar1.buttonSpacing = 1
 			E.db.actionbar.bar2.buttons = 9
-			E.db.actionbar.bar2.buttonsize = 38
-			E.db.actionbar.bar2.buttonspacing = 1
+			E.db.actionbar.bar2.buttonSize = 38
+			E.db.actionbar.bar2.buttonSpacing = 1
 			E.db.actionbar.bar2.enabled = true
 			E.db.actionbar.bar2.visibility = '[petbattle] hide; show'
 			E.db.actionbar.bar3.buttons = 8
-			E.db.actionbar.bar3.buttonsize = 50
-			E.db.actionbar.bar3.buttonspacing = 1
+			E.db.actionbar.bar3.buttonSize = 50
+			E.db.actionbar.bar3.buttonSpacing = 1
 			E.db.actionbar.bar3.buttonsPerRow = 10
 			E.db.actionbar.bar3.visibility = '[petbattle] hide; show'
 			E.db.actionbar.bar4.enabled = false
@@ -272,14 +276,26 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 			E.db.bags.bankWidth = 474
 			E.db.bags.itemLevelCustomColorEnable = true
 			E.db.bags.scrapIcon = true
+			E.db.bags.split.bag1 = true
+			E.db.bags.split.bag2 = true
+			E.db.bags.split.bag3 = true
+			E.db.bags.split.bag4 = true
+			E.db.bags.split.bagSpacing = 7
+			E.db.bags.split.player = true
 		--Chat
 			E.db.chat.fontSize = 10
 			E.db.chat.separateSizes = false
 			E.db.chat.panelHeight = 236
 			E.db.chat.panelWidth = 472
-			E.db.chat.tabFontSize = 10
+			E.db.chat.tabFontSize = 12
+			E.db.chat.copyChatLines = true
 		--DataTexts
 			E.db.datatexts.panels.LeftChatDataPanel[3] = 'QuickJoin'
+		--DataBars
+			E.db.databars.threat.height = 24
+			E.db.databars.threat.width = 472
+			E.db.databars.azerite.enable = false
+			E.db.databars.reputation.enable = true
 		--General
 			E.db.general.bonusObjectivePosition = 'AUTO'
 			E.db.general.minimap.size = 220
@@ -288,7 +304,8 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 			E.db.general.totems.growthDirection = 'HORIZONTAL'
 			E.db.general.totems.size = 50
 			E.db.general.totems.spacing = 8
-
+			E.db.general.autoTrackReputation = true
+			E.db.general.bonusObjectivePosition = "AUTO"
 		--Movers
 			for mover, position in pairs(E.LayoutMoverPositions.ALL) do
 				E.db.movers[mover] = position
@@ -297,6 +314,29 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 		--Tooltip
 			E.db.tooltip.healthBar.fontOutline = 'MONOCHROMEOUTLINE'
 			E.db.tooltip.healthBar.height = 12
+			E.db.movers.TooltipMover = nil --ensure that this mover gets completely reset.. yes E:ResetMover call above doesn't work.
+			E.db.tooltip.healthBar.font = "PT Sans Narrow"
+			E.db.tooltip.healthBar.fontOutline = "NONE"
+			E.db.tooltip.healthBar.fontSize = 12
+		--Nameplates
+			E.db.nameplates.colors.castNoInterruptColor = {r = 0.78, g=0.25, b=0.25}
+			E.db.nameplates.colors.reactions.good = {r = 0.30, g=0.67, b=0.29}
+			E.db.nameplates.colors.reactions.neutral = {r = 0.85, g=0.76, b=0.36}
+			E.db.nameplates.colors.selection[0] = {r = 0.78, g=0.25, b=0.25}
+			E.db.nameplates.colors.selection[2] = {r = 0.85, g=0.76, b=0.36}
+			E.db.nameplates.colors.selection[3] = {r = 0.29, g=0.67, b=0.30}
+			E.db.nameplates.colors.threat.badColor = {r = 0.78, g=0.25, b=0.25}
+			E.db.nameplates.colors.threat.goodColor = {r = 0.29, g=0.67, b=0.30}
+			E.db.nameplates.colors.threat.goodTransition = {r = 0.85, g=0.76, b=0.36}
+			E.db.nameplates.units.ENEMY_NPC.health.text.format = ""
+			E.db.nameplates.units.ENEMY_PLAYER.health.text.format = ""
+			E.db.nameplates.units.ENEMY_PLAYER.portrait.classicon = false
+			E.db.nameplates.units.ENEMY_PLAYER.portrait.enable = true
+			E.db.nameplates.units.ENEMY_PLAYER.portrait.position = "LEFT"
+			E.db.nameplates.units.ENEMY_PLAYER.portrait.xOffset = 0
+			E.db.nameplates.units.ENEMY_PLAYER.portrait.yOffset = 0
+
+
 		--UnitFrames
 			E.db.unitframe.smoothbars = true
 			E.db.unitframe.thinBorders = true
@@ -353,7 +393,6 @@ function E:SetupLayout(layout, noDataReset, noDisplayMsg)
 			--Pet
 				E.db.unitframe.units.pet.castbar.iconSize = 32
 				E.db.unitframe.units.pet.castbar.width = 270
-				E.db.unitframe.units.pet.debuffs.anchorPoint = 'TOPRIGHT'
 				E.db.unitframe.units.pet.debuffs.enable = true
 				E.db.unitframe.units.pet.disableTargetGlow = false
 				E.db.unitframe.units.pet.infoPanel.height = 14
@@ -573,19 +612,23 @@ function E:SetPage(PageNum)
 		f.Desc1:SetText(L["Please click the button below to setup your Profile Settings."])
 		f.Desc2:SetText(L["New Profile will create a fresh profile for this character."] .. '\n' .. L["Shared Profile will select the default profile."])
 
+		InstallOption1Button:SetText(L["Shared Profile"])
 		InstallOption1Button:Show()
 		InstallOption1Button:SetScript('OnClick', function()
 			E.data:SetProfile('Default')
-			E:NextPage()
+			if E.db.layoutSet then
+				E:SetPage(9)
+			else
+				E:NextPage()
+			end
 		end)
 
-		InstallOption1Button:SetText(L["Shared Profile"])
+		InstallOption2Button:SetText(L["New Profile"])
 		InstallOption2Button:Show()
 		InstallOption2Button:SetScript('OnClick', function()
 			E.data:SetProfile(E.mynameRealm)
 			E:NextPage()
 		end)
-		InstallOption2Button:SetText(L["New Profile"])
 	elseif PageNum == 5 then
 		f.SubTitle:SetText(L["Theme Setup"])
 		f.Desc1:SetText(L["Choose a theme layout you wish to use for your initial setup."])
@@ -901,7 +944,12 @@ function E:Install()
 
 		local close = CreateFrame('Button', 'InstallCloseButton', f, 'UIPanelCloseButton, BackdropTemplate')
 		close:Point('TOPRIGHT', f, 'TOPRIGHT')
-		close:SetScript('OnClick', function() f:Hide() end)
+		close:SetScript('OnClick', function()
+			-- Wasn't sure if we should run the InstallComplete function which will reload the ui for just clicking X to close it...
+			-- Simpy, Azil and I were sure what your thoughts on just saying it's complete
+			E.private.install_complete = E.version
+			f:Hide()
+		end)
 		S:HandleCloseButton(close)
 
 		local logo = f:CreateTexture('InstallTutorialImage', 'OVERLAY')

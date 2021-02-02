@@ -1,202 +1,173 @@
-LibStub("LibGatheringNodes-1.0").enUS = {
-	-- Mining nodes
-	-- Classic
-	["Copper Vein"]                     =   2770, -- Copper Ore
-	["Dark Iron Deposit"]               =  11370, -- Dark Iron Ore
-	["Gold Vein"]                       =   2776, -- Gold Ore
-	["Hakkari Thorium Vein"]            =  10620, -- Thorium Ore
-	["Iron Deposit"]                    =   2772, -- Iron Ore
-	["Mithril Deposit"]                 =   3858, -- Mithril Ore
-	["Ooze Covered Gold Vein"]          =   2776, -- Gold Ore
-	["Ooze Covered Mithril Deposit"]    =   3858, -- Mithril Ore
-	["Ooze Covered Rich Thorium Vein"]  =  10620, -- Thorium Ore
-	["Ooze Covered Silver Vein"]        =   2775, -- Silver Ore
-	["Ooze Covered Thorium Vein"]       =  10620, -- Thorium Ore
-	["Ooze Covered Truesilver Deposit"] =   7911, -- Truesilver Ore
-	["Rich Thorium Vein"]               =  10620, -- Thorium Ore
-	["Silver Vein"]                     =   2775, -- Silver Ore
-	["Small Thorium Vein"]              =  10620, -- Thorium Ore
-	["Tin Vein"]                        =   2771, -- Tin Ore
-	["Truesilver Deposit"]              =   7911, -- Truesilver Ore
+LibStub('LibGatheringNodes-1.0').enUS = {
+	["Adamantite Deposit"] = 		 {23425, 23427, 108302, },
+	["Blackrock Deposit"] = 		 {109118, 115508, 109992, },
+	["Brimstone Destroyer Core"] = 		 {124444, },
+	["Cobalt Deposit"] = 		 {36909, 108305, },
+	["Copper Vein"] = 		 {2770, 2835, },
+	["Dark Iron Deposit"] = 		 {11370, },
+	["Elementium Vein"] = 		 {52185, 108308, },
+	["Elethium Deposit"] = 		 {171833, 171841, },
+	["Empyrium Deposit"] = 		 {151564, },
+	["Empyrium Seam"] = 		 {151564, },
+	["Fel Iron Deposit"] = 		 {23424, 23427, 108301, },
+	["Felslate Deposit"] = 		 {123919, },
+	["Felslate Seam"] = 		 {123919, },
+	["Felslate Spike"] = 		 {123919, },
+	["Ghost Iron Deposit"] = 		 {72092, 97512, },
+	["Gold Vein"] = 		 {2776, 108296, },
+	["Iron Deposit"] = 		 {2772, 2838, 108297, },
+	["Khorium Vein"] = 		 {23426, 23427, 108304, },
+	["Kyparite Deposit"] = 		 {72093, 97546, },
+	["Laestrite Deposit"] = 		 {171828, 171840, 171833, },
+	["Large Obsidian Chunk"] = 		 {22202, 22203, },
+	["Leystone Deposit"] = 		 {123918, },
+	["Leystone Seam"] = 		 {123918, },
+	["Mithril Deposit"] = 		 {3858, 7912, 108300, },
+	["Monelite Deposit"] = 		 {152512, },
+	["Monelite Seam"] = 		 {152512, },
+	["Nethercite Deposit"] = 		 {23427, },
+	["Obsidium Deposit"] = 		 {53038, 108307, },
+	["Ooze Covered Mithril Deposit"] = 		 {3858, 7912, },
+	["Ooze Covered Rich Thorium Vein"] = 		 {12365, 10620, },
+	["Ooze Covered Thorium Vein"] = 		 {12365, 10620, 108298, },
+	["Ooze Covered Truesilver Deposit"] = 		 {7911, },
+	["Osmenite Deposit"] = 		 {168185, },
+	["Osmenite Seam"] = 		 {168185, },
+	["Oxxein Deposit"] = 		 {171830, 171840, 171841, 171833, },
+	["Phaedrum Deposit"] = 		 {171831, 171833, },
+	["Platinum Deposit"] = 		 {152513, },
+	["Pure Saronite Deposit"] = 		 {36912, },
+	["Pyrite Deposit"] = 		 {52183, 108309, },
+	["Rich Adamantite Deposit"] = 		 {23425, 23427, 108302, },
+	["Rich Blackrock Deposit"] = 		 {115508, 109118, 109992, },
+	["Rich Cobalt Deposit"] = 		 {36909, 108305, },
+	["Rich Elementium Vein"] = 		 {52185, 108308, },
+	["Rich Elethium Deposit"] = 		 {171833, 171841, },
+	["Rich Empyrium Deposit"] = 		 {151564, },
+	["Rich Felslate Deposit"] = 		 {123919, },
+	["Rich Ghost Iron Deposit"] = 		 {72092, 97512, },
+	["Rich Kyparite Deposit"] = 		 {72093, 97546, },
+	["Rich Laestrite Deposit"] = 		 {171828, 171840, 171833, },
+	["Rich Leystone Deposit"] = 		 {123918, },
+	["Rich Monelite Deposit"] = 		 {152512, },
+	["Rich Obsidium Deposit"] = 		 {53038, 108307, },
+	["Rich Osmenite Deposit"] = 		 {168185, },
+	["Rich Oxxein Deposit"] = 		 {171830, 171840, 171841, 171833, },
+	["Rich Phaedrum Deposit"] = 		 {171831, 171833, },
+	["Rich Platinum Deposit"] = 		 {152513, },
+	["Rich Pyrite Deposit"] = 		 {52183, 108309, },
+	["Rich Saronite Deposit"] = 		 {36912, 108306, },
+	["Rich Sinvyr Deposit"] = 		 {171832, 171840, 171841, 171833, },
+	["Rich Solenium Deposit"] = 		 {171829, 171840, 171841, 171833, },
+	["Rich Storm Silver Deposit"] = 		 {152579, },
+	["Rich Thorium Vein"] = 		 {12365, 10620, 108298, },
+	["Rich Trillium Vein"] = 		 {72103, 72094, },
+	["Rich True Iron Deposit"] = 		 {115508, 109119, 109991, },
+	["Saronite Deposit"] = 		 {36912, 108306, },
+	["Silver Vein"] = 		 {2775, 108294, },
+	["Sinvyr Deposit"] = 		 {171832, 171840, 171841, 171833, },
+	["Small Obsidian Chunk"] = 		 {22202, 22203, },
+	["Small Thorium Vein"] = 		 {12365, 10620, 108298, },
+	["Smoldering True Iron Deposit"] = 		 {109119, 115508, },
+	["Solenium Deposit"] = 		 {171829, 171840, 171841, 171833, },
+	["Storm Silver Deposit"] = 		 {152579, },
+	["Storm Silver Seam"] = 		 {152579, },
+	["Tin Vein"] = 		 {2771, 2836, 2770, },
+	["Titanium Vein"] = 		 {36910, 108391, },
+	["Trillium Vein"] = 		 {72094, 72103, },
+	["True Iron Deposit"] = 		 {115508, 109119, 109991, },
+	["Truesilver Deposit"] = 		 {7911, 108299, },
 
-	["Lesser Bloodstone Deposit"]       =   4278, -- Lesser Bloodstone Ore
-	["Incendicite Mineral Vein"]        =   3340, -- Incendicite Ore
-	["Indurium Mineral Vein"]           =   5833, -- Indurium Ore
-	["Large Obsidian Chunk"]            =  22203, -- Large Obsidian Shard. Both drop on both nodes.
-	["Small Obsidian Chunk"]            =  22202, -- Small Obsidian Shard. Both drop on both nodes.
-	
-	-- TBC
-	["Adamantite Deposit"]              =  23425, -- Adamantite Ore
-	["Fel Iron Deposit"]                =  23424, -- Fel Iron Ore
-	["Khorium Vein"]                    =  23426, -- Khorium Ore
-	["Nethercite Deposit"]              =  32464, -- Nethercite Ore
-	["Rich Adamantite Deposit"]         =  23425, -- Adamantite Ore
-	
-	-- WotLK
-	["Cobalt Deposit"]                  =  36909, -- Cobalt Ore
-	["Rich Cobalt Deposit"]             =  36909, -- Cobalt Ore
-	["Saronite Deposit"]                =  36912, -- Saronite Ore
-	["Rich Saronite Deposit"]           =  36912, -- Saronite Ore
-	["Titanium Vein"]                   =  36910, -- Titanium Ore
-
-	-- Cataclysm
-	["Obsidium Deposit"]                =  53038, -- Obsidium Ore
-	["Rich Obsidium Deposit"]           =  53038, -- Obsidium Ore
-	["Elementium Vein"]                 =  52185, -- Elementium Ore
-	["Rich Elementium Vein"]            =  52185, -- Elementium Ore
-	["Pyrite Deposit"]                  =  52183, -- Pyrite Ore
-	["Rich Pyrite Deposit"]             =  52183, -- Pyrite Ore
-
-	-- MoP
-	["Ghost Iron Deposit"]              =  72092, -- Ghost Iron Ore
-	["Rich Ghost Iron Deposit"]         =  72092, -- Ghost Iron Ore
-	["Kyparite Deposit"]                =  72093, -- Kyparite Ore
-	["Rich Kyparite Deposit"]           =  72093, -- Kyparite Ore
-	["Trillium Vein"]                   =  72095, -- Trillium Bar, because this node produces two ores
-	["Rich Trillium Vein"]              =  72095, -- Trillium Bar, because this node produces two ores
-
-	-- WoD
-	["Blackrock Deposit"]               = 109118, -- Blackrock Ore
-	["Rich Blackrock Deposit"]          = 109118, -- Blackrock Ore
-	["True Iron Deposit"]               = 109119, -- True Iron Ore 
-	["Rich True Iron Deposit"]          = 109119, -- True Iron Ore
-	["Smoldering True Iron Deposit"]    = 109119, -- True Iron Ore
-
-	-- Legion
-	["Leystone Deposit"]                = 123918, -- Leystone Ore
-	["Leystone Seam"]                   = 123918, -- Leystone Ore
-	["Rich Leystone Deposit"]           = 123918, -- Leystone Ore
-	["Felslate Deposit"]                = 123919, -- Felslate
-	["Felslate Seam"]                   = 123919, -- Felslate
-	["Rich Felslate Deposit"]           = 123919, -- Felslate
-    
-	["Empyrium Deposit"]                = 151564, -- Empyrium
-	["Empyrium Seam"]                   = 151564, -- Empyrium
-	["Rich Empyrium Deposit"]           = 151564, -- Empyrium	
-	
-	-- Badtle for Azeroth
-	["Monelite Deposit"]				= 152512, -- Monelite Ore
-	["Rich Monelite Deposit"]		    = 152512, -- Monelite Ore
-	["Monelite Seam"]				    = 152512, -- Monelite Ore
-	["Storm Silver Deposit"]			= 152579, -- Storm Silver Ore
-	["Rich Storm Silver Deposit"]	    = 152579, -- Storm Silver Ore
-	["Storm Silver Seam"]			    = 152579, -- Storm Silver Ore
-	["Platinum Deposit"]				= 152513, -- Platinum Ore
-	["Rich Platinum Deposit"]		    = 152513, -- Platinum Ore
-    ["Osmenite Ore"]                    = 168185, -- Osmenite Ore
-    ["Osmenite Seam"]                   = 168185,
-    ["Rich Osmenite Deposit"]           = 168185,
-    
-    -- Delaydowlands
-    ["Laestrite Deposit"]               = 171828, -- Laestrite Ore
-    ["Rich Elethium Deposit"]           = 171833, -- Elethium Ore
-    ["Solenium Deposit"]                = 171829, -- Solenium Ore
-    ["Elethium Deposit"]                = 171833, -- Elethium Ore
-    ["Rich Solenium Deposit"]           = 171829, -- Solenium Ore
-    ["Rich Laestrite Deposit"]          = 171828, -- Laestrite Ore
-    --["Luminous Solenium Deposit"]     = ????
-    
-	
-	-- Herbs
-	-- Classic
-	["Arthas' Tears"]                   =  8836,
-	["Black Lotus"]                     = 13468,
-	["Blindweed"]                       =  8839,
-	["Bloodthistle"]                    = 22710,
-	["Briarthorn"]                      =  2450,
-	["Bruiseweed"]                      =  2453,
-	["Dreamfoil"]                       = 13463,
-	["Earthroot"]                       =  2449,
-	["Fadeleaf"]                        =  3818,
-	["Firebloom"]                       =  4625,
-	["Ghost Mushroom"]                  =  8845,
-	["Golden Sansam"]                   = 13464,
-	["Goldthorn"]                       =  3821,
-	["Grave Moss"]                      =  3369,
-	["Gromsblood"]                      =  8846,
-	["Icecap"]                          = 13467,
-	["Khadgar's Whisker"]               =  3358,
-	["Kingsblood"]                      =  3356,
-	["Liferoot"]                        =  3357,
-	["Mageroyal"]                       =   785,
-	["Mountain Silversage"]             = 13465,
-	["Peacebloom"]                      =  2447,
-	["Plaguebloom"]                     = 13466,
-	["Purple Lotus"]                    =  8831,
-	["Silverleaf"]                      =   765,
-	["Stranglekelp"]                    =  3820,
-	["Sungrass"]                        =  8838,
-	["Wild Steelbloom"]                 =  3355,
-	["Wintersbite"]                     =  3819,
-
-	-- TBC
-	["Ancient Lichen"]                  = 22790,
-	["Dreaming Glory"]                  = 22786,
-	["Felweed"]                         = 22785,
-	["Flame Cap"]                       = 22788,
-	["Glowcap"]                         = 24245,
-	["Mana Thistle"]                    = 22793,
-	["Netherbloom"]                     = 22791,
-	["Netherdust Bush"]                 = 32468, -- Netherdust Pollen
-	["Nightmare Vine"]                  = 22792,
-	["Ragveil"]                         = 22787,
-	["Sanguine Hibiscus"]               = 24246,
-	["Terocone"]                        = 22789,
-
-	-- WotLK
-	["Goldclover"]                      = 36901,
-	["Adder's Tongue"]                  = 36903,
-	["Tiger Lily"]                      = 36904,
-	["Lichbloom"]                       = 36905,
-	["Icethorn"]                        = 36906,
-	["Talandra's Rose"]                 = 36907,
-	["Frost Lotus"]                     = 36908,
-	["Firethorn"]                       = 39970,
-
-	-- Cataclysm
-	["Cinderbloom"]                     = 52983,
-	["Stormvine"]                       = 52984,
-	["Azshara's Veil"]                  = 52985,
-	["Heartblossom"]                    = 52986,
-	["Twilight Jasmine"]                = 52987,
-	["Whiptail"]                        = 52988,
-
-	-- MoP
-	["Green Tea Leaf"]                  = 72234,
-	["Silkweed"]                        = 72235,
-	["Rain Poppy"]                      = 72237,
-	["Snow Lily"]                       = 79010,
-	["Fool's Cap"]                      = 79011,
-
-	-- WoD
-	["Frostweed"]                       = 109124,
-	["Fireweed"]                        = 109125,
-	["Gorgrond Flytrap"]                = 109126,
-	["Starflower"]                      = 109127,
-	["Nagrand Arrowbloom"]              = 109128,
-	["Talador Orchid"]                  = 109129,
-
-	-- Legion
-	["Aethril"]                         = 124101,
-	["Dreamleaf"]                       = 124102,
-	["Foxflower"]                       = 124103,
-	["Fjarnskaggl"]                     = 124104,
-	["Starlight Rose"]                  = 124105,
-    ["Astral Glory"]     	            = 151565,	
-	
-	-- Badtle for Azeroth
-	["Akunda's Bite"]                   = 152507,
-	["Anchor Weed"]                     = 152510,
-	["Riverbud"]                        = 152505,
-	["Sea Stalks"]                      = 152511, -- Sea Stalk
-	["Siren's Sting"]                   = 152509, -- Siren's Pollen	
-	["Star Moss"]                       = 152506,	
-	["Winter's Kiss"]                   = 152508,
-    ["Zin'anthid"]                      = 168487,
-
-    -- Delaydowlands
-    ["Death Blossom"]                   = 169701,
-    ["Nightshade"]                      = 171315,
-    ["Rising Glory"]                    = 168586,
-    ["Vigil's Torch"]                   = 170554,
+	["Adder's Tongue"] = 		 {36903, 36908, },
+	["Aethril"] = 		 {124101, 128304, 129284, },
+	["Akunda's Bite"] = 		 {152507, },
+	["Anchor Weed"] = 		 {152510, },
+	["Ancient Lichen"] = 		 {22790, 22794, 108348, },
+	["Arthas' Tears"] = 		 {8836, },
+	["Astral Glory"] = 		 {151565, },
+	["Azshara's Veil"] = 		 {52985, },
+	["Black Lotus"] = 		 {13468, },
+	["Blacker Lotus"] = 		 {13468, },
+	["Blindweed"] = 		 {8839, 108336, },
+	["Bloodthistle"] = 		 {10, },
+	["Briarthorn"] = 		 {2450, 2452, },
+	["Bruiseweed"] = 		 {2453, },
+	["Cinderbloom"] = 		 {52983, },
+	["Death Blossom"] = 		 {169701, },
+	["Dragon's Teeth"] = 		 {3819, 108329, },
+	["Dreamfoil"] = 		 {13463, 108339, },
+	["Dreaming Glory"] = 		 {22786, 22794, 108345, },
+	["Dreamleaf"] = 		 {124102, 128304, 129285, },
+	["Earthroot"] = 		 {2449, },
+	["Fadeleaf"] = 		 {3818, 108328, },
+	["Fel-Encrusted Herb"] = 		 {151565, },
+	["Fel-Encrusted Herb Cluster"] = 		 {128304, 124102, 124104, 124101, 124103, },
+	["Felweed"] = 		 {22785, 22794, 108344, },
+	["Felwort"] = 		 {124106, 129289, },
+	["Firebloom"] = 		 {4625, 108332, },
+	["Firethorn"] = 		 {39970, 36908, },
+	["Fireweed"] = 		 {109125, 116053, },
+	["Fjarnskaggl"] = 		 {124104, 128304, 129287, },
+	["Flame Cap"] = 		 {22788, 22794, },
+	["Fool's Cap"] = 		 {79011, 97623, 72238, },
+	["Foxflower"] = 		 {124103, 128304, 129286, },
+	["Frost Lotus"] = 		 {36908, 37921, },
+	["Frostweed"] = 		 {109124, 116053, 109624, },
+	["Frozen Herb"] = 		 {36901, 36907, 36904, 2450, 2453, 785, },
+	["Ghost Mushroom"] = 		 {8845, 108337, },
+	["Goldclover"] = 		 {36901, 37921, 36908, },
+	["Golden Lotus"] = 		 {72238, },
+	["Golden Sansam"] = 		 {13464, 108340, },
+	["Goldthorn"] = 		 {3821, 108331, },
+	["Gorgrond Flytrap"] = 		 {109126, 116053, 109626, },
+	["Grave Moss"] = 		 {3369, 108327, },
+	["Green Tea Leaf"] = 		 {72234, 97619, 72238, },
+	["Gromsblood"] = 		 {8846, 108338, },
+	["Heartblossom"] = 		 {52986, },
+	["Icecap"] = 		 {13467, 108343, },
+	["Icethorn"] = 		 {36906, 36908, },
+	["Khadgar's Whisker"] = 		 {3358, 108326, },
+	["Kingsblood"] = 		 {3356, 108324, },
+	["Lichbloom"] = 		 {36905, 36908, },
+	["Liferoot"] = 		 {3357, 108325, },
+	["Mageroyal"] = 		 {785, 2452, },
+	["Mana Thistle"] = 		 {22793, 22794, },
+	["Marrowroot"] = 		 {168589, },
+	["Mountain Silversage"] = 		 {13465, 108341, },
+	["Nagrand Arrowbloom"] = 		 {116053, 109128, },
+	["Netherbloom"] = 		 {22791, 22794, },
+	["Netherdust Bush"] = 		 {22794, },
+	["Nightmare Vine"] = 		 {22792, 22794, 108350, },
+	["Nightshade"] = 		 {171315, 169697, },
+	["Peacebloom"] = 		 {2447, },
+	["Purple Lotus"] = 		 {8831, 8153, 108333, },
+	["Ragveil"] = 		 {22787, 22794, },
+	["Rain Poppy"] = 		 {72237, 97620, 72238, },
+	["Rising Glory"] = 		 {168586, },
+	["Riverbud"] = 		 {152505, },
+	["Sea Stalks"] = 		 {152511, },
+	["Sha-Touched Herb"] = 		 {72234, 79010, 79011, 97624, 72238, 97622, },
+	["Silkweed"] = 		 {72235, 97621, 72238, },
+	["Silverleaf"] = 		 {765, },
+	["Siren's Sting"] = 		 {152509, },
+	["Snow Lily"] = 		 {79010, 97622, 72238, },
+	["Sorrowmoss"] = 		 {13466, 108342, },
+	["Star Moss"] = 		 {152506, },
+	["Starflower"] = 		 {109127, 116053, 109627, },
+	["Starlight Rose"] = 		 {124105, 129288, },
+	["Stormvine"] = 		 {52984, },
+	["Stranglekelp"] = 		 {3820, 108330, },
+	["Sungrass"] = 		 {8838, 108335, },
+	["Talador Orchid"] = 		 {116053, 109129, },
+	["Talandra's Rose"] = 		 {36907, 37921, 36908, 108357, },
+	["Terocone"] = 		 {22789, 22794, 108347, },
+	["Tiger Lily"] = 		 {36904, 37921, 36908, },
+	["Twilight Jasmine"] = 		 {52987, },
+	["Vigil's Torch"] = 		 {170554, },
+	["Whiptail"] = 		 {52988, },
+	["Widowbloom"] = 		 {168583, },
+	["Wild Steelbloom"] = 		 {3355, 108323, },
+	["Winter's Kiss"] = 		 {152508, },
+	["Withered Herb"] = 		 {116053, 109124, 109125, 109126, 109128, 109127, 109129, 109625, },
+	["Zin'anthid"] = 		 {168487, },
 }

@@ -1,4 +1,4 @@
-## Interface: 90001
+## Interface: 90002
 ## Title: PetTracker Config
 ## Notes: Load on demand options and tutorials.
 ## Author: Jaliborc (João Cardoso)

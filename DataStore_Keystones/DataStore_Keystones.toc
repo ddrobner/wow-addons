@@ -2,7 +2,7 @@
 ## Title: DataStore_Keystones
 ## Notes: Stores information about Mythic+ Keystones
 ## Author: Teelo (US-Jubei'thos)
-## Version: 9.0.1-033
+## Version: 9.0.2-010
 ## Dependencies: DataStore, DataStore_Containers
 ## OptionalDeps: Ace3
 ## SavedVariables: DataStore_KeystonesDB

@@ -32,16 +32,20 @@ local function countItemDifferences(item1, item2)
 		return 1000000 
 	end
 	
-    -- different versions of same item (id + bonus ids + suffix + drop level, constitutes a different physical drop)
-    if Amr.GetItemUniqueId(item1, true, true) ~= Amr.GetItemUniqueId(item2, true, true) then
-		return 100000
-    end
-    
-    -- different upgrade levels of the same item
-    if item1.upgradeId ~= item2.upgradeId then
-        return 10000
-	end
-	
+	--if item1.guid and item2.guid and item1.guid == item2.guid then
+	--	-- these have the same guid, so even if bonus id or something doesn't match for some reason, they are identical items
+	--else
+		-- different versions of same item (id + bonus ids + suffix + drop level, constitutes a different physical drop)
+		if Amr.GetItemUniqueId(item1, true, true) ~= Amr.GetItemUniqueId(item2, true, true) then
+			return 100000
+		end
+		
+		-- different upgrade levels of the same item
+		if item1.upgradeId ~= item2.upgradeId then
+			return 10000
+		end
+	--end
+
 	-- a change that requires reforging is considered more different than a change that does not;
 	-- it is assumed that item1 is how we want the item to be in the end, and item2 is how it currently is
 	local aztReforges = 0
@@ -118,6 +122,7 @@ local function findMatchingItemFromTable(item, list, bestItem, bestDiff, bestLoc
 	for k,listItem in pairs(list) do		
 		if listItem then
 			local diff = countItemDifferences(item, listItem)
+
 			if diff < bestDiff then
 				-- each physical item can only be used once, the usedItems table has items we can't use in this search
 				local key = string.format("%s_%s", tableType, k)
@@ -125,10 +130,10 @@ local function findMatchingItemFromTable(item, list, bestItem, bestDiff, bestLoc
 					bestItem = listItem
 					bestDiff = diff
 					bestLoc = key
-					found = true
 				end
 			end
-			if found then break end
+
+			if bestDiff == 0 then break end
 		end
 	end
 	
@@ -688,13 +693,23 @@ end
 -- scan a bag for the best matching item
 local function scanBagForItem(item, bagId, bestItem, bestDiff, bestLink)
 	local numSlots = GetContainerNumSlots(bagId)
-	local loc = ItemLocation.CreateEmpty()
+	--local loc = ItemLocation.CreateEmpty()
+	local blizzItem
 	for slotId = 1, numSlots do
 		local _, _, _, _, _, _, itemLink = GetContainerItemInfo(bagId, slotId)
         -- we skip any stackable item, as far as we know, there is no equippable gear that can be stacked
 		if itemLink then
 			local bagItem = Amr.ParseItemLink(itemLink)
 			if bagItem ~= nil then
+
+				blizzItem = Item:CreateFromBagAndSlot(bagId, slotId)
+
+				-- seems to be of the form Item-1147-0-4000000XXXXXXXXX, so we take just the last 9 digits
+				bagItem.guid = blizzItem:GetItemGUID()
+				if bagItem.guid and strlen(bagItem.guid) > 9 then
+					bagItem.guid = strsub(bagItem.guid, -9)
+				end
+
 				-- see if this is an azerite item and read azerite power ids
 				--[[loc:SetBagAndSlot(bagId, slotId)
 				if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItem(loc) then
@@ -1140,11 +1155,12 @@ function beginEquipGearSet(setupId, passes)
 
 				-- find the best matching item anywhere in the player's gear
 				local bestItem, bestDiff = Amr:FindMatchingItem(new, player, usedItems)
+				
 				new = bestItem
-
 				local diff = countItemDifferences(new, old)				
 
-				if diff > 0 then	
+				if diff > 0 then
+
 					list[slotId] = new
 					if list == itemsToEquip.mh or list == itemsToEquip.oh then
 						itemsToEquip.weapons[slotId] = {}

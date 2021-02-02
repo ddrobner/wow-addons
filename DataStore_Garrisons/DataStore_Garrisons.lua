@@ -74,8 +74,6 @@ local AddonDB_Defaults = {
 				artifactResearchDuration = 0,
 				artifactResearchNumReady = 0,
 				artifactResearchNumTotal = 0,
-                
-                RenownLevel = 0,
 			}
 		}
 	}
@@ -690,6 +688,7 @@ local function ScanResourceCollectionTime()
 end
 
 local function ScanAvailableMissions(followerType, storage)
+    if (not followerType) or (not storage) then return end -- workaround for delays after logging in
 	local missionsList = {}
 	C_Garrison.GetAvailableMissions(missionsList, followerType)
 	
@@ -875,10 +874,6 @@ end
 
 local function OnGarrisonMissionFinished()
 	ScanAvailableMissions(Enum.GarrisonFollowerType.FollowerType_6_0, GARRISON_MISSIONS_STORAGE)
-end
-
-local function OnCovenantSanctumInteract()
-    addon.ThisCharacter.RenownLevel = C_CovenantSanctumUI.GetRenownLevel()
 end
 
 local function OnAddonLoaded(event, addonName)
@@ -1073,10 +1068,6 @@ local function _GetArtifactResearchInfo(character)
 	return remaining, numReady, numTotal
 end
 
-local function _GetRenownLevel(character)
-    return character.RenownLevel
-end
-
 local PublicMethods = {
 	GetFollowers = _GetFollowers,
     GetBFAFollowers = _GetBFAFollowers,
@@ -1108,7 +1099,6 @@ local PublicMethods = {
 	GetMissionTableLastVisit = _GetMissionTableLastVisit,
 	GetLastResourceCollectionTime = _GetLastResourceCollectionTime,
 	GetArtifactResearchInfo = _GetArtifactResearchInfo,
-    GetRenownLevel = _GetRenownLevel,
 }
 
 function addon:OnInitialize()
@@ -1143,7 +1133,6 @@ function addon:OnInitialize()
 	DataStore:SetCharacterBasedMethod("GetMissionTableLastVisit")
 	DataStore:SetCharacterBasedMethod("GetLastResourceCollectionTime")
 	DataStore:SetCharacterBasedMethod("GetArtifactResearchInfo")
-    DataStore:SetCharacterBasedMethod("GetRenownLevel")
 end
 
 function addon:OnEnable()
@@ -1167,8 +1156,6 @@ function addon:OnEnable()
 	addon:RegisterEvent("GARRISON_MISSION_STARTED", OnGarrisonMissionStarted)
 	addon:RegisterEvent("GARRISON_MISSION_FINISHED", OnGarrisonMissionFinished)
 	addon:RegisterEvent("GARRISON_UPDATE", OnGarrisonUpdate)
-    
-    addon:RegisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED", OnCovenantSanctumInteract)
 
 	addon:SetupOptions()
 	if GetOption("ReportUncollected") then
@@ -1210,6 +1197,5 @@ function addon:OnDisable()
 	addon:UnregisterEvent("GARRISON_MISSION_FINISHED")
 	addon:UnregisterEvent("LOADING_SCREEN_ENABLED")
 	addon:UnregisterEvent("GARRISON_UPDATE")
-    addon:UnregisterEvent("COVENANT_SANCTUM_INTERACTION_STARTED")
 	addon:UnregisterEvent("ADDON_LOADED")
 end

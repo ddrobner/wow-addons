@@ -96,7 +96,7 @@ PLATER_DEFAULT_SETTINGS = {
 				click_through = true,
 				show_guild_name = false,
 				
-				fixed_class_color = {0, 1, 0},
+				fixed_class_color = {0, 1, 0, 1},
 				
 				health = {70, 2},
 				health_incombat = {70, 2},
@@ -167,7 +167,7 @@ PLATER_DEFAULT_SETTINGS = {
 				show_guild_name = false,
 				
 				use_playerclass_color = true,
-				fixed_class_color = {1, .4, .1},
+				fixed_class_color = {1, .4, .1, 1},
 				
 				health = {112, 12},
 				cast = {112, 10},
@@ -312,7 +312,8 @@ PLATER_DEFAULT_SETTINGS = {
 				percent_text_alpha = 1,
 				
 				quest_enabled = true,
-				quest_color = {.5, 1, 0},
+				quest_color_enabled = true,
+				quest_color = {.5, 1, 0, 1},
 				
 				big_actortitle_text_size = 11,
 				big_actortitle_text_font = "Arial Narrow",
@@ -394,8 +395,9 @@ PLATER_DEFAULT_SETTINGS = {
 				percent_text_alpha = 1,
 				
 				quest_enabled = true,
-				quest_color_enemy = {1, .369, 0},
-				quest_color_neutral = {1, .65, 0},
+				quest_color_enabled = true,
+				quest_color_enemy = {1, .369, 0, 1},
+				quest_color_neutral = {1, .65, 0, 1},
 				
 				--no color / it'll auto colour by the reaction
 				big_actortitle_text_size = 10,
@@ -569,11 +571,13 @@ PLATER_DEFAULT_SETTINGS = {
 		use_ui_parent_just_enabled = false,
 		ui_parent_base_strata = "BACKGROUND",
 		ui_parent_buff_strata = "BACKGROUND", --testing, buffs should be in front of the health bar
-		ui_parent_buff2_strata = "BACKGROUND", 
+		ui_parent_buff2_strata = "BACKGROUND",
+		ui_parent_buff_special_strata = "BACKGROUND",
 		ui_parent_cast_strata = "BACKGROUND", --testing, the castbar should be in front of everythings
 		ui_parent_target_strata = "LOW", --testing, the current target nameplate should be in this strata
 		ui_parent_buff_level = 10,
-		ui_parent_buff2_level = 10, 
+		ui_parent_buff2_level = 10,
+		ui_parent_buff_special_level = 10,
 		ui_parent_cast_level = 10,
 		ui_parent_scale_tune = 0, --testing, a slider to change the unit frame scale / goal is to have a fine tune knob to adjust the overall size when using this feature
 		
@@ -668,6 +672,7 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_height2 = 16,
 		auras_per_row_auto = true,
 		auras_per_row_amount = 10,
+		auras_per_row_amount2 = 10,
 		
 		--> aura frame 1
 		--aura_x_offset = 0,
@@ -2471,13 +2476,16 @@ PLATER_DEFAULT_SETTINGS = {
 		cast_statusbar_spark_color = {1, 1, 1, 1},
 		
 		indicator_faction = true,
+		indicator_friendlyfaction = false,
 		indicator_spec = true,
+		indicator_friendlyspec = false,
 		indicator_worldboss = true,
 		indicator_elite = true,
 		indicator_rare = true,
 		indicator_quest = true,
 		indicator_pet = true,
 		indicator_enemyclass = false,
+		indicator_friendlyclass = false,
 		indicator_anchor = {side = 2, x = -2, y = 0},
 		indicator_scale = 1,
 		
@@ -2501,7 +2509,7 @@ PLATER_DEFAULT_SETTINGS = {
 		focus_color = {0, 0, 0, 0.5},
 		focus_texture = "PlaterFocus",
 		
-		tap_denied_color = {.9, .9, .9},
+		tap_denied_color = {.9, .9, .9, 1},
 		
 		aggro_modifies = {
 			health_bar_color = true,
@@ -2516,22 +2524,22 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		tank = {
 			colors = {
-				aggro = {.5, .5, 1},
-				noaggro = {1, 0, 0},
-				pulling = {1, 1, 0},
-				nocombat = {0.505, 0.003, 0},
-				anothertank = {0.729, 0.917, 1},
-				pulling_from_tank = {1, .7, 0}, --color when a tank is pulling the aggro from another tank
+				aggro = {.5, .5, 1, 1},
+				noaggro = {1, 0, 0, 1},
+				pulling = {1, 1, 0, 1},
+				nocombat = {0.505, 0.003, 0, 1},
+				anothertank = {0.729, 0.917, 1, 1},
+				pulling_from_tank = {1, .7, 0, 1}, --color when a tank is pulling the aggro from another tank
 			},
 		},
 		
 		dps = {
 			colors = {
-				aggro = {1, 0.109803, 0},
-				solo = {.5, .5, 1},
-				noaggro = {.5, .5, 1},
-				pulling = {1, .8, 0},
-				notontank = {.5, .5, 1}, --color inside dungeon when the mob is not in the tank aggro and not on the player
+				aggro = {1, 0.109803, 0, 1},
+				solo = {.5, .5, 1, 1},
+				noaggro = {.5, .5, 1, 1},
+				pulling = {1, .8, 0, 1},
+				notontank = {.5, .5, 1, 1}, --color inside dungeon when the mob is not in the tank aggro and not on the player
 			},
 			use_aggro_solo = false,
 		},

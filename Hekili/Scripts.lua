@@ -381,8 +381,8 @@ do
         { "^^!?remains$",                           "remains" },
         { "^refreshable",                           "time_to_refresh" },
         
-        { "^(.-)%.deficit<=?(.-)$",                 "%1.timeTo(%1.max-(%2))" },
-        { "^(.-)%.deficit>=?(.-)$",                 "%1.timeTo(%1.max-(%2))" },        
+        { "^(.-)%.deficit<=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },
+        { "^(.-)%.deficit>=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },        
         
         { "^cooldown%.([a-z0-9_]+)%.ready$",        "cooldown.%1.remains" },
         { "^cooldown%.([a-z0-9_]+)%.up$",           "cooldown.%1.remains" },
@@ -417,6 +417,9 @@ do
 
         { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
                                                     "time_to_wounds(%1)" },
+            
+        { "^master_assassin_remains[<=]+(.-)$",
+                                                    "0.01+master_assassin_remains-(%1)" },
 
         { "^exsanguinated$",                        "remains" }, -- Assassination
         { "^!?(debuff%.[a-z0-9_]+)%.exsanguinated$",
@@ -429,6 +432,7 @@ do
 
         { "^!?stealthed.all$",                      "stealthed.remains" },
         { "^!?stealthed.mantle$",                   "stealthed.mantle_remains" },
+        { "^!?stealthed.sepsis$",                   "stealthed.sepsis_remains" },
         { "^!?stealthed.rogue$",                    "stealthed.rogue_remains" },
 
         { "^!?time_to_hpg$",                        "time_to_hpg" }, -- Retribution Paladin
@@ -436,6 +440,8 @@ do
 
         { "^!?consecration.up",                     "consecration.remains" }, -- Prot Paladin
         { "^!?contagion<=?(.-)",                    "contagion-%1" }, -- Affliction Warlock
+
+        { "^time_to_imps%.(.+)$",                   "time_to_imps[%1]" }, -- Demo Warlock
         
         { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
 
@@ -586,6 +592,8 @@ do
     end
 
     function scripts:BuildRecheck( conditions )
+        if type( conditions ) ~= "string" then return end
+        
         local recheck
 
         conditions = conditions:gsub( " +", "" )
@@ -623,6 +631,8 @@ do
         ["="] = true,
         ["~"] = true,
         ["!"] = true,
+        ["!="] = true,
+        ["~="] = true
      }
 
      local math_ops = {
@@ -633,12 +643,19 @@ do
         ["%"] = true,
         ["<"] = true,
         [">"] = true,
-        ["="] = true,
-        ["~="] = true,
+        -- ["="] = true,
+        -- ["!="] = true,
+        -- ["~="] = true,
         ["<="] = true,
         [">="] = true,
         [">?"] = true,
         ["<?"] = true,
+     }
+
+     local equality = {
+         ["="] = true,
+         ["!="] = true,
+         ["~="] = true,
      }
 
      local comp_ops = {
@@ -766,6 +783,7 @@ do
 
         while( i <= #results ) do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
+            local trimmed_prefix
 
             -- If we get a math op (*) followed by a not (!) followed by an expression, we want to safely wrap up the !expr in safenum().
             if prev and prev.t == "op" and math_ops[ prev.a ] and piece.t == "op" and piece.a == "!" and next and next.t == "expr" then
@@ -773,7 +791,10 @@ do
                 piece = results[ i ]
                 next = results[ i + 1 ]
                 piece.s = "(!" .. piece.s .. ")"
-            end
+            elseif piece.t == "expr" and piece.s:match( "^%s*[a-z0-9_]+%s*%(" ) then
+                trimmed_prefix = piece.s:match( "^%s*([a-z0-9_]+)%s*%(" )
+                piece.s = piece.s:gsub( "^%s*" .. trimmed_prefix .. "%s*", "" )
+            end                
 
             if piece and piece.t == "expr" then
                 if piece.r then
@@ -789,7 +810,7 @@ do
                     piece.s = scripts:EmulateSyntax( piece.s, numeric )
                 end
 
-                if ( prev and prev.t == "op" and math_ops[ prev.a ] ) or ( next and next.t == "op" and math_ops[ next.a ] ) then
+                if ( prev and prev.t == "op" and math_ops[ prev.a ] and not equality[ prev.a ] ) or ( next and next.t == "op" and math_ops[ next.a ] and not equality[ next.a ] ) then
                     -- This expression is getting mathed.
                     -- Lets see what it returns and wrap it in btoi if it is a boolean expr.
                     if piece.s:find("^variable%.") then
@@ -803,10 +824,10 @@ do
                             -- maximum warningness
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
-                                -- local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                -- Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                                local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else
-                                if val == nil or type( val ) ~= "number" then piece.s = "safenum(" .. piece.s .. ")" end
+                                if trimmed_prefix ~= "safenum" and ( val == nil or type( val ) ~= "number" ) then piece.s = "safenum(" .. piece.s .. ")" end
                             end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
@@ -814,7 +835,7 @@ do
                     end
                     piece.r = nil
 
-                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] ) ) then
+                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] and not equality[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] and not equality[ next.a ] ) ) then
                     -- This expression is not having math operations performed on it.
                     -- Let's make sure it's a boolean.
                     if piece.s:find("^variable") then
@@ -826,15 +847,23 @@ do
                             setfenv( func, state )
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
-                                -- local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                -- Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
-                            else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
+                                local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                            else
+                                if trimmed_prefix ~= "safebool" and ( val == nil or type( val ) == "number" ) then
+                                    piece.s = "safebool(" .. piece.s .. ")"
+                                end
+                            end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-b)." )
                         end                        
                     end
                     piece.r = nil
                 end
+            end
+
+            if trimmed_prefix then
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s        
@@ -1023,6 +1052,7 @@ local newModifiers = {
     interrupt_global = 'bool',
     interrupt_if = 'bool',
     interrupt_immediate = 'bool',
+    max_energy = 'bool',
     moving = 'bool',
     only_cwc = 'bool',
     strict = 'bool',
@@ -1334,6 +1364,10 @@ local scriptsLoaded = false
 
 local function scriptLoader()
     if not scriptsLoaded then scripts:LoadScripts() end
+end
+
+function Hekili:ScriptsLoaded()
+    return scriptsLoaded
 end
 
 

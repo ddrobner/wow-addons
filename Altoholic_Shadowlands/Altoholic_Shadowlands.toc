@@ -1,0 +1,19 @@
+## Interface: 90002
+## Title: Altoholic_Shadowlands
+## Notes: Altoholic's Shadowlands UI
+## Author: Teelo
+## Version: 9.0.2-015
+## Dependencies: Altoholic, DataStore, DataStore_Characters, DataStore_Covenants, DataStore_Quests
+## LoadOnDemand: 1
+## X-Category: Interface Enhancements
+
+TabShadowlands.xml
+
+Frames\Overview.xml
+Frames\Renown.xml
+Frames\Soulbinds.xml
+Frames\SanctumFeatures.xml
+Frames\AnimaDiversion.xml
+Frames\Torghast.xml
+Frames\Weeklies.xml
+Frames\Reservoir.xml

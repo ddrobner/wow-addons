@@ -111,21 +111,23 @@ addon:Controller("AltoholicUI.TabGrids", {
 						
 						itemButton:Show()	-- note: this Show() must remain BEFORE the next call, if the button has to be hidden, it's done in ColumnSetup
 						obj:ColumnSetup(itemButton, dataRowID, character)
-                        itemButton:ClearAllPoints()
-                        if (colIndex < current_start_col) or (colIndex >= current_end_col) then
-                            -- Column is out of range, hide it
-                            itemButton:Hide()
-                        elseif colIndex == current_start_col then
-                            -- Column is the left-most one, anchor it to the left
-                            itemButton:SetPoint("BOTTOMRIGHT", rowFrame["Name"], "BOTTOMRIGHT", 50, 0)
-                        else
-                            -- Column is in the middle, anchor it to the one next to it
-                            itemButton:SetPoint("BOTTOMLEFT", rowFrame["Item"..(colIndex-1)], "BOTTOMLEFT", 35, 0)
-                        end
+                        
 					else
 						itemButton.id = nil
 						itemButton:Hide()
 					end
+                    
+                    itemButton:ClearAllPoints()
+                    if (colIndex < current_start_col) or (colIndex >= current_end_col) then
+                        -- Column is out of range, hide it
+                        itemButton:Hide()
+                    elseif colIndex == current_start_col then
+                        -- Column is the left-most one, anchor it to the left
+                        itemButton:SetPoint("BOTTOMRIGHT", rowFrame["Name"], "BOTTOMRIGHT", 50, 0)
+                    else
+                        -- Column is in the middle, anchor it to the one next to it
+                        itemButton:SetPoint("BOTTOMLEFT", rowFrame["Item"..(colIndex-1)], "BOTTOMLEFT", 35, 0)
+                    end
 				end
 
 				rowFrame:Show()

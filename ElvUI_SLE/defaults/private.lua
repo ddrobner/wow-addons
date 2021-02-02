@@ -1,4 +1,4 @@
-local SLE, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local SLE, T, E, L, V, P, G = unpack(select(2, ...))
 
 V["skins"]["addons"] = {
 	["EmbedSkada"] = true,
@@ -10,7 +10,6 @@ V["sle"] = {
 		["spam"] = false,
 		["onlyTalent"] = false,
 		["conditions"] = "",
-		["setoverlay"] = false,
 		["lockbutton"] = false,
 	},
 	--Minimap Module

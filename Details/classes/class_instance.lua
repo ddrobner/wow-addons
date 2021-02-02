@@ -520,12 +520,14 @@ end
 			else
 				_detalhes:ReabrirTodasInstancias()
 				
-				local instance1 = _detalhes:GetInstance (1)
-				local instance2 = _detalhes:GetInstance (2)
+				local instance1 = _detalhes:GetInstance(1)
+				local instance2 = _detalhes:GetInstance(2)
 				
 				if (instance1 and instance2) then
-					if (not instance1.ignore_mass_showhide and not instance2.ignore_mass_showhide) then
-						_detalhes:CheckCoupleWindows (instance1, instance2)
+					if (not Details.disable_window_groups) then
+						if (not instance1.ignore_mass_showhide and not instance2.ignore_mass_showhide) then
+							_detalhes:CheckCoupleWindows (instance1, instance2)
+						end
 					end
 				end
 			end
@@ -3433,8 +3435,8 @@ function _detalhes:envia_relatorio (linhas, custom)
 		_SendChatMessage (timerObject.Arg1, timerObject.Arg2, timerObject.Arg3, timerObject.Arg4)
 	end
 	
-	local send_report_bnet = function (timerObject)
-		BNSendWhisper (timerObject.Arg1, timerObject.Arg2)
+	local sendReportBnet = function (timerObject)
+		BNSendWhisper(timerObject.Arg1, timerObject.Arg2)
 	end
 	
 	local delay = 200
@@ -3459,13 +3461,12 @@ function _detalhes:envia_relatorio (linhas, custom)
 		return
 		
 	elseif (is_btag) then
-	
-		local id = to_who:gsub ((".*|"), "")
-		local presenceID = tonumber (id)
+		local bnetAccountID = to_who:gsub ((".*|"), "")
+		bnetAccountID = tonumber(bnetAccountID)
 		
 		for i = 1, #linhas do
-			local timer = C_Timer.NewTimer (i * delay / 1000, send_report_bnet)
-			timer.Arg1 = presenceID
+			local timer = C_Timer.NewTimer (i * delay / 1000, sendReportBnet)
+			timer.Arg1 = bnetAccountID
 			timer.Arg2 = linhas[i]
 		end
 		

@@ -1,4 +1,4 @@
-local SLE, _, E, L, _, _, _ = unpack(select(2, ...))
+﻿local SLE, _, E, L, _, _, _ = unpack(select(2, ...))
 local DTP = SLE:GetModule('Datatexts')
 local DT = E:GetModule('DataTexts')
 

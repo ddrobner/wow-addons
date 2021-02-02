@@ -19,6 +19,14 @@ local RSLogger = private.ImportLib("RareScannerLogger")
 -- Timers options
 ---============================================================================
 
+function RSConfigDB.GetRescanTimer()
+	return private.db.general.rescanTimer
+end
+
+function RSConfigDB.SetRescanTimer(value)
+	private.db.general.rescanTimer = value
+end
+
 function RSConfigDB.GetAutoHideButtonTime()
 	return private.db.display.autoHideButton
 end
@@ -61,6 +69,14 @@ end
 
 function RSConfigDB.SetPlayingSound(value)
 	private.db.sound.soundDisabled = value
+end
+
+function RSConfigDB.IsPlayingObjectsSound()
+	return private.db.sound.soundObjectDisabled
+end
+
+function RSConfigDB.SetPlayingObjectsSound(value)
+	private.db.sound.soundObjectDisabled = value
 end
 
 function RSConfigDB.GetSoundPlayedWithObjects()
@@ -173,6 +189,14 @@ end
 
 function RSConfigDB.SetScanningWhileOnTaxi(value)
 	private.db.general.scanOnTaxi = value
+end
+
+function RSConfigDB.IsScanningWhileOnPetBattle()
+	return private.db.general.scanOnPetBattle
+end
+
+function RSConfigDB.SetScanningWhileOnPetBattle(value)
+	private.db.general.scanOnPetBattle = value
 end
 
 function RSConfigDB.IsScanningWorldMapVignettes()
@@ -336,9 +360,24 @@ function RSConfigDB.IsNpcFiltered(npcID)
 	return false
 end
 
+function RSConfigDB.GetNpcFiltered(npcID)
+	if (npcID) then
+		local value = private.db.general.filteredRares[npcID]
+		if (value == nil) then
+			return true
+		else
+			return value
+		end
+	end
+end
+
 function RSConfigDB.SetNpcFiltered(npcID, value)
 	if (npcID) then
-		private.db.general.filteredRares[npcID] = value
+		if (value == false) then
+			private.db.general.filteredRares[npcID] = false
+		else
+			private.db.general.filteredRares[npcID] = nil
+		end
 	end
 end
 
@@ -422,6 +461,43 @@ end
 
 function RSConfigDB.SetShowingContainers(value)
 	private.db.map.displayContainerIcons = value
+end
+
+function RSConfigDB.IsContainerFiltered(containerID)
+	if (containerID) then
+		return private.db.general.filteredContainers[containerID] == false
+	end
+
+	return false
+end
+
+function RSConfigDB.GetContainerFiltered(containerID)
+	if (containerID) then
+		local value = private.db.general.filteredContainers[containerID]
+		if (value == nil) then
+			return true
+		else
+			return value
+		end
+	end
+end
+
+function RSConfigDB.SetContainerFiltered(containerID, value)
+	if (containerID) then
+		if (value == false) then
+			private.db.general.filteredContainers[containerID] = value
+		else
+			private.db.general.filteredContainers[containerID] = nil
+		end
+	end
+end
+
+function RSConfigDB.IsContainerFilteredOnlyOnWorldMap()
+	return private.db.containerFilters.filterOnlyMap
+end
+
+function RSConfigDB.SetContainerFilteredOnlyOnWorldMap(value)
+	private.db.containerFilters.filterOnlyMap = value
 end
 
 function RSConfigDB.IsShowingGarrisonCache()
@@ -565,18 +641,6 @@ function RSConfigDB.GetIconsMinimapScale()
 end
 
 ---============================================================================
--- WorldMap loot
----============================================================================
-
-function RSConfigDB.IsShowingLootOnWorldMap()
-	return private.db.loot.displayLootOnMap
-end
-
-function RSConfigDB.SetShowingLootOnWorldMap(value)
-	private.db.loot.displayLootOnMap = value
-end
-
----============================================================================
 -- Loot in general
 ---============================================================================
 
@@ -607,6 +671,34 @@ end
 ---============================================================================
 -- Loot filters
 ---============================================================================
+
+function RSConfigDB.IsItemFiltered(itemID)
+	if (itemID) then
+		return private.db.loot.filteredItems[itemID] == true
+	end
+
+	return false
+end
+
+function RSConfigDB.GetItemFiltered(itemID)
+	if (itemID) then
+		return private.db.loot.filteredItems[itemID]
+	end
+end
+
+function RSConfigDB.GetAllFilteredItems()
+	return private.db.loot.filteredItems
+end
+
+function RSConfigDB.SetItemFiltered(itemID, value)
+	if (itemID) then
+		if (value) then
+			private.db.loot.filteredItems[itemID] = true
+		else
+			private.db.loot.filteredItems[itemID] = nil
+		end
+	end
+end
 
 function RSConfigDB.GetLootFilterMinQuality()
 	return private.db.loot.lootMinQuality
@@ -676,6 +768,22 @@ end
 
 function RSConfigDB.SetFilteringByCollected(value)
 	private.db.loot.filterCollectedItems = value
+end
+
+function RSConfigDB.IsFilteringAnimaItems()
+	return private.db.loot.filterAnimaItems
+end
+
+function RSConfigDB.SetFilteringAnimaItems(value)
+	private.db.loot.filterAnimaItems = value
+end
+
+function RSConfigDB.IsFilteringConduitItems()
+	return private.db.loot.filterConduitItems
+end
+
+function RSConfigDB.SetFilteringConduitItems(value)
+	private.db.loot.filterConduitItems = value
 end
 
 ---============================================================================
@@ -764,4 +872,72 @@ end
 
 function RSConfigDB.SetAddingWorldMapIngameWaypoints(value)
 	private.db.map.waypointIngame = value
+end
+
+---============================================================================
+-- Worldmap tooltips
+---============================================================================
+
+function RSConfigDB.IsShowingTooltipsOnIngameIcons()
+	return private.db.map.tooltipsOnIngameIcons
+end
+
+function RSConfigDB.SetShowingTooltipsOnIngameIcons(value)
+	private.db.map.tooltipsOnIngameIcons = value
+end
+
+function RSConfigDB.IsShowingTooltipsAchievements()
+	return private.db.map.tooltipsAchievements
+end
+
+function RSConfigDB.SetShowingTooltipsAchievements(value)
+	private.db.map.tooltipsAchievements = value
+end
+
+function RSConfigDB.IsShowingTooltipsNotes()
+	return private.db.map.tooltipsNotes
+end
+
+function RSConfigDB.SetShowingTooltipsNotes(value)
+	private.db.map.tooltipsNotes = value
+end
+
+function RSConfigDB.IsShowingTooltipsLoot()
+	return private.db.map.tooltipsLoot
+end
+
+function RSConfigDB.SetShowingTooltipsLoot(value)
+	private.db.map.tooltipsLoot = value
+end
+
+function RSConfigDB.IsShowingLootOnWorldMap()
+	return private.db.loot.displayLootOnMap
+end
+
+function RSConfigDB.SetShowingLootOnWorldMap(value)
+	private.db.loot.displayLootOnMap = value
+end
+
+function RSConfigDB.IsShowingTooltipsSeen()
+	return private.db.map.tooltipsSeen
+end
+
+function RSConfigDB.SetShowingTooltipsSeen(value)
+	private.db.map.tooltipsSeen = value
+end
+
+function RSConfigDB.IsShowingTooltipsState()
+	return private.db.map.tooltipsState
+end
+
+function RSConfigDB.SetShowingTooltipsState(value)
+	private.db.map.tooltipsState = value
+end
+
+function RSConfigDB.IsShowingTooltipsCommands()
+	return private.db.map.tooltipsCommands
+end
+
+function RSConfigDB.SetShowingTooltipsCommands(value)
+	private.db.map.tooltipsCommands = value
 end

@@ -1,37 +1,24 @@
 # Elemental Shaman
-# November 20, 2020
+# December 27, 2020
 
 # Changes:
-# - Added backup Essence ability.
-
-actions.precombat=use_item,name=azsharas_font_of_power
-actions.precombat+=/potion
+# - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
 
 # Executed every time the actor is available.
-# Cast Bloodlust manually if the Azerite Trait Ancestral Resonance is present.
-actions=bloodlust,if=azerite.ancestral_resonance.enabled
-# In-combat potion is preferentially linked to the Guardian of Azeroth, unless combat will end shortly.
-actions+=/potion,if=fight_remains<60|cooldown.guardian_of_azeroth.remains<30
+actions.precombat=earth_elemental,if=!talent.primal_elementalist.enabled
+# Use Stormkeeper precombat unless some adds will spawn soon.
+actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled&(raid_event.adds.count<3|raid_event.adds.in>50)
+actions.precombat+=/elemental_blast,if=talent.elemental_blast.enabled
+actions.precombat+=/lava_burst,if=!talent.elemental_blast.enabled
+actions.precombat+=/potion
 
 # Interrupt of casts.
 actions+=/wind_shear
+actions+=/spiritwalkers_grace,moving=1
+actions+=/potion
 actions+=/use_items
 actions+=/fire_elemental
 actions+=/storm_elemental
-
-actions+=/concentrated_flame
-actions+=/blood_of_the_enemy
-actions+=/guardian_of_azeroth
-actions+=/focused_azerite_beam
-actions+=/purifying_blast
-actions+=/the_unbound_force
-actions+=/memory_of_lucid_dreams
-actions+=/ripple_in_space
-actions+=/worldvein_resonance
-actions+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|fight_remains<30
-# In case I forgot something.
-actions+=/heart_essence
-
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
@@ -40,7 +27,7 @@ actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 
 actions+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions+=/vesper_totem
-actions+=/fae_transfusion
+actions+=/fae_transfusion,if=!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up
 
 actions+=/run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
 actions+=/run_action_list,name=single_target,if=!talent.storm_elemental.enabled&active_enemies<=2
@@ -49,7 +36,7 @@ actions+=/run_action_list,name=se_single_target,if=talent.storm_elemental.enable
 actions.aoe=earthquake,if=buff.echoing_shock.up
 actions.aoe+=/chain_harvest
 actions.aoe+=/stormkeeper,if=talent.stormkeeper.enabled
-actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&active_dot.flame_shock<3&active_enemies<=5
+actions.aoe+=/flame_shock,cycle_targets=1,if=active_dot.flame_shock<3&active_enemies<=5|runeforge.skybreakers_fiery_demise.equipped
 actions.aoe+=/flame_shock,if=!active_dot.flame_shock
 actions.aoe+=/echoing_shock,if=talent.echoing_shock.enabled&maelstrom>=60
 actions.aoe+=/ascendance,if=talent.ascendance.enabled&(!pet.storm_elemental.active)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
@@ -65,6 +52,7 @@ actions.aoe+=/chain_lightning,if=buff.stormkeeper.remains<3*gcd*buff.stormkeeper
 actions.aoe+=/lava_burst,if=buff.lava_surge.up&spell_targets.chain_lightning<4&(!pet.storm_elemental.active)&dot.flame_shock.ticking
 # Use Elemental Blast against up to 3 targets as long as Storm Elemental is not active.
 actions.aoe+=/elemental_blast,if=talent.elemental_blast.enabled&spell_targets.chain_lightning<5&(!pet.storm_elemental.active)
+actions.aoe+=/lava_beam,if=talent.ascendance.enabled
 actions.aoe+=/chain_lightning
 actions.aoe+=/lava_burst,moving=1,if=buff.lava_surge.up&cooldown_react
 actions.aoe+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
@@ -78,8 +66,8 @@ actions.se_single_target+=/lava_burst,if=buff.wind_gust.stack<18|buff.lava_surge
 actions.se_single_target+=/lightning_bolt,if=buff.stormkeeper.up
 actions.se_single_target+=/earthquake,if=buff.echoes_of_great_sundering.up
 actions.se_single_target+=/earthquake,if=(spell_targets.chain_lightning>1)&(!dot.flame_shock.refreshable)
-actions.se_single_target+=/earth_shock,if=spell_targets.chain_lightning<2&maelstrom>=60&(buff.wind_gust.stack<20|maelstrom>90)
-actions.se_single_target+=/lightning_bolt,if=(buff.stormkeeper.remains<1.1*gcd*buff.stormkeeper.stack|buff.stormkeeper.up&buff.master_of_the_elements.up)
+actions.se_single_target+=/earth_shock,if=spell_targets.chain_lightning<2&maelstrom>=60&(buff.wind_gust.stack<20|maelstrom>90)|(runeforge.echoes_of_great_sundering.equipped&!buff.echoes_of_great_sundering.up)
+actions.se_single_target+=/lightning_bolt,if=(buff.stormkeeper.remains<settings.stack_buffer*gcd*buff.stormkeeper.stack|buff.stormkeeper.up&buff.master_of_the_elements.up)
 actions.se_single_target+=/frost_shock,if=talent.icefury.enabled&talent.master_of_the_elements.enabled&buff.icefury.up&buff.master_of_the_elements.up
 actions.se_single_target+=/lava_burst,if=buff.ascendance.up
 actions.se_single_target+=/lava_burst,if=cooldown_react&!talent.master_of_the_elements.enabled
@@ -103,22 +91,23 @@ actions.single_target+=/lava_burst,if=talent.echoing_shock.enabled&buff.echoing_
 actions.single_target+=/liquid_magma_totem,if=talent.liquid_magma_totem.enabled
 actions.single_target+=/lightning_bolt,if=buff.stormkeeper.up&spell_targets.chain_lightning<2&(buff.master_of_the_elements.up)
 actions.single_target+=/earthquake,if=buff.echoes_of_great_sundering.up&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up)
-actions.single_target+=/earthquake,if=(spell_targets.chain_lightning>1)&(!dot.flame_shock.refreshable)&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|cooldown.lava_burst.remains>0&maelstrom>=92)
-actions.single_target+=/earth_shock,if=talent.master_of_the_elements.enabled&(buff.master_of_the_elements.up|cooldown.lava_burst.remains>0&maelstrom>=92|spell_targets.chain_lightning<2&buff.stormkeeper.up&cooldown.lava_burst.remains<=gcd)|maelstrom>=60
-actions.single_target+=/lightning_bolt,if=(buff.stormkeeper.remains<1.1*gcd*buff.stormkeeper.stack|buff.stormkeeper.up&buff.master_of_the_elements.up)
+actions.single_target+=/earthquake,if=spell_targets.chain_lightning>1&!dot.flame_shock.refreshable&!runeforge.echoes_of_great_sundering.equipped&(!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up|cooldown.lava_burst.remains>0&maelstrom>=92)
+actions.single_target+=/earth_shock,if=talent.master_of_the_elements.enabled&(buff.master_of_the_elements.up|cooldown.lava_burst.remains>0&maelstrom>=92|spell_targets.chain_lightning<2&buff.stormkeeper.up&cooldown.lava_burst.remains<=gcd)|!talent.master_of_the_elements.enabled
+actions.single_target+=/lightning_bolt,if=(buff.stormkeeper.remains<settings.stack_buffer*gcd*buff.stormkeeper.stack|buff.stormkeeper.up&buff.master_of_the_elements.up)
 actions.single_target+=/frost_shock,if=talent.icefury.enabled&talent.master_of_the_elements.enabled&buff.icefury.up&buff.master_of_the_elements.up
 actions.single_target+=/lava_burst,if=buff.ascendance.up
 actions.single_target+=/lava_burst,if=cooldown_react&!talent.master_of_the_elements.enabled
 actions.single_target+=/icefury,if=talent.icefury.enabled&!(maelstrom>75&cooldown.lava_burst.remains<=0)
 actions.single_target+=/lava_burst,if=cooldown_react&charges>talent.echo_of_the_elements.enabled
-actions.single_target+=/frost_shock,if=talent.icefury.enabled&buff.icefury.up&buff.icefury.remains<1.1*gcd*buff.icefury.stack
+actions.single_target+=/frost_shock,if=talent.icefury.enabled&buff.icefury.up&buff.icefury.remains<settings.stack_buffer*gcd*buff.icefury.stack
 actions.single_target+=/lava_burst,if=cooldown_react
 actions.single_target+=/flame_shock,cycle_targets=1,if=refreshable
-actions.single_target+=/earthquake,if=spell_targets.chain_lightning>1&!runeforge.echoes_of_great_sundering.equipped|(buff.echoes_of_great_sundering.up&buff.master_of_the_elements.up)
+actions.single_target+=/earthquake,if=spell_targets.chain_lightning>1&!runeforge.echoes_of_great_sundering.equipped|buff.echoes_of_great_sundering.up
 actions.single_target+=/frost_shock,if=talent.icefury.enabled&buff.icefury.up&(buff.icefury.remains<gcd*4*buff.icefury.stack|buff.stormkeeper.up|!talent.master_of_the_elements.enabled)
+actions.single_target+=/frost_shock,if=runeforge.elemental_equilibrium.equipped&!buff.elemental_equilibrium_debuff.up&!talent.elemental_blast.enabled&!talent.echoing_shock.enabled
 actions.single_target+=/chain_harvest
 actions.single_target+=/static_discharge,if=talent.static_discharge.enabled
-actions.single_target+=/earth_elemental,if=!talent.primal_elementalist.enabled|talent.primal_elementalist.enabled&(!pet.fire_elemental.active)
+actions.single_target+=/earth_elemental,if=!talent.primal_elementalist.enabled|!pet.fire_elemental.active
 actions.single_target+=/lightning_bolt
 actions.single_target+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
 actions.single_target+=/flame_shock,moving=1,if=movement.distance>6

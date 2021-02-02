@@ -10,12 +10,14 @@ local AL = LibStub("AceLocale-3.0"):GetLocale("RareScanner", false)
 
 -- RareScanner database libraries
 local RSNpcDB = private.ImportLib("RareScannerNpcDB")
+local RSContainerDB = private.ImportLib("RareScannerContainerDB")
 local RSConfigDB = private.ImportLib("RareScannerConfigDB")
 local RSGeneralDB = private.ImportLib("RareScannerGeneralDB")
 
 -- RareScanner internal libraries
 local RSLogger = private.ImportLib("RareScannerLogger")
 local RSUtils = private.ImportLib("RareScannerUtils")
+local RSConstants = private.ImportLib("RareScannerConstants")
 
 -- RareScanner service libraries
 local RSMinimap = private.ImportLib("RareScannerMinimap")
@@ -177,7 +179,7 @@ private.CLASS_PROFICIENCIES = {
 
 private.CLOTH_CHARACTERES = { 4, 8, 9 }
 
-local DEFAULT_CONTINENT_MAP_ID = 875
+local DEFAULT_CONTINENT_MAP_ID = 1550
 local DEFAULT_MAIN_CATEGORY = 0
 
 local general_options
@@ -231,8 +233,23 @@ local function GetGeneralOptions()
 			handler = RareScanner,
 			desc = AL["GENERAL_OPTIONS"],
 			args = {
-				scanRares = {
+				rescanTimer = {
 					order = 0,
+					type = "range",
+					name = AL["RESCAN_TIMER"],
+					desc = AL["RESCAN_TIMER_DESC"],
+					min	= 3,
+					max	= 60,
+					step = 1,
+					bigStep = 1,
+					get = function() return RSConfigDB.GetRescanTimer() end,
+					set = function(_, value)
+						RSConfigDB.SetRescanTimer(value)
+					end,
+					width = "full",
+				},
+				scanRares = {
+					order = 1,
 					name = AL["ENABLE_SCAN_RARES"],
 					desc = AL["ENABLE_SCAN_RARES_DESC"],
 					type = "toggle",
@@ -243,7 +260,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				scanContainers = {
-					order = 1,
+					order = 2,
 					name = AL["ENABLE_SCAN_CONTAINERS"],
 					desc = AL["ENABLE_SCAN_CONTAINERS_DESC"],
 					type = "toggle",
@@ -254,7 +271,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				scanEvents = {
-					order = 2,
+					order = 3,
 					name = AL["ENABLE_SCAN_EVENTS"],
 					desc = AL["ENABLE_SCAN_EVENTS_DESC"],
 					type = "toggle",
@@ -265,7 +282,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				scanChatAlerts = {
-					order = 3,
+					order = 4,
 					name = AL["ENABLE_SCAN_CHAT"],
 					desc = AL["ENABLE_SCAN_CHAT_DESC"],
 					type = "toggle",
@@ -276,7 +293,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				scanGarrison = {
-					order = 4,
+					order = 5,
 					name = AL["ENABLE_SCAN_GARRISON_CHEST"],
 					desc = AL["ENABLE_SCAN_GARRISON_CHEST_DESC"],
 					type = "toggle",
@@ -287,7 +304,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				scanInstances = {
-					order = 5,
+					order = 6,
 					name = AL["ENABLE_SCAN_IN_INSTANCE"],
 					desc = AL["ENABLE_SCAN_IN_INSTANCE_DESC"],
 					type = "toggle",
@@ -298,7 +315,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				scanOnTaxi = {
-					order = 6,
+					order = 7,
 					name = AL["ENABLE_SCAN_ON_TAXI"],
 					desc = AL["ENABLE_SCAN_ON_TAXI_DESC"],
 					type = "toggle",
@@ -308,8 +325,19 @@ local function GetGeneralOptions()
 					end,
 					width = "full",
 				},
-				scanWorldMapVignettes = {
+				scanOnPetBattle = {
 					order = 7,
+					name = AL["ENABLE_SCAN_ON_PET_BATTLE"],
+					desc = AL["ENABLE_SCAN_ON_PET_BATTLE_DESC"],
+					type = "toggle",
+					get = function() return RSConfigDB.IsScanningWhileOnPetBattle() end,
+					set = function(_, value)
+						RSConfigDB.SetScanningWhileOnPetBattle(value)
+					end,
+					width = "full",
+				},
+				scanWorldMapVignettes = {
+					order = 8,
 					name = AL["ENABLE_SCAN_WORLDMAP_VIGNETTES"],
 					desc = AL["ENABLE_SCAN_WORLDMAP_VIGNETTES_DESC"],
 					type = "toggle",
@@ -320,7 +348,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				showMaker = {
-					order = 8,
+					order = 9,
 					name = AL["ENABLE_MARKER"],
 					desc = AL["ENABLE_MARKER_DESC"],
 					type = "toggle",
@@ -331,7 +359,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				marker = {
-					order = 9,
+					order = 10,
 					type = "select",
 					dialogControl = 'RS_Markers',
 					name = AL["MARKER"],
@@ -345,12 +373,12 @@ local function GetGeneralOptions()
 					disabled = function() return not RSConfigDB.IsDisplayingMarkerOnTarget() end,
 				},
 				separatorIngameWaypoints = {
-					order = 10,
+					order = 11,
 					type = "header",
 					name = AL["INGAME_WAYPOINTS"],
 				},
 				enableIngameWaypoints = {
-					order = 11,
+					order = 12,
 					name = AL["ENABLE_WAYPOINTS_SUPPORT"],
 					desc = AL["ENABLE_WAYPOINTS_SUPPORT_DESC"],
 					type = "toggle",
@@ -361,7 +389,7 @@ local function GetGeneralOptions()
 					width = "full",
 				},
 				autoIngameWaypoints = {
-					order = 12,
+					order = 13,
 					name = AL["ENABLE_AUTO_WAYPOINTS"],
 					desc = AL["ENABLE_AUTO_WAYPOINTS_DESC"],
 					type = "toggle",
@@ -373,12 +401,12 @@ local function GetGeneralOptions()
 					disabled = function() return not RSConfigDB.IsWaypointsSupportEnabled() end,
 				},
 				separatorTomtomWaypoints = {
-					order = 13,
+					order = 14,
 					type = "header",
 					name = AL["TOMTOM_WAYPOINTS"],
 				},
 				enableTomtomSupport = {
-					order = 14,
+					order = 15,
 					name = AL["ENABLE_TOMTOM_SUPPORT"],
 					desc = AL["ENABLE_TOMTOM_SUPPORT_DESC"],
 					type = "toggle",
@@ -390,7 +418,7 @@ local function GetGeneralOptions()
 					disabled = function() return not TomTom end,
 				},
 				autoTomtomWaypoints = {
-					order = 15,
+					order = 16,
 					name = AL["ENABLE_AUTO_TOMTOM_WAYPOINTS"],
 					desc = AL["ENABLE_AUTO_TOMTOM_WAYPOINTS_DESC"],
 					type = "toggle",
@@ -420,7 +448,7 @@ local function GetSoundOptions()
 			desc = AL["SOUND_OPTIONS"],
 			args = {
 				soundDisabled = {
-					order = 0,
+					order = 1,
 					name = AL["DISABLE_SOUND"],
 					desc = AL["DISABLE_SOUND_DESC"],
 					type = "toggle",
@@ -431,7 +459,7 @@ local function GetSoundOptions()
 					width = "full",
 				},
 				soundPlayed = {
-					order = 1,
+					order = 2,
 					type = "select",
 					dialogControl = 'LSM30_Sound',
 					name = AL["ALARM_SOUND"],
@@ -444,8 +472,19 @@ local function GetSoundOptions()
 					width = "double",
 					disabled = function() return RSConfigDB.IsPlayingSound() end,
 				},
+				soundObjectDisabled = {
+					order = 3,
+					name = AL["DISABLE_OBJECTS_SOUND"],
+					desc = AL["DISABLE_OBJECTS_SOUND_DESC"],
+					type = "toggle",
+					get = function() return RSConfigDB.IsPlayingObjectsSound() end,
+					set = function(_, value)
+						RSConfigDB.SetPlayingObjectsSound(value)
+					end,
+					width = "full",
+				},
 				soundObjectPlayed = {
-					order = 2,
+					order = 4,
 					type = "select",
 					dialogControl = 'LSM30_Sound',
 					name = AL["ALARM_TREASURES_SOUND"],
@@ -456,10 +495,10 @@ local function GetSoundOptions()
 						RSConfigDB.SetSoundPlayedWithObjects(value)
 					end,
 					width = "double",
-					disabled = function() return RSConfigDB.IsPlayingSound() end,
+					disabled = function() return RSConfigDB.IsPlayingObjectsSound() end,
 				},
 				soundVolume = {
-					order = 3,
+					order = 5,
 					type = "range",
 					name = AL["SOUND_VOLUME"],
 					desc = AL["SOUND_VOLUME_DESC"],
@@ -472,7 +511,7 @@ local function GetSoundOptions()
 						RSConfigDB.SetSoundVolume(value)
 					end,
 					width = "full",
-					disabled = function() return RSConfigDB.IsPlayingSound() end,
+					disabled = function() return RSConfigDB.IsPlayingSound() and RSConfigDB.IsPlayingObjectsSound() end,
 				}
 			},
 		}
@@ -882,8 +921,8 @@ local function GetFilterOptions()
 								private.db.rareFilters.filtersToggled = true
 							end
 
-							for k, v in pairs(filter_options.args.rareFilters.values) do
-								private.db.general.filteredRares[v] = private.db.rareFilters.filtersToggled
+							for k, npcID in pairs(filter_options.args.rareFilters.values) do
+								RSConfigDB.SetNpcFiltered(npcID, private.db.rareFilters.filtersToggled)
 							end
 						end
 						RSMinimap.RefreshAllData(true)
@@ -896,9 +935,9 @@ local function GetFilterOptions()
 					name = AL["FILTER_RARE_LIST"],
 					desc = AL["FILTER_RARE_LIST_DESC"],
 					values = {},
-					get = function(_, key) return private.db.general.filteredRares[key] end,
-					set = function(_, key, value)
-						private.db.general.filteredRares[key] = value;
+					get = function(_, npcID) return RSConfigDB.GetNpcFiltered(npcID) end,
+					set = function(_, npcID, value)
+						RSConfigDB.SetNpcFiltered(npcID, value)
 						RSMinimap.RefreshAllData(true)
 					end,
 				}
@@ -907,6 +946,638 @@ local function GetFilterOptions()
 	end
 
 	return filter_options
+end
+
+
+
+local custom_npcs_options
+
+local function GetCustomNpcOptions()
+	if not custom_npcs_options then
+		-- load continent combo
+		local CONTINENT_MAP_IDS = {}
+		for k, v in pairs(private.CONTINENT_ZONE_IDS) do
+			if (v.zonefilter) then
+				if (v.id) then
+					CONTINENT_MAP_IDS[k] = getZoneName(k)
+				else
+					CONTINENT_MAP_IDS[k] = AL["ZONES_CONTINENT_LIST"][k]
+				end
+			end
+		end
+		
+		-- add wild zone
+		CONTINENT_MAP_IDS[RSConstants.ALL_ZONES_CUSTOM_NPC] = AL["ALL_ZONES"]
+
+		local loadSubmapsCombo = function(continentID, npcID)
+			if (continentID) then
+				custom_npcs_options.args[npcID].args.subzones.values = {}
+				private.custom_npcs_options[npcID].subzone = nil
+				
+				if (continentID == RSConstants.ALL_ZONES_CUSTOM_NPC) then
+					custom_npcs_options.args[npcID].args.subzones.values[RSConstants.ALL_ZONES_CUSTOM_NPC] = AL["ALL_ZONES"]
+					private.custom_npcs_options[npcID].subzone = RSConstants.ALL_ZONES_CUSTOM_NPC
+				else
+					table.foreach(private.CONTINENT_ZONE_IDS[continentID].zones, function(index, zoneID)
+						local zoneName = getZoneName(zoneID)
+						if (zoneName) then
+							custom_npcs_options.args[npcID].args.subzones.values[zoneID] = zoneName
+						end
+					end)
+				end
+			end
+		end
+		
+		local addNewCustomNpc = function(npcID)
+			if (not private.custom_npcs_options) then
+				private.custom_npcs_options = {}
+			end
+			
+			private.custom_npcs_options[npcID] = {}
+			
+			if (not private.custom_npcs_options[npcID].zones) then
+				private.custom_npcs_options[npcID].zones = {}
+				private.custom_npcs_options[npcID].coordinates = {}
+			end
+			
+			custom_npcs_options.args[npcID] = {
+				type = "group",
+				order = 2,
+				name = RSNpcDB.GetNpcName(tonumber(npcID)),
+				handler = RareScanner,
+				desc = RSNpcDB.GetNpcName(tonumber(npcID)),
+				args = {
+					deleteNpc = {
+						order = 1,
+						name = AL["CUSTOM_NPC_DELETE_NPC"],
+						desc = AL["CUSTOM_NPC_DELETE_NPC_DESC"],
+						type = "execute",
+						confirm = true,
+						confirmText = string.format(AL["CUSTOM_NPC_DELETE_NPC_CONFIRM"], RSNpcDB.GetNpcName(tonumber(npcID))),
+						func = function()
+							private.custom_npcs_options[npcID] = nil
+							custom_npcs_options.args[npcID] = nil
+							RSNpcDB.DeleteCustomNpcInfo(npcID)
+							RSGeneralDB.RemoveAlreadyFoundEntity(tonumber(npcID))
+						end,
+						width = "normal",
+					},
+					separatorFindZone = {
+						order = 2,
+						type = "header",
+						name = AL["CUSTOM_NPC_FIND_ZONES"],
+					},
+					continents = {
+						order = 3.1,
+						type = "select",
+						name = AL["FILTER_CONTINENT"],
+						desc = AL["FILTER_CONTINENT_DESC"],
+						values = CONTINENT_MAP_IDS,
+						sorting = sortValues(CONTINENT_MAP_IDS),
+						get = function(_, key)
+							-- initialize
+							if (not private.custom_npcs_options[npcID].continent) then
+								private.custom_npcs_options[npcID].continent = DEFAULT_CONTINENT_MAP_ID
+	
+								-- load submaps combo
+								loadSubmapsCombo(private.custom_npcs_options[npcID].continent, npcID)
+							end
+	
+							return private.custom_npcs_options[npcID].continent
+						end,
+						set = function(_, key, value)
+							private.custom_npcs_options[npcID].continent = key
+	
+							-- load subzones combo
+							loadSubmapsCombo(key, npcID)
+						end,
+						width = 1.0,
+					},
+					subzones = {
+						order = 3.2,
+						type = "select",
+						name = AL["FILTER_ZONE"],
+						desc = AL["FILTER_ZONE_DESC"],
+						values = {},
+						sorting = function()
+							if (next(custom_npcs_options.args[npcID].args.subzones.values)) then
+								return sortValues(custom_npcs_options.args[npcID].args.subzones.values)
+							end
+							return nil;
+						end,
+						get = function(_, key) return private.custom_npcs_options[npcID].subzone end,
+						set = function(_, key, value)
+							private.custom_npcs_options[npcID].subzone = key
+						end,
+						width = 1.4,
+						disabled = function() return (next(custom_npcs_options.args[npcID].args.subzones.values) == nil) end,
+					},
+					addZone = {
+						order = 4,
+						name = AL["CUSTOM_NPC_ADD_ZONE"],
+						desc = AL["CUSTOM_NPC_ADD_ZONE_DESC"],
+						type = "execute",
+						func = function()
+							-- if already selected ignore it
+							if (not private.custom_npcs_options[npcID].zones[private.custom_npcs_options[npcID].subzone]) then
+								if (private.custom_npcs_options[npcID].subzone == RSConstants.ALL_ZONES_CUSTOM_NPC) then
+									private.custom_npcs_options[npcID].zones[private.custom_npcs_options[npcID].subzone] = AL["ALL_ZONES"]
+									private.custom_npcs_options[npcID].zone = private.custom_npcs_options[npcID].subzone
+									
+									-- It won't have coordinates, so add it directly
+									RSNpcDB.SetCustomNpcInfo(npcID, private.custom_npcs_options[npcID])
+								else
+									private.custom_npcs_options[npcID].zones[private.custom_npcs_options[npcID].subzone] = getZoneName(private.custom_npcs_options[npcID].subzone)
+									private.custom_npcs_options[npcID].zone = private.custom_npcs_options[npcID].subzone
+								end
+							end
+						end,
+						width = "normal",
+						disabled = function() return (not private.custom_npcs_options[npcID].subzone) end,
+					},
+					separatorCurrentZones = {
+						order = 5,
+						type = "header",
+						name = AL["CUSTOM_NPC_CURRENT_ZONES"],
+					},
+					zones = {
+						order = 6.1,
+						type = "select",
+						name = AL["CUSTOM_NPC_CURRENT_ZONE"],
+						desc = AL["CUSTOM_NPC_CURRENT_ZONE_DESC"],
+						values = private.custom_npcs_options[npcID].zones,
+						sorting = function()
+							return sortValues(private.custom_npcs_options[npcID].zones)
+						end,
+						get = function(_, key) return private.custom_npcs_options[npcID].zone end,
+						set = function(_, key, value)
+							private.custom_npcs_options[npcID].zone = key
+						end,
+						width = 1.4,
+						disabled = function() return (next(private.custom_npcs_options[npcID].zones) == nil) end,
+					},
+					deleteZone = {
+						order = 6.2,
+						name = AL["CUSTOM_NPC_DELETE_ZONE"],
+						desc = AL["CUSTOM_NPC_DELETE_ZONE_DESC"],
+						type = "execute",
+						confirm = true,
+						confirmText = AL["CUSTOM_NPC_DELETE_ZONE_CONFIRM"],
+						func = function()
+							private.custom_npcs_options[npcID].zones[private.custom_npcs_options[npcID].zone] = nil
+							private.custom_npcs_options[npcID].coordinates[private.custom_npcs_options[npcID].zone] = nil
+							
+							if (RSNpcDB.DeleteCustomNpcZone(npcID, private.custom_npcs_options[npcID].zone)) then
+								RSGeneralDB.RemoveAlreadyFoundEntity(tonumber(npcID))
+							end
+							
+							private.custom_npcs_options[npcID].zone = next(private.custom_npcs_options[npcID].zones)
+						end,
+						width = 1.0,
+						disabled = function() return (next(private.custom_npcs_options[npcID].zones) == nil) end,
+					},
+					coordinates = {
+						order = 7,
+						type = "input",
+						name = AL["CUSTOM_NPC_COORDINATES"],
+						desc = AL["CUSTOM_NPC_COORDINATES_DESC"],
+						get = function(_, value) 
+							if (private.custom_npcs_options[npcID].zone) then
+								return private.custom_npcs_options[npcID].coordinates[private.custom_npcs_options[npcID].zone]
+							end
+							
+							return nil
+						end,
+						set = function(_, value)
+							private.custom_npcs_options[npcID].coordinates[private.custom_npcs_options[npcID].zone] = value
+							RSNpcDB.SetCustomNpcInfo(npcID, private.custom_npcs_options[npcID])
+						end,
+						validate = function(_, value)
+							-- Check if contains proper characters
+							if (not string.match(value, "[0-9,%-]")) then
+								return string.format(AL["CUSTOM_NPC_VALIDATION_CHAR"], "0123456789-,")
+							end
+							
+							-- Check if the string is well formed
+							local coordinatePairs = { strsplit(",", value) }
+							for i, coordinatePair in ipairs(coordinatePairs) do
+								local coordx, coordy = 	strsplit("-", coordinatePair)
+								if (not coordx or tonumber(coordx) == nil or not coordy or tonumber(coordy) == nil) then
+									return string.format(AL["CUSTOM_NPC_VALIDATION_COORD"], coordinatePair)
+								end
+							end
+							
+							return true
+						end,
+						width = "full",
+						disabled = function() return (next(private.custom_npcs_options[npcID].zones) == nil or not private.custom_npcs_options[npcID].zone or private.custom_npcs_options[npcID].zone == RSConstants.ALL_ZONES_CUSTOM_NPC) end,
+					},
+					separatorExtraInfo = {
+						order = 8,
+						type = "header",
+						name = AL["CUSTOM_NPC_EXTRA_INFO"],
+					},
+					displayID = {
+						order = 9,
+						type = "input",
+						name = AL["CUSTOM_NPC_DISPLAY_ID"],
+						desc = AL["CUSTOM_NPC_DISPLAY_ID_DESC"],
+						get = function(_, value) 
+							return private.custom_npcs_options[npcID].displayID
+						end,
+						set = function(_, value)
+							private.custom_npcs_options[npcID].displayID = value
+							RSNpcDB.SetCustomNpcInfo(npcID, private.custom_npcs_options[npcID])
+						end,
+						validate = function(_, value)
+							-- Skips if empty
+							if (not value or value == '') then
+								return true
+							end
+							
+							-- Check if number
+							if (value and tonumber(value) == nil) then
+								return AL["CUSTOM_NPC_VALIDATION_NUMBER"]
+							end
+							
+							return true
+						end,
+						width = "full",
+					},
+					loot = {
+						order = 10,
+						type = "input",
+						name = AL["CUSTOM_NPC_LOOT"],
+						desc = AL["CUSTOM_NPC_LOOT_DESC"],
+						get = function(_, value) 
+							return private.custom_npcs_options[npcID].loot
+						end,
+						set = function(_, value)
+							private.custom_npcs_options[npcID].loot = value
+							
+							if (value and value ~= '') then
+								local itemIDs = {}
+								for _, itemID in ipairs ({ strsplit(",", value) }) do
+									tinsert(itemIDs, tonumber(itemID))
+								end
+								RSNpcDB.SetCustomNpcLoot(npcID, itemIDs)
+							else
+								RSNpcDB.SetCustomNpcLoot(npcID, nil)
+							end
+						end,
+						validate = function(_, value)
+							-- Skips if empty
+							if (not value or value == '') then
+								return true
+							end
+						
+							-- Check if contains proper characters
+							if (not string.match(value, "[0-9,]")) then
+								return string.format(AL["CUSTOM_NPC_VALIDATION_CHAR"], "0123456789,")
+							end
+							
+							-- Check if the string is well formed
+							local itemIDs = { strsplit(",", value) }
+							for _, itemID in ipairs (itemIDs) do
+								if (not itemID or tonumber(itemID) == nil) then
+									return AL["CUSTOM_NPC_VALIDATION_ITEM"]
+								end
+							end
+							
+							return true
+						end,
+						width = "full",
+					},
+				}
+			}
+		end
+
+		custom_npcs_options = {
+			type = "group",
+			order = 1,
+			name = AL["CUSTOM_NPCS"],
+			handler = RareScanner,
+			desc = AL["CUSTOM_NPCS"],
+			args = {
+				description = {
+					order = 1,
+					type = "description",
+					name = AL["CUSTOM_NPC_TEXT"],
+				},
+				newNpcID = {
+					order = 2,
+					type = "input",
+					name = AL["CUSTOM_NPC_ADD_NPC"],
+					desc = AL["CUSTOM_NPC_ADD_NPC_DESC"],
+					get = function(_, value) return private.custom_npcs_options_newNpcID_input end,
+					set = function(_, value)
+						private.custom_npcs_options_newNpcID_input = value
+						addNewCustomNpc(private.custom_npcs_options_newNpcID_input);
+					end,
+					validate = function(_, value)
+						-- Check if number
+						if (tonumber(value) == nil) then
+							return AL["CUSTOM_NPC_VALIDATION_NUMBER"]
+						end
+						
+						-- Check if valid NPC
+						-- Call several times to let the server load it
+						RSNpcDB.GetNpcName(tonumber(value))
+						RSNpcDB.GetNpcName(tonumber(value))
+						local name = RSNpcDB.GetNpcName(tonumber(value))
+						if (not name) then
+							return AL["CUSTOM_NPC_ADD_NPC_NOEXIST"]
+						end
+						
+						-- Check if already supported by RareScanner
+						if (RSNpcDB.GetInternalNpcInfo(tonumber(value))) then
+							return AL["CUSTOM_NPC_ADD_NPC_EXISTS_RS"]
+						end
+						
+						return true
+					end,
+					width = "normal",
+				}
+			},
+		}
+		
+		local extractCoordinates = function(overlay)
+			local coordinates = ""
+			if (overlay) then
+				for i, coordinate in pairs (overlay) do
+					local x, y = strsplit("-",coordinate)
+					if (i > 1) then
+						coordinates = coordinates..string.format(",%s-%s", string.sub(x, 3), string.sub(y, 3))
+					else
+						coordinates = coordinates..string.format("%s-%s", string.sub(x, 3), string.sub(y, 3))
+					end
+				end
+			end
+			
+			return coordinates
+		end
+		
+		-- Preload already added custom NPCs
+		if (RSNpcDB.GetAllCustomNpcInfo()) then
+			for npcID, npcInfo in pairs (RSNpcDB.GetAllCustomNpcInfo()) do
+				local npcIDstring = tostring(npcID)
+				addNewCustomNpc(npcIDstring)
+				
+				local npcInfo = RSNpcDB.GetCustomNpcInfo(npcID)
+				if (npcInfo.displayID and npcInfo.displayID ~= 0) then
+					private.custom_npcs_options[npcIDstring].displayID = tostring(npcInfo.displayID)
+				end
+				
+				local npcLoot = RSNpcDB.GetCustomNpcLoot(npcID)
+				if (npcLoot) then
+					private.custom_npcs_options[npcIDstring].loot = table.concat(npcLoot, ",")
+				end
+				
+				if (RSNpcDB.IsInternalNpcMultiZone(npcID)) then
+					for zoneID, zoneInfo in pairs (npcInfo.zoneID) do
+						if (zoneID == RSConstants.ALL_ZONES_CUSTOM_NPC) then
+							private.custom_npcs_options[npcIDstring].zones[zoneID] = AL["ALL_ZONES"]
+							private.custom_npcs_options[npcIDstring].zone = zoneID
+						else
+							private.custom_npcs_options[npcIDstring].zones[zoneID] = getZoneName(zoneID)
+							private.custom_npcs_options[npcIDstring].zone = zoneID
+							private.custom_npcs_options[npcIDstring].coordinates[zoneID] = extractCoordinates(zoneInfo.overlay)
+						end
+					end
+				else
+					if (npcInfo.zoneID == RSConstants.ALL_ZONES_CUSTOM_NPC) then
+						private.custom_npcs_options[npcIDstring].zones[npcInfo.zoneID] = AL["ALL_ZONES"]
+						private.custom_npcs_options[npcIDstring].zone = npcInfo.zoneID
+					else
+						private.custom_npcs_options[npcIDstring].zones[npcInfo.zoneID] = getZoneName(npcInfo.zoneID)
+						private.custom_npcs_options[npcIDstring].zone = npcInfo.zoneID
+						private.custom_npcs_options[npcIDstring].coordinates[npcInfo.zoneID] = extractCoordinates(npcInfo.overlay)
+					end
+				end
+			end
+		end
+	end
+
+	return custom_npcs_options
+end
+
+local container_filter_options
+
+local function GetContainerFilterOptions()
+	if not container_filter_options then
+		-- load continent combo
+		local CONTINENT_MAP_IDS = {}
+		for k, v in pairs(private.CONTINENT_ZONE_IDS) do
+			if (v.npcfilter) then
+				if (v.id) then
+					CONTINENT_MAP_IDS[k] = getZoneName(k)
+				else
+					CONTINENT_MAP_IDS[k] = AL["ZONES_CONTINENT_LIST"][k]
+				end
+			end
+		end
+
+		local searchContainerByZoneID = function(zoneID, containerName)
+			if (zoneID) then
+				for containerID, name in pairs(RSContainerDB.GetAllContainerNames()) do
+					local tempName = name
+					if (not RSContainerDB.IsWorldMap(containerID) and RSContainerDB.IsInternalContainerInMap(containerID, zoneID, true) and ((containerName and RSUtils.Contains(name,containerName)) or not containerName)) then
+						local i = 2
+						local sameNPC = false
+						while (container_filter_options.args.containerFilters.values[tempName]) do
+							-- If same container skip
+							if (container_filter_options.args.containerFilters.values[tempName] == containerID) then
+								sameNPC = true
+								break;
+							end
+
+							tempName = name..' ('..i..')'
+							i = i+1
+						end
+						if (not sameNPC) then
+							container_filter_options.args.containerFilters.values[tempName] = containerID
+						end
+					end
+				end
+			end
+		end
+
+		local searchContainerByContinentID = function(continentID, npcName)
+			if (continentID) then
+				table.foreach(private.CONTINENT_ZONE_IDS[continentID].zones, function(index, zoneID)
+					-- filter checkboxes
+					searchContainerByZoneID(zoneID, npcName)
+				end)
+			end
+		end
+
+		local loadSubmapsCombo = function(continentID)
+			if (continentID) then
+				container_filter_options.args.subzones.values = {}
+				private.container_filter_options_subzones = nil
+				table.foreach(private.CONTINENT_ZONE_IDS[continentID].zones, function(index, zoneID)
+					local zoneName = getZoneName(zoneID)
+					if (zoneName) then
+						container_filter_options.args.subzones.values[zoneID] = zoneName
+					end
+				end)
+			end
+		end
+
+		container_filter_options = {
+			type = "group",
+			order = 1,
+			name = AL["CONTAINER_FILTER"],
+			handler = RareScanner,
+			desc = AL["CONTAINER_FILTER"],
+			args = {
+				filterOnlyMap = {
+					order = 1,
+					type = "toggle",
+					name = AL["FILTER_NPCS_ONLY_MAP"],
+					desc = AL["FILTER_CONTAINERS_ONLY_MAP_DESC"],
+					get = function() return RSConfigDB.IsContainerFilteredOnlyOnWorldMap() end,
+					set = function(_, value)
+						RSConfigDB.SetContainerFilteredOnlyOnWorldMap(value)
+						RSMinimap.RefreshAllData(true)
+					end,
+					width = "full",
+				},
+				containerFiltersSearch = {
+					order = 2,
+					type = "input",
+					name = AL["FILTERS_SEARCH"],
+					desc = AL["FILTERS_CONTAINERS_SEARCH_DESC"],
+					get = function(_, value) return private.container_filter_options_input end,
+					set = function(_, value)
+						private.container_filter_options_input = value
+						-- search
+						container_filter_options.args.containerFilters.values = {}
+						if (private.container_filter_options_subzones) then
+							searchContainerByZoneID(private.container_filter_options_subzones, value)
+						else
+							searchContainerByContinentID(private.container_filter_options_continents, value)
+						end
+					end,
+					width = "full",
+				},
+				continents = {
+					order = 3.1,
+					type = "select",
+					name = AL["FILTER_CONTINENT"],
+					desc = AL["FILTER_CONTINENT_DESC"],
+					values = CONTINENT_MAP_IDS,
+					sorting = sortValues(CONTINENT_MAP_IDS),
+					get = function(_, key)
+						-- initialize
+						if (not private.container_filter_options_continents) then
+							private.container_filter_options_continents = DEFAULT_CONTINENT_MAP_ID
+
+							-- load submaps combo
+							loadSubmapsCombo(private.container_filter_options_continents)
+
+							-- launch first search zone filters
+							searchContainerByContinentID(private.container_filter_options_continents)
+						end
+
+						return private.container_filter_options_continents
+					end,
+					set = function(_, key, value)
+						private.container_filter_options_continents = key
+
+						-- load subzones combo
+						loadSubmapsCombo(key)
+
+						-- search
+						container_filter_options.args.containerFilters.values = {}
+						searchContainerByContinentID(key, private.container_filter_options_input)
+					end,
+					width = 1.0,
+				},
+				subzones = {
+					order = 3.2,
+					type = "select",
+					name = AL["FILTER_ZONE"],
+					desc = AL["FILTER_ZONE_DESC"],
+					values = {},
+					sorting = function()
+						if (next(container_filter_options.args.subzones.values)) then
+							return sortValues(container_filter_options.args.subzones.values)
+						end
+						return nil;
+					end,
+					get = function(_, key) return private.container_filter_options_subzones end,
+					set = function(_, key, value)
+						private.container_filter_options_subzones = key
+
+						-- search
+						container_filter_options.args.containerFilters.values = {}
+						searchContainerByZoneID(key, private.container_filter_options_input)
+					end,
+					width = 1.925,
+					disabled = function() return (next(container_filter_options.args.subzones.values) == nil) end,
+				},
+				containerFiltersClear = {
+					order = 3.3,
+					name = AL["CLEAR_FILTERS_SEARCH"],
+					desc = AL["CLEAR_FILTERS_SEARCH_DESC"],
+					type = "execute",
+					func = function()
+						private.container_filter_options_input = nil
+						container_filter_options.args.subzones.values = {}
+						private.container_filter_options_subzones = nil
+						private.container_filter_options_continents = DEFAULT_CONTINENT_MAP_ID
+						-- load subzones combo
+						loadSubmapsCombo(DEFAULT_CONTINENT_MAP_ID)
+						-- search
+						container_filter_options.args.containerFilters.values = {}
+						searchContainerByContinentID(DEFAULT_CONTINENT_MAP_ID)
+					end,
+					width = 0.5,
+				},
+				separator = {
+					order = 4,
+					type = "header",
+					name = AL["CONTAINER_FILTER"],
+				},
+				containerFiltersToogleAll = {
+					order = 5,
+					name = AL["TOGGLE_FILTERS"],
+					desc = AL["TOGGLE_FILTERS_DESC"],
+					type = "execute",
+					func = function()
+						if (next(container_filter_options.args.containerFilters.values) ~= nil) then
+							if (private.db.containerFilters.filtersToggled) then
+								private.db.containerFilters.filtersToggled = false
+							else
+								private.db.containerFilters.filtersToggled = true
+							end
+
+							for k, containerID in pairs(container_filter_options.args.containerFilters.values) do
+								RSConfigDB.SetContainerFiltered(containerID, private.db.containerFilters.filtersToggled)
+							end
+						end
+						RSMinimap.RefreshAllData(true)
+					end,
+					width = "full",
+				},
+				containerFilters = {
+					order = 6,
+					type = "multiselect",
+					name = AL["FILTER_CONTAINER_LIST"],
+					desc = AL["FILTER_CONTAINER_LIST_DESC"],
+					values = {},
+					get = function(_, containerID) return RSConfigDB.GetContainerFiltered(containerID) end,
+					set = function(_, containerID, value)
+						RSConfigDB.SetContainerFiltered(containerID, value)
+						RSMinimap.RefreshAllData(true)
+					end,
+				}
+			},
+		}
+	end
+
+	return container_filter_options
 end
 
 local zones_filter_options
@@ -1096,6 +1767,30 @@ local function GetLootFilterOptions()
 			end
 		end
 	end
+	
+	private.loadFilteredItems = function()
+		if (loot_filter_options) then
+			for itemID, value in pairs(RSConfigDB.GetAllFilteredItems()) do
+				local itemLink, _, _, _, _, _ = RSGeneralDB.GetItemInfo(itemID)
+				if (itemLink) then
+					loot_filter_options.args.individual.args.filteredItems.values[itemLink] = itemID
+				end
+			end
+		end
+	end
+	
+	local searchItem = function(name)
+		if (name) then
+			for itemID, value in pairs(RSConfigDB.GetAllFilteredItems()) do
+				local itemLink, _, _, _, _, _ = RSGeneralDB.GetItemInfo(itemID)
+				if ((itemLink and RSUtils.Contains(itemLink,name)) or not itemLink) then
+					loot_filter_options.args.individual.args.filteredItems.values[itemLink] = itemID
+				end
+			end
+		else
+			private.loadFilteredItems()
+		end
+	end
 
 	if not loot_filter_options then
 		loot_filter_options = {
@@ -1116,20 +1811,9 @@ local function GetLootFilterOptions()
 					end,
 					width = "full",
 				},
-				displayLootOnMap = {
-					order = 2,
-					type = "toggle",
-					name = AL["DISPLAY_LOOT_ON_MAP"],
-					desc = AL["DISPLAY_LOOT_ON_MAP_DESC"],
-					get = function() return RSConfigDB.IsShowingLootOnWorldMap() end,
-					set = function(_, value)
-						RSConfigDB.SetShowingLootOnWorldMap(value)
-					end,
-					width = "full",
-				},
 				display_options = {
 					type = "group",
-					order = 3,
+					order = 2,
 					name = AL["LOOT_DISPLAY_OPTIONS"],
 					handler = RareScanner,
 					desc = AL["LOOT_DISPLAY_OPTIONS_DESC"],
@@ -1184,7 +1868,7 @@ local function GetLootFilterOptions()
 				},
 				category_filters = {
 					type = "group",
-					order = 4,
+					order = 3,
 					name = AL["LOOT_CATEGORY_FILTERS"],
 					handler = RareScanner,
 					desc = AL["LOOT_CATEGORY_FILTERS_DESC"],
@@ -1254,6 +1938,42 @@ local function GetLootFilterOptions()
 						}
 					},
 					disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
+				},
+				individual = {
+					type = "group",
+					order = 4,
+					name = AL["LOOT_INDIVIDUAL_FILTERS"],
+					handler = RareScanner,
+					desc = AL["LOOT_INDIVIDUAL_FILTERS_DESC"],
+					args = {
+						search = {
+							order = 1,
+							type = "input",
+							name = AL["FILTERS_SEARCH"],
+							desc = AL["LOOT_SEARCH_ITEMS_DESC"],
+							get = function(_, value) return private.loot_individual_filter_input end,
+							set = function(_, value)
+								private.loot_individual_filter_input = value
+								-- search
+								loot_filter_options.args.individual.args.filteredItems.values = {}
+								searchItem(value)
+							end,
+							width = "full",
+							disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
+						},
+						filteredItems = {
+							order = 2,
+							type = "multiselect",
+							name = AL["LOOT_FILTER_ITEM_LIST"],
+							desc = "itemLink",
+							values = {},
+							get = function(_, itemID) return RSConfigDB.GetItemFiltered(itemID) end,
+							set = function(_, itemID, value)
+								RSConfigDB.SetItemFiltered(itemID, value)
+							end,
+							disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
+						}
+					}
 				},
 				other_filters = {
 					type = "group",
@@ -1347,11 +2067,38 @@ local function GetLootFilterOptions()
 							width = "full",
 							disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
 						},
+						filterAnimaItems = {
+							order = 8,
+							type = "toggle",
+							name = AL["LOOT_FILTER_ANIMA_ITEMS"],
+							desc = AL["LOOT_FILTER_ANIMA_ITEMS_DESC"],
+							get = function() return RSConfigDB.IsFilteringAnimaItems() end,
+							set = function(_, value)
+								RSConfigDB.SetFilteringAnimaItems(value)
+							end,
+							width = "full",
+							disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
+						},
+						filterNotUsableConduits = {
+							order = 9,
+							type = "toggle",
+							name = AL["LOOT_FILTER_CONDUIT_ITEMS"],
+							desc = AL["LOOT_FILTER_CONDUIT_ITEMS_DESC"],
+							get = function() return RSConfigDB.IsFilteringConduitItems() end,
+							set = function(_, value)
+								RSConfigDB.SetFilteringConduitItems(value)
+							end,
+							width = "full",
+							disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
+						},
 					},
 					disabled = function() return (not RSConfigDB.IsDisplayingLootBar() and not RSConfigDB.IsShowingLootOnWorldMap()) end,
 				}
 			},
 		}
+		
+		-- Load filtered items
+		private.loadFilteredItems()
 	end
 
 	return loot_filter_options
@@ -1660,7 +2407,8 @@ local function GetMapOptions()
 							width = "double",
 						},
 					}
-				}, waypoints = {
+				}, 
+				waypoints = {
 					type = "group",
 					order = 4,
 					name = AL["MAP_WAYPOINTS"],
@@ -1691,6 +2439,92 @@ local function GetMapOptions()
 							width = "double",
 						},
 					}
+				},
+				tooltips = {
+					type = "group",
+					order = 1,
+					name = AL["MAP_TOOLTIPS"],
+					handler = RareScanner,
+					desc = AL["MAP_TOOLTIPS_DESC"],
+					args = {
+						worldmapTooltips = {
+							order = 1,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_WORLDMAP_ICONS"],
+							desc = AL["MAP_TOOLTIPS_WORLDMAP_ICONS_DESC"],
+							get = function() return RSConfigDB.IsShowingTooltipsOnIngameIcons() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingTooltipsOnIngameIcons(value)
+							end,
+							width = "full",
+						},
+						achievementsInfo = {
+							order = 2,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_ACHIEVEMENT"],
+							desc = AL["MAP_TOOLTIPS_ACHIEVEMENT_DESC"],
+							get = function() return RSConfigDB.IsShowingTooltipsAchievements() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingTooltipsAchievements(value)
+							end,
+							width = "full",
+						},
+						notes = {
+							order = 3,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_NOTES"],
+							desc = AL["MAP_TOOLTIPS_NOTES_DESC"],
+							get = function() return RSConfigDB.IsShowingTooltipsNotes() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingTooltipsNotes(value)
+							end,
+							width = "full",
+						},
+						loot = {
+							order = 4,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_LOOT"],
+							desc = AL["MAP_TOOLTIPS_LOOT_DESC"],
+							get = function() return RSConfigDB.IsShowingLootOnWorldMap() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingLootOnWorldMap(value)
+							end,
+							width = "full",
+						},
+						lastTimeSeen = {
+							order = 5,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_SEEN"],
+							desc = AL["MAP_TOOLTIPS_SEEN_DESC"],
+							get = function() return RSConfigDB.IsShowingTooltipsSeen() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingTooltipsSeen(value)
+							end,
+							width = "full",
+						},
+						state = {
+							order = 6,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_STATE"],
+							desc = AL["MAP_TOOLTIPS_STATE_DESC"],
+							get = function() return RSConfigDB.IsShowingTooltipsState() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingTooltipsState(value)
+							end,
+							width = "full",
+						},
+						commands = {
+							order = 7,
+							type = "toggle",
+							name = AL["MAP_TOOLTIPS_COMMANDS"],
+							desc = AL["MAP_TOOLTIPS_COMMANDS_DESC"],
+							get = function() return RSConfigDB.IsShowingTooltipsCommands() end,
+							set = function(_, value)
+								RSConfigDB.SetShowingTooltipsCommands(value)
+							end,
+							width = "full",
+						},
+					}
 				}
 			}
 		}
@@ -1708,7 +2542,9 @@ function RareScanner:SetupOptions()
 	RSAC:RegisterOptionsTable("RareScanner General", GetGeneralOptions)
 	RSAC:RegisterOptionsTable("RareScanner Sound", GetSoundOptions)
 	RSAC:RegisterOptionsTable("RareScanner Display", GetDisplayOptions)
-	RSAC:RegisterOptionsTable("RareScanner Filter", GetFilterOptions)
+	RSAC:RegisterOptionsTable("RareScanner Custom NPCs", GetCustomNpcOptions)
+	RSAC:RegisterOptionsTable("RareScanner NPC Filter", GetFilterOptions)
+	RSAC:RegisterOptionsTable("RareScanner Container Filter", GetContainerFilterOptions)
 	RSAC:RegisterOptionsTable("RareScanner Zone Filter", GetZonesFilterOptions)
 	RSAC:RegisterOptionsTable("RareScanner Loot Options", GetLootFilterOptions)
 	RSAC:RegisterOptionsTable("RareScanner Map", GetMapOptions)
@@ -1718,7 +2554,9 @@ function RareScanner:SetupOptions()
 	RSACD:AddToBlizOptions("RareScanner General", _G.GENERAL_LABEL, "RareScanner")
 	RSACD:AddToBlizOptions("RareScanner Sound", AL["SOUND"], "RareScanner")
 	RSACD:AddToBlizOptions("RareScanner Display", AL["DISPLAY"], "RareScanner")
-	RSACD:AddToBlizOptions("RareScanner Filter", AL["FILTER"], "RareScanner")
+	RSACD:AddToBlizOptions("RareScanner Custom NPCs", AL["CUSTOM_NPCS"], "RareScanner")
+	RSACD:AddToBlizOptions("RareScanner NPC Filter", AL["FILTER"], "RareScanner")
+	RSACD:AddToBlizOptions("RareScanner Container Filter", AL["CONTAINER_FILTER"], "RareScanner")
 	RSACD:AddToBlizOptions("RareScanner Zone Filter", AL["ZONES_FILTER"], "RareScanner")
 	RSACD:AddToBlizOptions("RareScanner Loot Options", AL["LOOT_OPTIONS"], "RareScanner")
 	RSACD:AddToBlizOptions("RareScanner Map", AL["MAP_OPTIONS"], "RareScanner")

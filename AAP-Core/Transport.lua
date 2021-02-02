@@ -511,48 +511,7 @@ function AAP.FP.GetCustomZone()
 				return AAP.QuestStepListListingZone["Z-15-Oribos-Story"], "1671-Z15-Oribos-Story"
 			end
 		elseif (C_QuestLog.IsOnQuest(61874) == true or C_QuestLog.IsQuestFlaggedCompleted(61874) == true) then
-			--- Oribos Zone Pick non-Story
-			if (C_QuestLog.IsQuestFlaggedCompleted(57693) == true and C_QuestLog.IsQuestFlaggedCompleted(62159) == false) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-01-Oribos-Story"], "1670-Z1-Oribos-StoryX2"
-			end
-			--- Oribos Bastion Pick non-Story
-			if (C_QuestLog.IsQuestFlaggedCompleted(57693) == true and (C_QuestLog.IsOnQuest(62275) == true or C_QuestLog.IsQuestFlaggedCompleted(62275) == true) and C_QuestLog.IsQuestFlaggedCompleted(62707) == false) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-01-Oribos-Story"], "1670-Z1-Oribos-StoryXBastion"
-			end
-			--- Bastion non-Story
-			if (C_QuestLog.IsQuestFlaggedCompleted(62159) == true and C_QuestLog.IsQuestFlaggedCompleted(62729) == false) then
-				AAP.ProgressShown = 1
-				return 1533, "1533-Bastion-NonStoryMode-1"
-			end
-			--- Oribos Maldraxxus Pick non-Story
-			if ((C_QuestLog.IsOnQuest(62278) == true or C_QuestLog.IsQuestFlaggedCompleted(62278) == true)) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-01-Oribos-Story"], "1670-Z1-Oribos-StoryXMaldraxxus"
-			end
 
-
-			if (C_QuestLog.IsQuestFlaggedCompleted(62654) == true and C_QuestLog.IsQuestFlaggedCompleted(59011) == false) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-07-Oribos-Story"], "1670-Z7-Oribos-Story"
-			end
-
-			if (C_QuestLog.IsQuestFlaggedCompleted(59206) == true and C_QuestLog.IsQuestFlaggedCompleted(61716) == false) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-09-Oribos-Story"], "1670-Z9-Oribos-Storyx2"
-			end
-			if ((C_QuestLog.IsOnQuest(62277) == true or C_QuestLog.IsQuestFlaggedCompleted(62277) == true) and C_QuestLog.IsQuestFlaggedCompleted(60338) == false) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-01-Oribos-Story"], "1670-Z1-Oribos-StoryXArdenweald"
-			end
-
-			if ((C_QuestLog.IsOnQuest(62279) == true or C_QuestLog.IsQuestFlaggedCompleted(62279) == true) and C_QuestLog.IsQuestFlaggedCompleted(57025) == false) then
-				AAP.ProgressShown = 1
-				return AAP.QuestStepListListingZone["Z-01-Oribos-Story"], "1670-Z1-Oribos-StoryXRevendreth"
-			end
-
-			return 1670, "1670-Z1-Oribos-ZonePick"
 		else
 			AAP.ProgressShown = 0
 			return

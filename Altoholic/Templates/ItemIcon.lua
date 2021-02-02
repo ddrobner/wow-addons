@@ -11,7 +11,7 @@ addon:Controller("AltoholicUI.ItemIcon", {
 		
         -- check for battle pet
         local itemLink = frame.itemLink or select(2, GetItemInfo(itemID))
-        	
+	
 		GameTooltip:SetOwner(frame, "ANCHOR_LEFT")
         
         if itemLink then
@@ -19,7 +19,7 @@ addon:Controller("AltoholicUI.ItemIcon", {
 			if speciesID then
 				BattlePetToolTip_Show(speciesID, level, breedQuality, maxHealth, power, speed, name)
 			else
-                GameTooltip:SetItemByID(itemID)
+                GameTooltip:SetHyperlink(itemLink)
 			end
 		else
 			GameTooltip:SetItemByID(itemID)

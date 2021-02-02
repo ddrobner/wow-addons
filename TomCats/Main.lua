@@ -514,6 +514,7 @@ do
 end
 local BackgroundProcessing = { }
 do
+	local eventFrame = CreateFrame("Frame")
 	local queue = { }
 	function BackgroundProcessing.addToQueue(func, ...)
 		local params = { ... }
@@ -532,7 +533,7 @@ do
 			end
 		end
 	end
-	addon.events.registerEvent("ON_UPDATE",ON_UPDATE)
+	eventFrame:SetScript("OnUpdate",ON_UPDATE)
 end
 local Bit32S = { }
 do
@@ -2634,40 +2635,3 @@ do
 	hooksecurefunc("ChatEdit_UpdateHeader", ChatEdit_UpdateHeader);
 end
 
--- Initialize LOD addons
-do
-	local function ADDON_LOADED(_, _, addonName1)
-		if (addonName == addonName1) then
-			do
-				local _, _, _, _, reason = GetAddOnInfo("TomCats-Bundled-DeathsRising")
-				local loading = IsAddOnLoaded("TomCats-Bundled-DeathsRising")
-				if (reason == "DEMAND_LOADED" and not loading) then
-					TomCats.DeathsRising = { }
-					TomCats:Register(
-							{
-								slashCommands = {
-									{
-										command = "DEATHSRISING",
-										desc = "Toggle Death's Rising Window",
-										func = function()
-											TomCats.DeathsRising.openOnStart = true
-											LoadAddOn("TomCats-Bundled-DeathsRising")
-										end
-									}
-								},
-								name = "Death's Rising",
-								version = "2.0.25",
-								raresLogHandlers = {
-									[118] = {
-										raresLog = GetRaresLog
-									}
-								}
-							}
-					)
-				end
-			end
-		end
-		Events.unregisterEvent("ADDON_LOADED", ADDON_LOADED)
-	end
-	addon.events.registerEvent("ADDON_LOADED", ADDON_LOADED)
-end

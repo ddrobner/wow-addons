@@ -1,4 +1,4 @@
-local SLE, T, E, L = unpack(select(2, ...))
+﻿local SLE, T, E, L = unpack(select(2, ...))
 local UB = SLE:GetModule('UIButtons')
 
 --  GLOBALS: unpack, select, tinsert, pairs, type, ADDONS, DEFAULT, NONE, CUSTOM

@@ -1,0 +1,10 @@
+lightweight tag 0f20a0f1c64b24297da15024a155ef110378b49e v1.2.6
+Author:	Saregon <n_rhygar@yahoo.it>
+Date:	Sat Mar 16 10:16:15 2019 +0100
+
+commit 0f20a0f1c64b24297da15024a155ef110378b49e
+Author: Saregon <n_rhygar@yahoo.it>
+Date:   Sat Mar 16 10:16:15 2019 +0100
+
+    8.1.5 update
+

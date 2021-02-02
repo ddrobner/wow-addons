@@ -1,0 +1,245 @@
+<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="AnimaDiversion.lua"/>
+
+	<Frame name="AltoAnimaDiversionPinTemplate" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="IconBorder"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconDisabledOverlay" hidden="true"/>
+			</Layer>
+		</Layers>
+        <Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionPinTemplate")
+            </OnLoad>
+        </Scripts>
+	</Frame>
+	<Frame name="AltoAnimaDiversionModelScenePinTemplate" virtual="true">
+		<Frames>
+			<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" enableMouse="false">
+				<KeyValues>
+					<KeyValue key="useViewInsetNormalization" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+        <Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionModelScenePinTemplate")
+            </OnLoad>
+        </Scripts>
+	</Frame>
+
+	<Frame name="AltoAnimaDiversionConnectionTemplate" ignoreParentScale="true" virtual="true">
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Line parentKey="Line" />
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="AnimaLink1" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AnimaLink2" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="AnimaLinkBlack" atlas="animachannel-link-anima-black" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="AnimaChannel-Line-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="AnimaLink1" />
+						<MaskedTexture childKey="AnimaLink2" />
+						<MaskedTexture childKey="AnimaLinkBlack" />
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="AlphaAnim" parentArray="animationGroups" looping="REPEAT">
+				<Alpha childkey="AnimaLink1" duration="2.2" order="1" smoothing="in_out" fromalpha="1" toalpha=".8" />
+				<Alpha childKey="AnimaLink1" duration="2.0" order="2" smoothing="in_out" fromAlpha=".8" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TranslateAnim1" parentArray="animationGroups" looping="REPEAT">
+				<TextureCoordTranslation childKey="AnimaLink1" duration="4" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TranslateAnim2" parentArray="animationGroups" looping="REPEAT">
+				<TextureCoordTranslation childKey="AnimaLink2" duration="2" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="TranslateAnim3" parentArray="animationGroups" looping="REPEAT">
+				<TextureCoordTranslation childKey="AnimaLinkBlack" duration="3" order="1" offsetU="0" offsetV="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RotateAnim1" parentArray="animationGroups" looping="REPEAT">
+				<Rotation childKey="AnimaLink1" duration="32" order="1" degrees="2" />
+				<Rotation childKey="AnimaLink1" duration="32" order="2" degrees="-2" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RotateAnim2" parentArray="animationGroups" looping="REPEAT">
+				<Rotation childKey="AnimaLink2" duration="16" order="1" degrees="-2" />
+				<Rotation childKey="AnimaLink2" duration="16" order="2" degrees="2" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="RotateAnim3" parentArray="animationGroups" looping="REPEAT">
+				<Rotation childKey="AnimaLinkBlack" duration="24" order="1" degrees="2" />
+				<Rotation childKey="AnimaLinkBlack" duration="24" order="2" degrees="-2" />
+			</AnimationGroup>
+		</Animations>
+        <Scripts>
+            <OnLoad>
+                Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionConnectionTemplate")
+            </OnLoad>
+        </Scripts>
+	</Frame>
+
+	<Frame name="AltoAnimaDiversionBolsterProgressGemTemplate" frameLevel="512" virtual="true">
+		<Size x="24" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Gem">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AltoAnimaDiversionCurrencyCostFrameTemplate" virtual="true">
+		<Size x="200" y="18"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Quantity" justifyH="CENTER" inherits="GameFontHighlight">
+					<Size x="200" y="18"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame parentKey="AnimaDiversionPanel" parent="AltoholicTabShadowlands" inherits="MapCanvasFrameTemplate" enableMouse="true">
+        <Size x="384" y="276"/>
+        <Anchors>
+			<Anchor point="TOPLEFT" x="200" y="-110"/>
+            <!--Anchor point="BOTTOMLEFT" x="200" y="50"/-->
+		</Anchors>
+		<Frames>
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
+					<KeyValue key="layoutTextureKit" value="Oribos" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-6" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="BorderFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-16" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-12"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate"/>
+			<Frame parentKey="AnimaDiversionCurrencyFrame" frameLevel="512">
+				<Size x="189" y="37"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="8"/> 
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="AnimaChannel-CurrencyBorder" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="CurrencyFrame" inherits="AltoAnimaDiversionCurrencyCostFrameTemplate">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Background" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+                    <OnLoad>
+                        Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionCurrencyFrame")
+                    </OnLoad>
+					<OnEnter>
+                        self:OnEnter()
+                    </OnEnter> 
+			        <OnLeave>
+                        self:OnLeave()
+                    </OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ReinforceProgressFrame" frameLevel="510">
+				<Size x="272" y="38"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="AnimaChannel-Bar-Background" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ModelScene parentKey="ModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false"/>
+					<ModelScene parentKey="OverlayModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" enableMouse="false" frameLevel="550"/>
+				</Frames>
+				<Scripts>
+                    <OnLoad>
+                        Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionReinforceProgressFrame")
+                    </OnLoad>
+					<OnEnter>
+                        self:OnEnter()
+                    </OnEnter> 
+			        <OnLeave>
+                        self:OnLeave()
+                    </OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ReinforceInfoFrame" frameLevel="512">
+				<Size x="312" y="50"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ReinforceProgressFrame" relativePoint="TOP" x="0" y="10"/> 
+				</Anchors>
+				<Scripts>
+                    <OnLoad>
+                        Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionReinforceInfoFrame")
+                    </OnLoad>
+					<OnHide>
+                        self:OnHide()
+                    </OnHide>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				Altoholic:BindViewToController(self, "AltoholicUI.ShadowlandsAnimaDiversionPanel")
+			</OnLoad>
+			<OnShow>
+                self:OnShow()
+            </OnShow>
+			<OnHide>
+                self:OnHide()
+            </OnHide>
+            <OnEvent>
+                self:OnEvent()
+            </OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

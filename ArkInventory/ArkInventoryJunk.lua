@@ -177,7 +177,8 @@ local function JunkSell_Threaded( thread_id )
 			
 		elseif vendorPrice == 0 then
 			
-			if ArkInventory.db.option.junk.delete then
+			if false and ArkInventory.db.option.junk.delete then
+--[[
 				
 				ArkInventory.Global.Junk.destroyed = ArkInventory.Global.Junk.destroyed + 1
 				
@@ -189,12 +190,14 @@ local function JunkSell_Threaded( thread_id )
 					
 					-- might fail, might prompt user if quality is green or higher
 					PickupContainerItem( blizzard_id, slot_id )
+					-- made protected after 9.0.2 so can no longer delete items
 					DeleteCursorItem( )
 					
 					ArkInventory.ThreadYield( thread_id )
 					
 				end
 				
+]]--
 			end
 			
 		end

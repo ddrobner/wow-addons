@@ -136,7 +136,7 @@ local function Tradeskill_OnEnter(frame, skillName, showRecipeStats)
 	tt:ClearLines()
 	tt:SetOwner(frame, "ANCHOR_RIGHT")
 	tt:AddLine(skillName,1,1,1)
-	tt:AddLine(format("%s%s/%s", GetSkillRankColor(curRank), curRank, maxRank),1,1,1)
+	tt:AddLine(format("%s%s/%s", GetSkillRankColor(curRank, maxRank), curRank, maxRank),1,1,1)
 	
 	if showRecipeStats then	-- for primary skills + cooking & first aid
 		-- if DataStore:GetProfessionSpellID(skillName) ~= 2366 and skillName ~= GetSpellInfo(8613) then		-- no display for herbalism & skinning
@@ -507,20 +507,19 @@ columns["Name"] = {
 
 			local dungeons = DataStore:GetSavedInstances(character)
 			if dungeons then
-				for key, _ in pairs(dungeons) do
-					local hasExpired, expiresIn = DataStore:HasSavedInstanceExpired(character, key)
-                    local name = DataStore:GetSavedInstanceInfo(character, key)
+				for instanceID, _ in pairs(dungeons) do
+					local hasExpired, expiresIn = DataStore:HasSavedInstanceExpired(character, instanceID)
+                    local instanceName = DataStore:GetSavedInstanceInfo(character, instanceID)
 					
 					if hasExpired then
-						DataStore:DeleteSavedInstance(character, key)
+						DataStore:DeleteSavedInstance(character, instanceID)
 					else
 						if bLineBreak then
 							tt:AddLine(" ")		-- add a line break only once
 							bLineBreak = nil
 						end
 						
-						local instanceName, instanceID = strsplit("|", key)
-						tt:AddDoubleLine(format("%s (%sID: %s|r)", colors.gold..name, colors.white, colors.green..key), addon:GetTimeString(expiresIn))
+						tt:AddDoubleLine(format("%s (%sID: %s|r)", colors.gold..instanceName, colors.white, colors.green..instanceID), addon:GetTimeString(expiresIn))
 					end
 				end
 			end

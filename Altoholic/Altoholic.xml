@@ -87,7 +87,19 @@
                     end
                 end
                 
+                local lastUpdate = GetTime()
+                local delayedResize
                 AltoholicFrame:HookScript("OnSizeChanged", function()
+                    -- Throttle to only update twice a second.
+                    if lastUpdate >= (GetTime() - 0.2) then
+                        -- And for good measure, schedule an update once a second, too
+                        if delayedResize then return end
+                        delayedResize = true
+                        C_Timer.After(1, function() self:TriggerResizeEvents() end) 
+                        return 
+                    end
+                    lastUpdate = GetTime()
+                    delayedResize = nil
                     self:TriggerResizeEvents()
                 end)
 			</OnLoad>

@@ -132,7 +132,7 @@ local function PrintAlreadyFoundTable(raresFound)
 	return ""
 end
 
-function RSGeneralDB.UpdateAlreadyFoundEntity(entityID, mapID, x, y, artID)
+function RSGeneralDB.UpdateAlreadyFoundEntity(entityID, mapID, x, y, artID, atlasName)
 	if (entityID and private.dbglobal.rares_found[entityID] and mapID and x and y and artID) then
 		-- If the map is the same, check if different artID
 		local currentMapID = private.dbglobal.rares_found[entityID].mapID;
@@ -153,6 +153,9 @@ function RSGeneralDB.UpdateAlreadyFoundEntity(entityID, mapID, x, y, artID)
 		private.dbglobal.rares_found[entityID].coordX = x;
 		private.dbglobal.rares_found[entityID].coordY = y;
 		private.dbglobal.rares_found[entityID].foundTime = time();
+		if (atlasName) then
+			private.dbglobal.rares_found[entityID].atlasName = atlasName;
+		end
 
 		RSLogger:PrintDebugMessage(string.format("UpdateAlreadyFoundEntity[%s]: %s", entityID, PrintAlreadyFoundTable(RSGeneralDB.GetAlreadyFoundEntity(entityID))))
 	end
@@ -350,14 +353,24 @@ end
 
 function RSGeneralDB.SetButtonPositionCoordinates(x, y)
 	if (x and y) then
-		private.dbchar.scannerXPos = x
-		private.dbchar.scannerYPos = y
+		private.db.scannerXPos = x
+		private.db.scannerYPos = y
 	end
 end
 
 function RSGeneralDB.GetButtonPositionCoordinates()
+	-- Previous settings based on character database
 	if (private.dbchar.scannerXPos and private.dbchar.scannerYPos) then
-		return private.dbchar.scannerXPos, private.dbchar.scannerYPos
+		if (not private.db.scannerXPos or not private.db.scannerYPos) then
+			RSGeneralDB.SetButtonPositionCoordinates(private.dbchar.scannerXPos, private.dbchar.scannerYPos)
+		end
+		private.dbchar.scannerXPos = nil
+		private.dbchar.scannerYPos = nil
+	end
+	
+	-- Current settings based on profiles database
+	if (private.db.scannerXPos and private.db.scannerYPos) then
+		return private.db.scannerXPos, private.db.scannerYPos
 	end
 
 	return nil

@@ -1536,6 +1536,9 @@ function Details.Database.StoreWipe(combat)
 	
 	--database
 		local db = Details.Database.LoadDB()
+		if (not db) then
+			return
+		end
 
 		local diff_storage = db [diff]
 		if (not diff_storage) then
@@ -1604,7 +1607,10 @@ function Details.Database.StoreEncounter(combat)
 	
 	--database
 		local db = Details.Database.LoadDB()
-
+		if (not db) then
+			return
+		end
+		
 		local diff_storage = db [diff]
 		if (not diff_storage) then
 			db [diff] = {}
@@ -1755,10 +1761,8 @@ function Details.Database.StoreEncounter(combat)
 
 		local myrole = UnitGroupRolesAssigned ("player")
 		local mybest, onencounter = _detalhes.storage:GetBestFromPlayer (diff, encounter_id, myrole, _detalhes.playername, true) --> get dps or hps
-		local mybest2 = mybest[1] or 0
+		local mybest2 = mybest and mybest[1] or 0
 		local myBestDps = mybest2 / onencounter.elapsed
-
-		--[12:18:37] Details!: error occurred on Details.Database.StoreEncounter(): Interface\AddOns\Details\core\gears.lua:1758: attempt to index local 'mybest' (a nil value)
 
 		if (mybest) then
 			local d_one = 0
